@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.garnettwork.ackrivals",
+    "sha256_cert_fingerprints": ["BE:8B:6C:58:64:59:7D:81:0C:81:F3:3C:CA:48:E6:7C:57:9A:D3:9F:00:C2:07:E3:FD:F4:67:F7:6D:E2:1C:62"]
+  }
+}]

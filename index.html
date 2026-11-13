@@ -1,4 +1,4 @@
-<!doctype html><html><head><script>(function(){try{var k='__ack_t';window.localStorage.setItem(k,'1');window.localStorage.removeItem(k)}catch(e){var m={};var s={getItem:function(k){return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null},setItem:function(k,v){m[k]=String(v)},removeItem:function(k){delete m[k]},clear:function(){m={}},key:function(i){return Object.keys(m)[i]||null},get length(){return Object.keys(m).length}};try{Object.defineProperty(window,'localStorage',{value:s,configurable:true})}catch(_){}}})();</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><script>(function(){try{var k='__ack_t';window.localStorage.setItem(k,'1');window.localStorage.removeItem(k)}catch(e){var m={};var s={getItem:function(k){return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null},setItem:function(k,v){m[k]=String(v)},removeItem:function(k){delete m[k]},clear:function(){m={}},key:function(i){return Object.keys(m)[i]||null},get length(){return Object.keys(m).length}};try{Object.defineProperty(window,'localStorage',{value:s,configurable:true})}catch(_){}}})();</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel=manifest href="/manifest.webmanifest"><meta name=theme-color content="#0d1520"><link rel=icon type="image/png" href="/icons/icon-192.png"><link rel=apple-touch-icon href="/icons/icon-192.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>ACK Rivals VR</title>
 <style>
 @font-face {
@@ -609,7 +609,7 @@ const VR={on:false};const VR_HEADSET=!!navigator.xr&&/OculusBrowser|Quest|Pico/i
    STORE_LOCK decides what the plain web link offers once the game is for sale: 'off' (everything, as now), 'vr' (flat game only,
    VR points to the store) or 'all' (just a store screen). STORE_URL is the game's store page, once Meta approves it. */
 const STORE_LOCK='off',STORE_URL='';
-const STORE_APP=(function(){try{if(typeof window.getDigitalGoodsService==='function'||/^android-app:\/\//.test(document.referrer||'')||sessionStorage.getItem('ack-store')==='1'){try{sessionStorage.setItem('ack-store','1')}catch(e){}return true}}catch(e){}return false})();
+const STORE_APP=(function(){try{if(typeof window.getDigitalGoodsService==='function'||/^android-app:\/\//.test(document.referrer||'')||sessionStorage.getItem('ack-store')==='1'||/[?&]app=quest\b/.test(location.search)){try{sessionStorage.setItem('ack-store','1')}catch(e){}return true}}catch(e){}return false})();
 const vrLocked=()=>STORE_LOCK!=='off'&&!STORE_APP;
 const canvas=document.getElementById('gl');
 const renderer=new T.WebGLRenderer({canvas,antialias:VR_HEADSET||!GFX.post&&(window.devicePixelRatio||1)<2,powerPreference:'high-performance',stencil:false});
@@ -6065,4 +6065,5 @@ window.__ack={step,startRace,startBattle,startCTF,startOpen,startHarbor,go,get O
 
 </body></html>
 
+<script>if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}</script>
 </body></html>
