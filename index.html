@@ -583,7 +583,7 @@ THREE.ColorManagement.legacyMode=false;const T=Object.assign({},THREE);
 const GFX=(function(){let q=null;try{q=localStorage.getItem('ack-gfx')}catch(e){}
  const mobile=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<700;
  // iPhones and iPads give a web page far less graphics memory than a computer, so they start on Low
- const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const auto=ios?'low':mobile?'medium':'high';
+ const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const questUA=/OculusBrowser|Quest|Pico/i.test(navigator.userAgent),auto=ios||questUA?'low':mobile?'medium':'high';
  let level=['low','medium','high','ultra'].includes(q)?q:auto,stepped=null;
  // crash guard: ack-alive is '0' while loading or starting a mode and flips to '1' once things run; a '0' here means the last try died
  try{if(localStorage.getItem('ack-alive')==='0'&&level!=='low'){level={ultra:'high',high:'medium',medium:'low'}[level];localStorage.setItem('ack-gfx',level);q=level;stepped=level}localStorage.setItem('ack-alive','0')}catch(e){}
@@ -604,6 +604,13 @@ let NIGHT_ON=false;const SITE={};MAP.sites.forEach(s=>SITE[s.id]=s);
 
 /* ---------- renderer / scene ---------- */
 const VR={on:false};const VR_HEADSET=!!navigator.xr&&/OculusBrowser|Quest|Pico/i.test(navigator.userAgent);
+/* Meta Horizon Store: the packaged store app (a web app wrapped for Quest) opens this same page. Inside it, the page sees the
+   store app's Digital Goods service (or an android-app:// referrer) and opens straight into VR.
+   STORE_LOCK decides what the plain web link offers once the game is for sale: 'off' (everything, as now), 'vr' (flat game only,
+   VR points to the store) or 'all' (just a store screen). STORE_URL is the game's store page, once Meta approves it. */
+const STORE_LOCK='off',STORE_URL='';
+const STORE_APP=(function(){try{if(typeof window.getDigitalGoodsService==='function'||/^android-app:\/\//.test(document.referrer||'')||sessionStorage.getItem('ack-store')==='1'){try{sessionStorage.setItem('ack-store','1')}catch(e){}return true}}catch(e){}return false})();
+const vrLocked=()=>STORE_LOCK!=='off'&&!STORE_APP;
 const canvas=document.getElementById('gl');
 const renderer=new T.WebGLRenderer({canvas,antialias:VR_HEADSET||!GFX.post&&(window.devicePixelRatio||1)<2,powerPreference:'high-performance',stencil:false});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,GFX.pr));
@@ -5680,55 +5687,78 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
    The game keeps driving its own camera exactly as on a flat screen. In the headset a rig follows that camera's
    position and heading only (no pitch, roll or shake), and the headset adds your real head movement on top.
    On foot you aim with the right controller; in a vehicle you look with your head.
-   Everything you need mid-game (pause, back on the road, music, turning, quit, leave VR) is a menu inside the headset. */
+   Everything works inside the headset: the main menu, the pause menu, the island map with its search, and the gun shop
+   are panels you point at with either controller and click with the trigger. Nothing needs the headset off.
+   In the Meta Horizon Store app (a packaged web app) the game opens straight into VR. */
 (function(){
  const xr=navigator.xr;let supported=false,session=null;
  const rig=new T.Group(),cam=new T.PerspectiveCamera(70,1,.1,12000);rig.add(cam);rig.name='vr-rig';scene.add(rig);
  const pad={id:'Meta Quest Touch (VR)',connected:true,mapping:'standard',index:0,timestamp:0,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,touched:false,value:0}))};
  try{const real=navigator.getGamepads?navigator.getGamepads.bind(navigator):()=>[];Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>VR.on?[pad]:real()})}catch(e){}
  let snap=true;try{snap=localStorage.getItem('ack-vr-turn')!=='smooth'}catch(e){}
- const st={snapArmed:true,navArmed:true,prev:{},prevYaw:0,headYaw:0,headPitch:0,aimYaw:null,prevAimYaw:null,rigYaw:0,L:null,R:null,Rsrc:null,
-  mute:false,lastResume:0,sel:0,ctl:'',err:'',errN:0,sig:'',showUntil:0,saveRefl:null,camBefore:null,hint:0,noted:{}};
- const _p=new T.Vector3(),_d=new T.Vector3(),_e=new T.Euler(0,0,0,'YXZ'),_q=new T.Quaternion();
+ const st={snapArmed:true,navArmed:true,prev:{},prevYaw:0,headYaw:0,headPitch:0,headY:0,aimYaw:null,prevAimYaw:null,rigYaw:0,fwd:0,L:null,R:null,Lsrc:null,Rsrc:null,
+  mute:false,lastResume:0,sel:0,ctl:'',err:'',errN:0,sig:'',showUntil:0,saveRefl:null,saveShadow:null,camBefore:null,hint:0,noted:{},vis:'visible',
+  hp:{left:null,right:null},hand:'right',menuPos:null,menuYaw:0,frameN:0,ui:'',uiWas:'',uiYaw:0,uiY:0,menuRig:null};
+ const _p=new T.Vector3(),_d=new T.Vector3(),_e=new T.Euler(0,0,0,'YXZ'),_q=new T.Quaternion(),_m=new T.Matrix4(),_o=new T.Vector3(),_v=new T.Vector3();
  const oops=e=>{st.errN++;if(!st.err){st.err=String(e&&e.message||e).slice(0,110);try{console.error('[ACK VR]',e)}catch(_){}}};
  const menuOn=()=>PAUSED||MODE==='raceover'||MODE==='battleover';
+ // which in-headset panel is up: map, shop, pause (or finished) menu, main menu, or none
+ const uiMode=()=>WM.open?'map':ARMS.open?'shop':menuOn()?'pause':MODE==='menu'?'main':'';
  function buzz(g,i,ms){try{const h=g&&g.hapticActuators&&g.hapticActuators[0];if(h&&h.pulse)h.pulse(i,ms)}catch(e){}}
  function note(k,msg){if(st.noted[k])return;st.noted[k]=1;toast(msg)}
  // resume from the pause screen; guarded so a trigger press and its select event can't toggle twice
  function resume(){if(!PAUSED||MODE==='menu'||MODE==='raceover'||MODE==='battleover')return;const t=performance.now();if(t-st.lastResume<250)return;st.lastResume=t;st.mute=true;togglePause()}
- function openMenu(){if(MODE==='menu')return;if(!PAUSED)togglePause();st.sel=0;hudT=0}
+ function openMenu(){if(MODE==='menu')return;if(WM.open)mapClose();if(ARMS.open)shopClose();if(!PAUSED)togglePause();st.sel=0;hudT=0}
  function exitVR(){const ss=(renderer.xr.getSession&&renderer.xr.getSession())||session;if(ss){try{const r=ss.end();if(r&&r.catch)r.catch(()=>leave())}catch(e){leave()}}else leave()}
+ function recenter(){st.fwd=MODE!=='menu'&&!(FOOT()&&PL&&PL.fp)?st.headYaw:0;if(MODE==='menu'){st.menuRig=null}uiPlace();toast('View recentered')}
  function menuItems(){
   if(PAUSED)return[{t:'Resume',go:resume},
+   ...(MODE!=='menu'?[{t:'Island map',go:()=>{st.mute=true;if(PAUSED)togglePause();mapOpen()}}]:[]),
    ...(PCAR?[{t:'Back on the road',go:()=>{resetInput=true;resume()}}]:[]),
    {t:'Music: '+(SETTINGS.music?'on':'off'),go:()=>{if(typeof toggleMusic==='function')toggleMusic()}},
    {t:'Turning: '+(snap?'snap':'smooth'),go:()=>{snap=!snap;try{localStorage.setItem('ack-vr-turn',snap?'snap':'smooth')}catch(e){}turnLbl()}},
+   {t:'Recenter view',go:recenter},
    {t:'Quit to main menu',go:()=>{toMenu()}},
-   {t:'Leave VR',go:exitVR}];
-  return[{t:'Go again',go:()=>{const b=$('b-again');if(b)b.click()}},{t:'Main menu',go:()=>{toMenu()}},{t:'Leave VR',go:exitVR}]}
+   ...(STORE_APP?[]:[{t:'Leave VR',go:exitVR}])];
+  return[{t:'Go again',go:()=>{const b=$('b-again');if(b)b.click()}},{t:'Main menu',go:()=>{toMenu()}},...(STORE_APP?[]:[{t:'Leave VR',go:exitVR}])]}
  /* ---- aim line from the right controller (on foot) ---- */
  const ray=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(0,0,-.05),new T.Vector3(0,0,-30)]),new T.LineBasicMaterial({color:0xffd23f,transparent:true,opacity:.5,fog:false,toneMapped:false}));
  ray.visible=false;ray.frustumCulled=false;ray.userData.noRefl=true;rig.add(ray);
+ /* ---- pointer for the panels: a white laser from whichever hand last pulled its trigger, and a dot where it lands ---- */
+ const uiRay=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(0,0,0),new T.Vector3(0,0,-1)]),new T.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.75,depthTest:false,fog:false,toneMapped:false}));
+ uiRay.visible=false;uiRay.frustumCulled=false;uiRay.renderOrder=10001;uiRay.userData.noRefl=true;rig.add(uiRay);
+ const dot=new T.Mesh(new T.CircleGeometry(.009,20),new T.MeshBasicMaterial({color:0xffd23f,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
+ dot.visible=false;dot.renderOrder=10002;dot.frustumCulled=false;dot.userData.noRefl=true;rig.add(dot);
  /* ---- in-headset panel: a small dashboard below your eyeline, and the menu in front of you when paused ---- */
  const hc=document.createElement('canvas');hc.width=1024;hc.height=440;const hx=hc.getContext('2d');
  const htex=new T.CanvasTexture(hc);htex.encoding=T.sRGBEncoding;htex.anisotropy=4;
  const hud=new T.Mesh(new T.PlaneGeometry(.78,.335),new T.MeshBasicMaterial({map:htex,transparent:true,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
  hud.position.set(0,-.43,-.86);hud.rotation.x=-.5;hud.renderOrder=9999;hud.frustumCulled=false;hud.userData.noRefl=true;hud.visible=false;rig.add(hud);
+ /* ---- the big panel: main menu, island map + search, gun shop ---- */
+ const BW=1536,BH=960,bc=document.createElement('canvas');bc.width=BW;bc.height=BH;const bx=bc.getContext('2d');
+ const btex=new T.CanvasTexture(bc);btex.encoding=T.sRGBEncoding;btex.anisotropy=4;
+ const big=new T.Mesh(new T.PlaneGeometry(1.44,.9),new T.MeshBasicMaterial({map:btex,transparent:true,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
+ big.renderOrder=9998;big.frustumCulled=false;big.userData.noRefl=true;big.visible=false;rig.add(big);
+ const SURF={hud:{mesh:hud,W:1024,H:440,w:.78,h:.335,hits:[]},big:{mesh:big,W:BW,H:BH,w:1.44,h:.9,hits:[]}};
+ const ptr={surf:null,x:0,y:0,id:'',hover:''};let bigDirty=true,bigT=0;
  let hudT=0;
  const txt=id=>{const el=$(id);if(!el||el.hidden)return'';let p=el;while(p&&p!==document.body){if(p.hidden)return'';p=p.parentElement}return(el.textContent||'').replace(/\s+/g,' ').trim()};
  const vrWords=s=>s.replace(/\b(ENTER|E|F|Y|△)\b(?=\s*(·|to\b))/g,'B').replace(/\bRB\b/g,'right grip').replace(/\bRT\b/g,'right trigger').replace(/\bLB\b/g,'left grip');
- function wrap(s,x,y,w,lh,max){const words=s.split(' ');let line='',n=0;for(const wd of words){const t=line?line+' '+wd:wd;if(hx.measureText(t).width>w&&line){hx.fillText(line,x,y+n*lh);n++;line=wd;if(n>=max)return n}else line=t}if(line&&n<max){hx.fillText(line,x,y+n*lh);n++}return n}
- function panel(W,H){hx.clearRect(0,0,W,H);hx.fillStyle='rgba(10,12,16,.72)';hx.beginPath();hx.roundRect?hx.roundRect(4,4,W-8,H-8,34):hx.rect(4,4,W-8,H-8);hx.fill()}
- function drawHud(){const W=hc.width,H=hc.height;panel(W,H);hx.textBaseline='top';
+ function wrapOn(c,s,x,y,w,lh,max){const words=String(s).split(' ');let line='',n=0;for(const wd of words){const t=line?line+' '+wd:wd;if(c.measureText(t).width>w&&line){c.fillText(line,x,y+n*lh);n++;line=wd;if(n>=max)return n}else line=t}if(line&&n<max){c.fillText(line,x,y+n*lh);n++}return n}
+ const wrap=(s,x,y,w,lh,max)=>wrapOn(hx,s,x,y,w,lh,max);
+ function rr(c,x,y,w,h,r){c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)}
+ function panel(W,H){hx.clearRect(0,0,W,H);hx.fillStyle='rgba(10,12,16,.72)';rr(hx,4,4,W-8,H-8,34);hx.fill()}
+ function drawHud(){const W=hc.width,H=hc.height;panel(W,H);hx.textBaseline='top';SURF.hud.hits=[];
   if(menuOn()){const it=menuItems();if(st.sel>=it.length)st.sel=0;
    hx.fillStyle='#fff';hx.font='700 46px Anton, Impact, sans-serif';hx.fillText(PAUSED?'PAUSED':'FINISHED',36,24);
-   hx.font='500 22px Barlow, Arial, sans-serif';hx.fillStyle='rgba(255,255,255,.7)';hx.fillText('Stick up or down to pick · A or trigger to choose'+(PAUSED?' · B to play':''),250,40);
+   hx.font='500 22px Barlow, Arial, sans-serif';hx.fillStyle='rgba(255,255,255,.7)';hx.fillText('Point and pull the trigger, or stick up/down and A'+(PAUSED?' · B to play':''),250,40);
    let y=92;const lh=Math.min(54,(H-92-50)/it.length);
-   it.forEach((m,i)=>{const on=i===st.sel;if(on){hx.fillStyle='#ffd23f';hx.beginPath();hx.roundRect?hx.roundRect(28,y-4,W-56,lh-6,14):hx.rect(28,y-4,W-56,lh-6);hx.fill()}
-    hx.fillStyle=on?'#111':'#fff';hx.font=(on?'700 ':'500 ')+Math.round(lh*.6)+'px Barlow, Arial, sans-serif';hx.fillText(m.t,52,y+2);y+=lh});
+   it.forEach((m,i)=>{const on=i===st.sel;if(on){hx.fillStyle='#ffd23f';rr(hx,28,y-4,W-56,lh-6,14);hx.fill()}
+    hx.fillStyle=on?'#111':'#fff';hx.font=(on?'700 ':'500 ')+Math.round(lh*.6)+'px Barlow, Arial, sans-serif';hx.fillText(m.t,52,y+2);
+    SURF.hud.hits.push({x:28,y:y-4,w:W-56,h:lh-6,id:'m'+i,fn:()=>{st.sel=i;m.go()},hov:()=>{if(st.sel!==i){st.sel=i;hudT=0}}});y+=lh});
    hx.font='500 20px Barlow, Arial, sans-serif';hx.fillStyle='rgba(255,255,255,.55)';hx.fillText(st.ctl,36,H-38)}
   else{
-   const mini=$('mini');let x0=28;if(mini&&mini.width&&MODE!=='menu'){try{hx.save();hx.beginPath();hx.arc(28+180,H/2,180,0,TAU);hx.clip();hx.drawImage(mini,28,H/2-180,360,360);hx.restore()}catch(e){}x0=420}
+   const mini=$('mini');let x0=28;if(mini&&mini.width&&MODE!=='menu'){hx.save();try{hx.beginPath();hx.arc(28+180,H/2,180,0,TAU);hx.clip();hx.drawImage(mini,28,H/2-180,360,360)}catch(e){}finally{hx.restore()}x0=420}
    hx.fillStyle='#fff';let y=30;const drive=!!PCAR&&!FOOT();
    if(drive){hx.font='700 96px Anton, Impact, sans-serif';const s=txt('spd')||'0';hx.fillText(s,x0,y-6);const sw=hx.measureText(s).width;hx.font='600 30px Barlow, Arial, sans-serif';hx.fillStyle='#cfd6e0';hx.fillText('MPH',x0+sw+14,y+52);y+=104}
    hx.font='600 32px Barlow Condensed, Arial, sans-serif';hx.fillStyle='#e8edf3';
@@ -5736,34 +5766,182 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
    if(line1){y+=wrap(line1,x0,y,W-x0-36,38,2)*38+6}
    const obj=txt('obj')||txt('next');if(obj){hx.fillStyle='#ffd23f';hx.font='600 30px Barlow, Arial, sans-serif';y+=wrap(obj,x0,y,W-x0-36,36,2)*36+6}
    const pr=txt('prompt');if(pr){hx.fillStyle='#7fd3ff';hx.font='700 34px Barlow, Arial, sans-serif';y+=wrap(vrWords(pr),x0,y,W-x0-36,40,2)*40+6}
-   const big=txt('count')||(txt('wasted')?'SPLATTED':'')||txt('busted');if(big){hx.fillStyle='#ff5a3c';hx.font='700 44px Anton, Impact, sans-serif';hx.fillText(big.slice(0,28),x0,y);y+=52}
+   const big2=txt('count')||(txt('wasted')?'SPLATTED':'')||txt('busted');if(big2){hx.fillStyle='#ff5a3c';hx.font='700 44px Anton, Impact, sans-serif';hx.fillText(big2.slice(0,28),x0,y);y+=52}
    const te=$('toast'),tt=te&&te.classList.contains('show')&&te.textContent?vrWords(te.textContent.replace(/\s+/g,' ')):'';
    if(tt){hx.fillStyle='#fff';hx.font='500 28px Barlow, Arial, sans-serif';y+=wrap(tt,x0,y,W-x0-36,34,3)*34}
-   if(st.hint>0){hx.fillStyle='rgba(255,255,255,.8)';hx.font='500 22px Barlow, Arial, sans-serif';wrap('Right trigger shoots (gas in a car) · left trigger brakes · B or Y gets in and out · A jumps · X pauses · left grip throws a grenade · click the right stick for the next weapon · look down to see this panel again',x0,H-112,W-x0-36,27,4)}
+   if(st.hint>0){hx.fillStyle='rgba(255,255,255,.8)';hx.font='500 22px Barlow, Arial, sans-serif';wrap('Right trigger shoots (gas in a car) · left trigger brakes · B or Y gets in and out · A jumps · X opens the menu (map, recenter, quit) · left grip throws a grenade · click the right stick for the next weapon · look down to see this panel again',x0,H-112,W-x0-36,27,4)}
    // show the panel for a few seconds whenever something new appears on it
-   const sig=[obj,pr,big,tt].join('|');if(sig!==st.sig){if(obj||pr||big||tt)st.showUntil=performance.now()+4000;st.sig=sig}
-   st.keep=!!(pr||big)}
+   const sig=[obj,pr,big2,tt].join('|');if(sig!==st.sig){if(obj||pr||big2||tt)st.showUntil=performance.now()+4000;st.sig=sig}
+   st.keep=!!(pr||big2)}
   if(st.err){hx.fillStyle='#ff8a7a';hx.font='500 22px Barlow, Arial, sans-serif';wrap('Error: '+st.err+(st.errN>1?' (x'+st.errN+')':''),36,H-34,W-72,24,1)}
   htex.needsUpdate=true}
+ /* ---- drawing kit for the big panel ---- */
+ const COL={bg:'rgba(12,15,20,.94)',card:'rgba(255,255,255,.07)',line:'rgba(255,255,255,.14)',dim:'rgba(255,255,255,.62)',gold:'#ffd23f',blue:'#7fd3ff'};
+ function hit(x,y,w,h,id,fn,hov){SURF.big.hits.push({x,y,w,h,id,fn,hov})}
+ function button(x,y,w,h,label,id,fn,o){o=o||{};const hov=ptr.surf===SURF.big&&ptr.hover===id&&!o.off,on=!!o.on;
+  bx.fillStyle=o.off?'rgba(255,255,255,.05)':on||o.primary?(hov?'#ffe27a':COL.gold):hov?'rgba(255,255,255,.22)':'rgba(255,255,255,.1)';rr(bx,x,y,w,h,Math.min(18,h/2));bx.fill();
+  if(hov&&!on&&!o.primary){bx.strokeStyle=COL.gold;bx.lineWidth=3;rr(bx,x+1.5,y+1.5,w-3,h-3,Math.min(17,h/2));bx.stroke()}
+  bx.fillStyle=o.off?'rgba(255,255,255,.35)':on||o.primary?'#111':'#fff';bx.font=(o.font||'700 '+Math.round(Math.min(34,h*.46))+'px Barlow, Arial, sans-serif');bx.textBaseline='middle';
+  if(o.left){bx.textAlign='left';bx.fillText(label,x+20,y+h/2+1)}else{bx.textAlign='center';bx.fillText(label,x+w/2,y+h/2+1)}bx.textAlign='left';bx.textBaseline='top';
+  if(!o.off&&fn)hit(x,y,w,h,id,fn)}
+ function frame0(title,sub){bx.clearRect(0,0,BW,BH);bx.fillStyle=COL.bg;rr(bx,4,4,BW-8,BH-8,40);bx.fill();bx.strokeStyle=COL.line;bx.lineWidth=2;rr(bx,5,5,BW-10,BH-10,39);bx.stroke();
+  bx.textBaseline='top';if(title){bx.fillStyle='#fff';bx.font='700 54px Anton, Impact, sans-serif';bx.fillText(title,40,30)}if(sub){bx.fillStyle=COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText(sub,40,96)}}
+ function statusLine(y){const te=$('toast');const t=te&&te.classList.contains('show')&&te.textContent?te.textContent.replace(/\s+/g,' '):'';if(t){bx.fillStyle=COL.blue;bx.font='600 26px Barlow, Arial, sans-serif';wrapOn(bx,vrWords(t),40,y,BW-80,30,1)}return t}
+ /* ---- main menu (also where the store app starts) ---- */
+ const MODES=[['open','Open Island','Zombies, a helicopter, pirate ships, cops and bigger guns'],['race','Race',''],['harbor','Harbor War','Boats, paint cannons, killer whales · first to 8'],['battle','Paintball War','Everyone for themselves · first to 10'],['ctf','Capture the Flag','Chicken Box vs Stop & Shop · first to 3']];
+ function routeList(){return Object.values(ROUTES)}
+ function drawMain(){frame0('ACK RIVALS VR','Point with either controller and pull the trigger to pick.');
+  // drivers
+  bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('YOUR DRIVER',40,150);
+  const n=PLAYABLE.length,gw=(BW-80-(n-1)*14)/n;PLAYABLE.forEach((i,k)=>{const d=DRIVERS[i],x=40+k*(gw+14),y=184,id='drv'+i,on=SEL===i,hov=ptr.hover===id;
+   bx.fillStyle=on?'rgba(255,210,63,.18)':hov?'rgba(255,255,255,.16)':COL.card;rr(bx,x,y,gw,86,16);bx.fill();if(on||hov){bx.strokeStyle=on?COL.gold:'rgba(255,255,255,.5)';bx.lineWidth=3;rr(bx,x+1.5,y+1.5,gw-3,83,15);bx.stroke()}
+   bx.fillStyle=d.paint||'#888';rr(bx,x+16,y+22,42,42,10);bx.fill();bx.fillStyle='#fff';bx.font='700 30px Barlow, Arial, sans-serif';bx.textBaseline='middle';bx.fillText(String(d.name||'').slice(0,14),x+72,y+34);
+   bx.fillStyle=COL.dim;bx.font='500 20px Barlow, Arial, sans-serif';bx.fillText(String(d.tag||'').slice(0,26),x+72,y+62);bx.textBaseline='top';
+   hit(x,y,gw,86,id,()=>{SEL=i;try{localStorage.setItem('ack-sel',i)}catch(e){}if(typeof setupPreview==='function')setupPreview();const box=$('drivers');if(box)[...box.children].forEach(c=>c.classList.toggle('sel',+c.dataset.di===SEL))})});
+  // modes
+  bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('PLAY',40,296);
+  const cw=(BW-80-14)/2,ch=104;MODES.forEach(([m,name,desc],k)=>{const col=k===0?0:(k-1)%2,row=k===0?0:1+((k-1)>>1),x=k===0?40:40+col*(cw+14),y=330+row*(ch+12),w=k===0?BW-80:cw,id='mode-'+m,hov=ptr.hover===id;
+   bx.fillStyle=k===0?(hov?'#ffe27a':COL.gold):hov?'rgba(255,255,255,.2)':COL.card;rr(bx,x,y,w,ch,18);bx.fill();if(hov&&k){bx.strokeStyle=COL.gold;bx.lineWidth=3;rr(bx,x+1.5,y+1.5,w-3,ch-3,17);bx.stroke()}
+   const dark=k===0;bx.fillStyle=dark?'#111':'#fff';bx.font='700 40px Anton, Impact, sans-serif';bx.fillText(name.toUpperCase(),x+24,y+14);
+   let dsc=desc;if(m==='race'){const r=ROUTES[SETTINGS.route]||routeList()[0];dsc=r?`${r.name} · ${r.km} km`:''}
+   bx.fillStyle=dark?'rgba(0,0,0,.7)':COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText(dsc,x+24,y+64);
+   hit(x,y,m==='race'?w-180:w,ch,id,()=>{st.mute=true;go(m)});
+   if(m==='race')button(x+w-168,y+22,150,60,'Next route','route',()=>{const L=routeList(),i=L.findIndex(r=>r.id===SETTINGS.route),r=L[(i+1)%L.length];if(r){SETTINGS.route=r.id;saveSettings();setRoute(r.id);if(typeof renderRoutePick==='function')try{renderRoutePick()}catch(e){}}},{font:'700 26px Barlow, Arial, sans-serif'})});
+  // settings
+  const y=BH-120;bx.fillStyle=COL.dim;bx.font='600 22px Barlow, Arial, sans-serif';bx.fillText('TIME OF DAY',40,y-30);
+  ['day','sunset','night'].forEach((v,k)=>button(40+k*126,y,116,64,v[0].toUpperCase()+v.slice(1),'tod-'+v,()=>applyTOD(v),{on:SETTINGS.tod===v,font:'700 26px Barlow, Arial, sans-serif'}));
+  bx.fillStyle=COL.dim;bx.fillText('SETTINGS',440,y-30);
+  button(440,y,170,64,'Music: '+(SETTINGS.music?'on':'off'),'mus',()=>{audioStart();toggleMusic()},{font:'700 26px Barlow, Arial, sans-serif'});
+  button(624,y,210,64,'Turning: '+(snap?'snap':'smooth'),'turn',()=>{snap=!snap;try{localStorage.setItem('ack-vr-turn',snap?'snap':'smooth')}catch(e){}turnLbl()},{font:'700 26px Barlow, Arial, sans-serif'});
+  const gl=gfxPref();button(848,y,250,64,'Graphics: '+gl,'gfx',()=>{const nx=gl==='Low'?'medium':'low';try{localStorage.setItem('ack-gfx',nx)}catch(e){}toast('Graphics '+nx+' from the next time you start the game')},{font:'700 26px Barlow, Arial, sans-serif'});
+  button(1112,y,170,64,'Recenter','rec',recenter,{font:'700 26px Barlow, Arial, sans-serif'});
+  if(!STORE_APP)button(1296,y,200,64,'Leave VR','leave',exitVR,{font:'700 26px Barlow, Arial, sans-serif'});
+  statusLine(BH-46)}
+ function gfxPref(){let q=null;try{q=localStorage.getItem('ack-gfx')}catch(e){}const v=q||GFX.level;return v==='low'?'Low':v==='medium'?'Medium':v==='high'?'High':'Ultra'}
+ /* ---- gun shop ---- */
+ function drawShop(){frame0('ACK ARMS','Gunny’s paint surplus · you have '+money(CASH));button(BW-220,34,180,70,'Done','close',shopClose);
+  const top=150,rh=(BH-top-80)/SHOP_ITEMS.length;
+  SHOP_ITEMS.forEach((it,i)=>{const W=WPNS[it.w],own=it.w!=='nades'&&ownsWeapon(it.w),name=it.w==='nades'?'Paint grenades ×5':W.name,cant=!own&&CASH<it.price,y=top+i*rh;
+   bx.fillStyle=COL.card;rr(bx,40,y,BW-80,rh-10,16);bx.fill();bx.fillStyle='#fff';bx.font='700 34px Barlow, Arial, sans-serif';bx.textBaseline='top';bx.fillText(name,64,y+12);
+   bx.fillStyle=COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText(it.desc,64,y+54);
+   button(BW-300,y+(rh-10-64)/2,236,64,own?'Equip':money(it.price),'buy'+i,()=>{shopBuy(i);bigDirty=true},{off:cant,primary:!own})});
+  statusLine(BH-60)}
+ /* ---- island map with search ---- */
+ const MW=900,MX=36,MY=36,mvc=document.createElement('canvas');mvc.width=MW;mvc.height=MW;
+ const VM={kb:false,scroll:0,rows:[],listY:0,listH:0,listX:0};
+ function mapOpen(){if(MODE==='menu')return;if(ARMS.open)shopClose();WM.open=true;wmBuild();WM.cv=mvc;WM.ctx=mvc.getContext('2d');WM.dpr=1;WM.W=MW;WM.H=MW;wmPois();
+  if(WM.first){WM.first=false;WM.z=wmFit();WM.cx=(B.x0+B.x1)/2;WM.cz=(B.z0+B.z1)/2;const me=ME();if(me&&MODE==='open'){WM.cx=me.p.x;WM.cz=me.p.z;WM.z=Math.max(wmFit(),.35)}}
+  wmClampView();if(WM.sel&&WM.sel.id)WM.sel=WM.pois.find(o=>o.id===WM.sel.id)||null;VM.kb=false;VM.scroll=0;bigDirty=true;sfx('beep',.4)}
+ function mapClose(){const bm=$('bigmap');if(bm)bm.hidden=true;if(WM.open)wmClose()}
+ function mapClick(sx,sy){let best=null,bd=26;for(const h of WM.hits){const d=Math.hypot(h.sx-sx,h.sy-sy);if(d<bd){bd=d;best=h.o}}
+  if(best){wmSelect(best,false);return}
+  const[x,z]=wmW(sx,sy),land=groundH(x,z)>.35;let nm='Dropped pin',nd=900;for(const o of WM.pois)if(o.cat==='place'){const d=Math.hypot(o.x-x,o.z-z);if(d<nd){nd=d;nm='Near '+o.name}}
+  WM.sel={id:'pin',name:land?nm:'Open water',x,z,cat:'pin',fact:land?'Spawn right here, or mark it and head over.':'You can mark water, but you can only spawn on land.',spawn:land}}
+ function mapRows(){const q=WM.q.trim().toLowerCase(),rows=[];for(const g of['place','mission','pirate','gun','harbor']){if(WM.cats[g]===false)continue;const items=WM.pois.filter(o=>o.cat===g&&(!q||o.name.toLowerCase().includes(q)));if(!items.length)continue;
+  items.sort((a,b)=>g==='place'?a.name.localeCompare(b.name):a.d-b.d);rows.push({h:WM_CAT[g].n,c:WM_CAT[g].c,n:items.length});items.forEach(o=>rows.push({o}))}return rows}
+ function drawMap(){
+  // the map itself, drawn by the game's own map code into an off-screen canvas
+  if(WM.fly){WM.raf=0;try{wmFrame()}catch(e){oops(e)}}else{try{wmDraw()}catch(e){oops(e)}}
+  bx.clearRect(0,0,BW,BH);bx.fillStyle=COL.bg;rr(bx,4,4,BW-8,BH-8,40);bx.fill();
+  bx.save();rr(bx,MX,MY,MW,MW,24);bx.clip();bx.drawImage(mvc,MX,MY);bx.restore();hit(MX,MY,MW,MW,'map',()=>{mapClick(ptr.x-MX,ptr.y-MY);bigDirty=true});
+  const zb=(k,l,id,fn)=>button(MX+MW-96,MY+16+k*80,80,68,l,id,fn,{font:(l.length>1?'700 24px':'700 38px')+' Barlow, Arial, sans-serif'});
+  zb(0,'+','zin',()=>wmZoomAt(1.6,MW/2,MW/2));zb(1,'−','zout',()=>wmZoomAt(1/1.6,MW/2,MW/2));zb(2,'Me','zme',()=>{const me=ME();if(me)wmFly(me.p.x,me.p.z,Math.max(WM.z,.9))});zb(3,'All','zall',()=>wmFly((B.x0+B.x1)/2,(B.z0+B.z1)/2,wmFit()));
+  bx.fillStyle='rgba(12,22,32,.8)';rr(bx,MX+14,MY+MW-52,MW-28,40,12);bx.fill();bx.fillStyle='rgba(255,255,255,.85)';bx.font='500 21px Barlow, Arial, sans-serif';bx.textBaseline='middle';
+  bx.fillText('Left stick moves the map · right stick zooms · point at a place and pull the trigger',MX+30,MY+MW-31);bx.textBaseline='top';
+  // right column
+  const X=MX+MW+28,Wc=BW-X-36;let y=MY;
+  bx.fillStyle='#fff';bx.font='700 44px Anton, Impact, sans-serif';bx.fillText('ISLAND MAP',X,y);button(X+Wc-150,y-4,150,60,'Close','close',mapClose,{font:'700 28px Barlow, Arial, sans-serif'});y+=72;
+  // search box
+  const q=WM.q;const sid='search',sh=ptr.hover===sid;bx.fillStyle=sh||VM.kb?'rgba(255,255,255,.18)':'rgba(255,255,255,.1)';rr(bx,X,y,Wc,62,14);bx.fill();if(VM.kb){bx.strokeStyle=COL.gold;bx.lineWidth=3;rr(bx,X+1.5,y+1.5,Wc-3,59,13);bx.stroke()}
+  bx.fillStyle=q?'#fff':COL.dim;bx.font='600 28px Barlow, Arial, sans-serif';bx.textBaseline='middle';bx.fillText((q?'Search:  '+q:VM.kb?'Search:  ':'Search places, missions, pirates')+(VM.kb?'_':''),X+18,y+32);bx.textBaseline='top';
+  hit(X,y,Wc,62,sid,()=>{VM.kb=!VM.kb});y+=76;
+  if(VM.kb){// on-panel keyboard
+   const keys='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat(['Space','Del','Clear','Done']),cols=6,kw=(Wc-(cols-1)*8)/cols,kh=62;
+   keys.forEach((k,i)=>{const kx=X+(i%cols)*(kw+8),ky=y+Math.floor(i/cols)*(kh+8);button(kx,ky,kw,kh,k,'key'+i,()=>{if(k==='Del')WM.q=WM.q.slice(0,-1);else if(k==='Clear')WM.q='';else if(k==='Done')VM.kb=false;else if(k==='Space')WM.q+=' ';else if(WM.q.length<24)WM.q+=k.toLowerCase();VM.scroll=0;buzz(st.hand==='left'?st.L:st.R,.15,8)},{primary:k==='Done',font:'700 28px Barlow, Arial, sans-serif'})});
+   y+=Math.ceil(keys.length/cols)*(kh+8)+6;bx.fillStyle=COL.dim;bx.font='500 22px Barlow, Arial, sans-serif';const nm=mapRows().filter(r=>r.o).length;bx.fillText(nm+' match'+(nm===1?'':'es')+' · press Done to see them',X,y)}
+  else{
+   // category chips
+   const cats=['place','mission','pirate','gun','harbor'],cw2=(Wc-4*8)/5;cats.forEach((c,i)=>{const on=WM.cats[c]!==false,cx=X+i*(cw2+8),id='cat-'+c,hov=ptr.hover===id;
+    bx.fillStyle=on?'rgba(255,255,255,.16)':'rgba(255,255,255,.04)';rr(bx,cx,y,cw2,48,12);bx.fill();if(hov){bx.strokeStyle=COL.gold;bx.lineWidth=2;rr(bx,cx+1,y+1,cw2-2,46,11);bx.stroke()}
+    bx.fillStyle=on?WM_CAT[c].c:'rgba(255,255,255,.25)';bx.fillRect(cx+10,y+16,8,16);bx.fillStyle=on?'#fff':COL.dim;bx.font="600 20px 'Barlow Condensed', Arial, sans-serif";bx.textBaseline='middle';bx.fillText(WM_CAT[c].n.replace('Pirate ',''),cx+24,y+25);bx.textBaseline='top';
+    hit(cx,y,cw2,48,id,()=>{WM.cats[c]=!(WM.cats[c]!==false);VM.scroll=0;wmDirty()})});y+=60;
+   // the list
+   const cardH=WM.sel?236:0,lh=50,ly=y,lH=BH-36-cardH-ly-10;VM.listX=X;VM.listY=ly;VM.listH=lH;
+   const rows=mapRows();VM.rows=rows;const maxS=Math.max(0,rows.length*lh-lH);VM.scroll=clamp(VM.scroll,0,maxS);
+   bx.save();bx.beginPath();bx.rect(X,ly,Wc,lH);bx.clip();
+   rows.forEach((r,i)=>{const ry=ly+i*lh-VM.scroll;if(ry<ly-lh||ry>ly+lH)return;
+    if(r.h){bx.fillStyle=r.c;bx.fillRect(X+2,ry+16,8,20);bx.fillStyle=COL.dim;bx.font='700 22px Barlow, Arial, sans-serif';bx.textBaseline='middle';bx.fillText(r.h.toUpperCase()+'  '+r.n,X+20,ry+26);bx.textBaseline='top';return}
+    const o=r.o,id='row-'+o.id,hov=ptr.hover===id,sel=o===WM.sel;if(sel||hov){bx.fillStyle=sel?'rgba(255,210,63,.22)':'rgba(255,255,255,.12)';rr(bx,X,ry+2,Wc,lh-4,10);bx.fill()}
+    bx.fillStyle='#fff';bx.font='600 26px Barlow, Arial, sans-serif';bx.textBaseline='middle';bx.fillText(o.name.length>30?o.name.slice(0,29)+'…':o.name,X+20,ry+lh/2);
+    bx.fillStyle=COL.dim;bx.font='500 20px Barlow, Arial, sans-serif';bx.textAlign='right';bx.fillText(wmDist(o),X+Wc-14,ry+lh/2);bx.textAlign='left';bx.textBaseline='top';
+    const top=Math.max(ry+2,ly),bot=Math.min(ry+lh-2,ly+lH);if(bot>top)hit(X,top,Wc,bot-top,id,()=>{wmSelect(o,true)})});
+   if(!rows.length){bx.fillStyle=COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText('Nothing matches that.',X+10,ly+10)}
+   bx.restore();
+   if(maxS>0){const th=Math.max(40,lH*lH/(rows.length*lh));bx.fillStyle='rgba(255,255,255,.25)';rr(bx,X+Wc-6,ly+(lH-th)*VM.scroll/maxS,6,th,3);bx.fill()}
+   // the card for whatever's picked
+   if(WM.sel){const o=WM.sel,cy=BH-36-cardH;bx.fillStyle='rgba(255,255,255,.08)';rr(bx,X,cy,Wc,cardH,18);bx.fill();
+    const cat=o.cat==='pin'?'Dropped pin':(WM_CAT[o.cat]?WM_CAT[o.cat].n.replace(/s$/,''):'');bx.fillStyle='#fff';bx.font='700 32px Barlow, Arial, sans-serif';bx.fillText(o.name.length>28?o.name.slice(0,27)+'…':o.name,X+20,cy+16);
+    bx.fillStyle=COL.dim;bx.font='500 22px Barlow, Arial, sans-serif';bx.fillText(`${cat} · ${wmDist(o)} away`,X+20,cy+56);
+    if(o.fact){bx.fillStyle='rgba(255,255,255,.85)';bx.font='500 22px Barlow, Arial, sans-serif';wrapOn(bx,o.fact,X+20,cy+88,Wc-40,26,2)}
+    const by=cy+cardH-76,canGo=o.spawn&&MODE==='open',bw=(Wc-40-12)/2;
+    if(canGo)button(X+20,by,bw,60,'Spawn here','go',()=>{wmTravel(o)},{primary:true,font:'700 28px Barlow, Arial, sans-serif'});
+    if(MODE==='open')button(canGo?X+20+bw+12:X+20,by,bw,60,WM.wp&&WM.wp.id===o.id?'Clear mark':'Mark it','mark',()=>{wmMark(o)},{font:'700 28px Barlow, Arial, sans-serif'});
+    button(X+Wc-64,cy+12,48,48,'×','unsel',()=>{WM.sel=null},{font:'700 30px Barlow, Arial, sans-serif'})}}
+  const t=statusLine(BH-34);if(t){}
+  btex.needsUpdate=true}
+ function drawBig(mode){SURF.big.hits=[];if(mode==='map')drawMap();else{if(mode==='shop')drawShop();else drawMain();btex.needsUpdate=true}}
+ // put the big panel (and the pause menu) in front of wherever you're looking
+ function uiPlace(){const a=st.headYaw,d=1.15;st.uiYaw=a;st.uiY=st.headY;big.position.set(-Math.sin(a)*d,st.headY-.12,-Math.cos(a)*d);big.rotation.set(-.06,a,0,'YXZ')}
+ /* ---- the pointer: cast each hand's ray at whichever panel is up ---- */
+ function castAt(S,h){if(!h||!S.mesh.visible)return null;S.mesh.updateMatrix();_m.copy(S.mesh.matrix).invert();_o.copy(h.o).applyMatrix4(_m);_v.set(0,0,-1).applyQuaternion(h.q).transformDirection(_m);
+  if(Math.abs(_v.z)<1e-4)return null;const t=-_o.z/_v.z;if(t<=0||t>6)return null;const x=_o.x+_v.x*t,y=_o.y+_v.y*t;if(Math.abs(x)>S.w/2||Math.abs(y)>S.h/2)return null;
+  return{t,px:(x/S.w+.5)*S.W,py:(.5-y/S.h)*S.H}}
+ function pickAt(S,px,py){for(let i=S.hits.length-1;i>=0;i--){const b=S.hits[i];if(px>=b.x&&px<=b.x+b.w&&py>=b.y&&py<=b.y+b.h)return b}return null}
+ function pointer(){const mode=st.ui;let S=mode==='pause'?SURF.hud:mode?SURF.big:null;ptr.surf=null;
+  if(!S||st.vis!=='visible'){uiRay.visible=dot.visible=false;if(ptr.hover){ptr.hover='';bigDirty=true}return}
+  const h=st.hp[st.hand]||st.hp.right||st.hp.left;const r=castAt(S,h);
+  if(!h){uiRay.visible=dot.visible=false;return}
+  uiRay.visible=true;uiRay.position.copy(h.o);uiRay.quaternion.copy(h.q);
+  if(!r){uiRay.scale.set(1,1,1.2);dot.visible=false;if(ptr.hover){ptr.hover='';bigDirty=true;hudT=0}return}
+  uiRay.scale.set(1,1,r.t);dot.visible=true;dot.position.copy(h.o).addScaledVector(_v.set(0,0,-1).applyQuaternion(h.q),r.t-.004);dot.quaternion.copy(S.mesh.quaternion);
+  ptr.surf=S;ptr.x=r.px;ptr.y=r.py;const b=pickAt(S,r.px,r.py),id=b?b.id:'';
+  if(id!==ptr.hover){ptr.hover=id;if(id&&id!=='map')buzz(st.hand==='left'?st.L:st.R,.12,8);bigDirty=true;hudT=0;if(b&&b.hov)b.hov()}}
+ function click(){const S=ptr.surf;if(!S)return false;const b=pickAt(S,ptr.x,ptr.y);if(!b)return false;buzz(st.hand==='left'?st.L:st.R,.45,22);try{b.fn()}catch(e){oops(e)}bigDirty=true;hudT=0;return true}
  /* ---- Quest controllers become one standard gamepad, so the game's own controller code does the rest ----
     Quest layout: left stick move/steer · right stick turn · right trigger shoot (gas in a car) · left trigger brake
-    · right grip shoot from a car · left grip grenade · A jump/handbrake · B or Y get in/out · X pause menu
+    · right grip shoot from a car · left grip grenade · A jump/handbrake · B or Y get in/out · X menu
     · right stick click next weapon · left stick click sprint */
- function readControllers(){const B=pad.buttons,A=pad.axes;B.forEach(b=>{b.pressed=false;b.value=0});A[0]=A[1]=A[2]=A[3]=0;
+ function readControllers(dt){const B=pad.buttons,A=pad.axes;B.forEach(b=>{b.pressed=false;b.value=0});A[0]=A[1]=A[2]=A[3]=0;
   let L=null,R=null,Ls=null,Rs=null,other=null,os=null;const ss=(renderer.xr.getSession&&renderer.xr.getSession())||session;
   if(ss&&ss.inputSources)for(const s of ss.inputSources){if(!s||!s.gamepad)continue;if(s.handedness==='left'){L=s.gamepad;Ls=s}else if(s.handedness==='right'){R=s.gamepad;Rs=s}else{other=s.gamepad;os=s}}
-  if(!R&&other){R=other;Rs=os}st.L=L;st.R=R;st.Rsrc=Rs;st.ctl='Controllers: left '+(L?'found':'not found')+' · right '+(R?'found':'not found');
+  if(!R&&other){R=other;Rs=os}st.L=L;st.R=R;st.Lsrc=Ls;st.Rsrc=Rs;st.ctl='Controllers: left '+(L?'found':'not found')+' · right '+(R?'found':'not found');
+  // when the headset isn't focused (system menu, notification) the game ignores the controllers
+  if(st.vis!=='visible'){st.prev={};return}
   const v=(g,i)=>g&&g.buttons[i]?(g.buttons[i].value||0):0,p=(g,i)=>!!(g&&g.buttons[i]&&(g.buttons[i].pressed||g.buttons[i].value>.5)),ax=(g,i)=>g&&g.axes&&g.axes.length>i?(g.axes[i]||0):0;
   const set=(i,on,val)=>{B[i].pressed=B[i].pressed||!!on;B[i].value=Math.max(B[i].value,val!==undefined?val:on?1:0)};
   const edge=(k,on)=>{const was=st.prev[k];st.prev[k]=on;return on&&!was};
   const now=performance.now(),foot=FOOT(),tL=v(L,0),tR=v(R,0),bA=p(R,4),bB=p(R,5),bX=p(L,4),bY=p(L,5);
   const E={A:edge('A',bA),B:edge('B',bB),X:edge('X',bX),Y:edge('Y',bY),TL:edge('TL',tL>.5),TR:edge('TR',tR>.5)};
   pad.timestamp=now;
-  if(menuOn()){ // the in-headset menu
-   const it=menuItems(),ly=ax(L,3),ry=ax(R,3),nav=Math.abs(ly)>Math.abs(ry)?ly:ry;
-   if(Math.abs(nav)>.6&&st.navArmed){st.navArmed=false;st.sel=(st.sel+(nav>0?1:it.length-1))%it.length;hudT=0;buzz(R||L,.2,12)}else if(Math.abs(nav)<.3)st.navArmed=true;
-   if(E.A||E.TR||E.TL){const m=it[st.sel];if(m){buzz(R||L,.4,20);st.mute=true;m.go();hudT=0}}
-   else if((E.B||E.X)&&PAUSED)resume();
+  const mode=st.ui;
+  if(mode){// a panel is up: the controllers drive the pointer, nothing reaches the game
+   if(E.TR){st.hand='right';pointer()}else if(E.TL){st.hand='left';pointer()}
+   if(st.mute){if(tL>.2||tR>.2||bA||bB||bX||bY)return;st.mute=false}
+   const ly=ax(L,3),ry=ax(R,3),lx=ax(L,2);
+   if(mode==='pause'){const it=menuItems(),nav=Math.abs(ly)>Math.abs(ry)?ly:ry;
+    if(Math.abs(nav)>.6&&st.navArmed){st.navArmed=false;st.sel=(st.sel+(nav>0?1:it.length-1))%it.length;hudT=0;buzz(R||L,.2,12)}else if(Math.abs(nav)<.3)st.navArmed=true;
+    if(E.TR||E.TL){if(!click()){}}
+    else if(E.A){const m=it[st.sel];if(m){buzz(R||L,.4,20);st.mute=true;m.go();hudT=0}}
+    else if((E.B||E.X)&&PAUSED)resume();return}
+   if(E.TR||E.TL)click();
+   if(mode==='map'){const overList=ptr.surf===SURF.big&&ptr.x>=VM.listX&&ptr.y>=VM.listY&&ptr.y<=VM.listY+VM.listH&&!VM.kb;
+    const dz=a=>Math.abs(a)<.15?0:a;
+    if(overList){const s=dz(ry)||dz(ly);if(s){VM.scroll+=s*900*dt;bigDirty=true}}
+    else{const px=dz(lx),pz=dz(ly);if(px||pz){WM.fly=null;WM.cx+=px*520*dt/WM.z;WM.cz+=pz*520*dt/WM.z;wmClampView();bigDirty=true}
+     const z=dz(ry);if(z){WM.fly=null;wmZoomAt(Math.exp(-z*1.6*dt),MW/2,MW/2);bigDirty=true}}
+    if(E.B||E.X||E.Y){if(VM.kb)VM.kb=false;else mapClose();bigDirty=true}}
+   else if(mode==='shop'){if(E.B||E.X||E.Y)shopClose()}
+   else if(mode==='main'){}
    return}
   A[0]=ax(L,2);A[1]=ax(L,3);
   // right stick: on foot it turns you (snap by default); in a vehicle your head does the looking
@@ -5772,34 +5950,44 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   else{set(7,tR>.05,tR);set(6,tL>.05,tL);set(5,p(R,1))}       // vehicle: triggers gas / brake, right grip shoots
   set(4,p(L,1));set(0,bA);set(1,bB||bY);set(10,p(L,3));set(15,p(R,3));
   if(E.X&&MODE!=='menu'){openMenu();return}
-  // after resuming, keep the buttons quiet until they are let go, so the press that resumed doesn't also jump or fire
+  // after resuming or closing a panel, keep the buttons quiet until they are let go, so that press doesn't also jump or fire
   if(st.mute){if(bA||bX||bB||bY||tL>.2||tR>.2||p(R,1)||p(L,1))B.forEach(b=>{b.pressed=false;b.value=0});else st.mute=false}}
  /* ---- per frame ---- */
- function pre(dt,frame){readControllers();shake=0;
-  _e.setFromQuaternion(cam.quaternion,'YXZ');st.headYaw=_e.y;st.headPitch=_e.x;
-  // flat-screen pop-ups can't be seen in the headset: close them and say why
-  if(WM.open&&typeof wmClose==='function'){$('bigmap').hidden=true;wmClose();note('map','The island map only works with the headset view off.')}
-  if(ARMS.open&&typeof shopClose==='function'){shopClose();note('shop','The gun shop only works with the headset view off.')}
+ function handPose(src,frame,ref){if(!src||!src.targetRaySpace||!frame||!ref)return null;try{const pose=frame.getPose(src.targetRaySpace,ref);if(!pose)return null;const o=pose.transform.orientation,q=pose.transform.position;
+  return{o:new T.Vector3(q.x,q.y,q.z),q:new T.Quaternion(o.x,o.y,o.z,o.w)}}catch(e){return null}}
+ function pre(dt,frame){const ui0=st.ui;st.ui=uiMode();if(st.ui!==ui0){if(ui0&&!st.ui)st.mute=true;if(ui0==='main'&&!st.ui)st.hint=14;bigDirty=true;hudT=0;ptr.hover=''}
+  readControllers(dt);shake=0;
+  _e.setFromQuaternion(cam.quaternion,'YXZ');st.headYaw=_e.y;st.headPitch=_e.x;st.headY=cam.position.y;
+  const ref=renderer.xr.getReferenceSpace&&renderer.xr.getReferenceSpace();st.hp.left=handPose(st.Lsrc,frame,ref);st.hp.right=handPose(st.Rsrc,frame,ref);if(!st.hp[st.hand])st.hand=st.hp.right?'right':'left';
+  if(st.ui!==ui0&&st.ui&&st.ui!=='pause')uiPlace();
   // the headset keeps you in first person on foot and in the driver's seat in a car
   if(FOOT()&&PL&&!PL.fp)PL.fp=true;
   if(PCAR&&!FOOT()&&PCAR.kind!=='heli'&&CAM!==2){if(st.camBefore===null)st.camBefore=CAM;CAM=2;camVis()}
-  // on foot you aim with the right controller (your head if it isn't tracked)
-  let aim=null;
-  if(frame&&st.Rsrc&&st.Rsrc.targetRaySpace){try{const ref=renderer.xr.getReferenceSpace(),pose=ref&&frame.getPose(st.Rsrc.targetRaySpace,ref);
-   if(pose){const o=pose.transform.orientation,q=pose.transform.position;_q.set(o.x,o.y,o.z,o.w);_e.setFromQuaternion(_q,'YXZ');aim={yaw:_e.y,pitch:_e.x};ray.position.set(q.x,q.y,q.z);ray.quaternion.copy(_q)}}catch(e){aim=null}}
-  const fp=FOOT()&&PL&&PL.fp&&PL.dead<=0&&!menuOn();
-  if(fp&&aim){if(st.prevAimYaw!==null)PL.yaw+=angWrap(aim.yaw-st.prevAimYaw);PL.pitch=clamp(aim.pitch,-1.1,1.1);st.aimYaw=aim.yaw}
-  else if(fp){PL.yaw+=angWrap(st.headYaw-st.prevYaw);PL.pitch=clamp(st.headPitch,-1.1,1.1);st.aimYaw=st.headYaw}
-  st.prevAimYaw=aim?aim.yaw:null;st.prevYaw=st.headYaw;ray.visible=!!(fp&&aim);
-  if(st.hint>0)st.hint-=dt;
-  if(MODE==='menu'&&session){session.end().catch(()=>{})}}
- function render(){const menu=menuOn();camera.updateMatrixWorld();camera.getWorldPosition(_p);
-  if(!menu){camera.getWorldDirection(_d);const yaw=Math.atan2(-_d.x,-_d.z),fp=FOOT()&&PL&&PL.fp&&PL.dead<=0;st.rigYaw=yaw-(fp&&st.aimYaw!==null?st.aimYaw:0)}
-  rig.position.copy(_p);rig.rotation.set(0,st.rigYaw,0);rig.updateMatrixWorld(true);
+  // on foot you aim with the right controller (your head if it isn't tracked); while a panel is up the aim holds still
+  const fp=FOOT()&&PL&&PL.fp&&PL.dead<=0&&!menuOn()&&!st.ui&&st.vis==='visible';const aim0=st.hp.right;let aim=null;
+  if(aim0){_e.setFromQuaternion(aim0.q,'YXZ');aim={yaw:_e.y,pitch:_e.x};ray.position.copy(aim0.o);ray.quaternion.copy(aim0.q)}
+  if(!st.ui){
+   if(fp&&aim){if(st.prevAimYaw!==null)PL.yaw+=angWrap(aim.yaw-st.prevAimYaw);PL.pitch=clamp(aim.pitch,-1.1,1.1);st.aimYaw=aim.yaw}
+   else if(fp){PL.yaw+=angWrap(st.headYaw-st.prevYaw);PL.pitch=clamp(st.headPitch,-1.1,1.1);st.aimYaw=st.headYaw}
+   st.prevAimYaw=aim?aim.yaw:null;st.prevYaw=st.headYaw}
+  ray.visible=!!(fp&&aim);
+  pointer();
+  if(st.hint>0)st.hint-=dt}
+ function render(){const menu=menuOn(),mode=st.ui;camera.updateMatrixWorld();camera.getWorldPosition(_p);
+  if(MODE==='menu'){// hold the rig still in front of the crew while the menu is up (the preview camera may drift)
+   if(!st.menuRig){camera.getWorldDirection(_d);st.menuRig={p:_p.clone(),yaw:Math.atan2(-_d.x,-_d.z)}}rig.position.copy(st.menuRig.p);st.rigYaw=st.menuRig.yaw-st.fwd}
+  else{st.menuRig=null;rig.position.copy(_p);
+   if(!menu&&!mode){camera.getWorldDirection(_d);const yaw=Math.atan2(-_d.x,-_d.z),fp=FOOT()&&PL&&PL.fp&&PL.dead<=0;st.rigYaw=fp&&st.aimYaw!==null?yaw-st.aimYaw:yaw-st.fwd}}
+  rig.rotation.set(0,st.rigYaw,0);rig.updateMatrixWorld(true);
   if(menu&&!st.wasMenu){st.menuYaw=st.headYaw;st.menuY=cam.position.y;st.sel=0;hudT=0}st.wasMenu=menu;
-  if(menu){const a=st.menuYaw||0;hud.position.set(-Math.sin(a)*.8,(st.menuY||0)-.1,-Math.cos(a)*.8);hud.rotation.set(-.12,a,0,'YXZ');hud.visible=true}
+  if(menu&&!WM.open&&!ARMS.open){const a=st.menuYaw||0;hud.position.set(-Math.sin(a)*.8,(st.menuY||0)-.1,-Math.cos(a)*.8);hud.rotation.set(-.12,a,0,'YXZ');hud.visible=true}
+  else if(mode){hud.visible=false}
   else{hud.position.set(0,-.43,-.86);hud.rotation.set(-.5,0,0,'XYZ');hud.visible=st.hint>0||st.keep||st.headPitch<-.38||performance.now()<st.showUntil}
-  if((hudT-=1)<=0){hudT=8;drawHud()}
+  big.visible=!!mode&&mode!=='pause';
+  if(big.visible){bigT--;if(bigDirty||bigT<=0||(mode==='map'&&WM.fly)){bigDirty=false;bigT=mode==='map'?6:20;try{drawBig(mode)}catch(e){oops(e)}}}
+  if((hudT-=1)<=0){hudT=8;if(!big.visible)drawHud()}
+  // shadows refresh every other frame in the headset: the sun barely moves, and it saves a lot of GPU time
+  st.frameN++;if(renderer.shadowMap.enabled&&st.saveShadow!==null)renderer.shadowMap.needsUpdate=(st.frameN&1)===0;
   renderer.render(scene,cam)}
  function loop(now,frame){const raw=now-last,dt=Math.min(.05,Math.max(0,raw)/1000);last=now;
   try{pre(dt,frame)}catch(e){oops(e)}
@@ -5807,41 +5995,59 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   try{renderFrame()}catch(e){oops(e);try{render()}catch(e2){oops(e2)}}}
  // your own shots give the right controller a kick
  try{const _fire=fireBall;fireBall=function(owner){const r=_fire.apply(this,arguments);if(VR.on&&owner&&(owner===PL||owner===PCAR))buzz(st.R||st.L,.75,45);return r}}catch(e){}
+ // the flat map code can't open its page inside the headset, so in VR it opens the in-headset map instead
+ try{const _open=wmOpen;wmOpen=function(){if(VR.on){mapOpen();return}return _open.apply(this,arguments)}}catch(e){}
+ try{const _rs=wmResize;wmResize=function(){if(WM.cv===mvc)return;return _rs.apply(this,arguments)}}catch(e){}
  /* ---- entering and leaving ---- */
- async function enter(){if(session||!xr)return;let s;try{s=await xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor','layers']})}catch(e){toast('The headset view could not start: '+(e&&e.message||e));return}
-  session=s;renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');
-  try{await renderer.xr.setSession(s)}catch(e){session=null;renderer.xr.enabled=false;toast('The headset view could not start: '+(e&&e.message||e));try{s.end()}catch(_){}return}
+ async function enter(){if(session||!xr)return;try{audioStart()}catch(e){}let s;try{s=await xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor','layers']})}catch(e){failStart(e);return}
+  session=s;renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');try{renderer.xr.setFoveation(1)}catch(e){}
+  try{await renderer.xr.setSession(s)}catch(e){session=null;renderer.xr.enabled=false;failStart(e);try{s.end()}catch(_){}return}
   VR.on=true;PERF.on=false;if(POST&&POST.G2){st.saveRefl=POST.G2.Q.refl;POST.G2.Q.refl=false;try{POST.G2.reflect(4,4)}catch(e){}}
+  st.saveShadow=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   if(document.exitPointerLock)try{document.exitPointerLock()}catch(e){}
   if(FOOT()&&PL)PL.fp=true;
-  st.prevYaw=0;st.prevAimYaw=null;st.aimYaw=null;st.hint=14;st.showUntil=0;st.noted={};hud.visible=true;hudT=0;last=performance.now();
-  s.addEventListener('end',leave);// backup only: if the controllers' buttons can't be read, a trigger or grip press still gets you out of the pause screen
-  const noPads=()=>!st.L&&!st.R;s.addEventListener('selectstart',()=>{if(PAUSED&&noPads())resume()});s.addEventListener('squeezestart',()=>{if(PAUSED&&noPads())resume()});
+  st.prevYaw=0;st.prevAimYaw=null;st.aimYaw=null;st.fwd=0;st.hint=MODE==='menu'?0:14;st.showUntil=0;st.noted={};st.vis=s.visibilityState||'visible';st.ui='';st.menuRig=null;hud.visible=true;hudT=0;bigDirty=true;last=performance.now();
+  s.addEventListener('end',leave);
+  // the system menu or a notification takes focus: pause a game in progress and stop reading the controllers
+  s.addEventListener('visibilitychange',()=>{st.vis=s.visibilityState||'visible';if(st.vis!=='visible'){if(MODE!=='menu'&&!menuOn()&&!WM.open)openMenu();uiRay.visible=dot.visible=ray.visible=false}});
+  try{const ref=renderer.xr.getReferenceSpace();if(ref&&ref.addEventListener)ref.addEventListener('reset',()=>{st.fwd=0;st.menuRig=null})}catch(e){}
+  // backup only: if the controllers' buttons can't be read, a trigger or grip press still gets you out of the pause screen
+  const noPads=()=>!st.L&&!st.R;s.addEventListener('selectstart',()=>{try{audioStart()}catch(e){}if(PAUSED&&noPads())resume()});s.addEventListener('squeezestart',()=>{if(PAUSED&&noPads())resume()});
   st.err='';st.errN=0;st.mute=true;st.lastResume=0;st.prev={};if(PAUSED)resume();
-  renderer.setAnimationLoop(loop);btn.hidden=true}
- function leave(){if(!VR.on&&!session)return;VR.on=false;session=null;renderer.setAnimationLoop(null);renderer.xr.enabled=false;hud.visible=false;ray.visible=false;PERF.on=true;
+  if(WM.open)mapClose();if(ARMS.open)shopClose();
+  renderer.setAnimationLoop(loop);btn.hidden=true;back.hidden=true}
+ function failStart(e){toast('The headset view could not start: '+(e&&e.message||e));if(STORE_APP)back.hidden=false}
+ function leave(){if(!VR.on&&!session)return;VR.on=false;session=null;renderer.setAnimationLoop(null);renderer.xr.enabled=false;hud.visible=false;big.visible=false;ray.visible=false;uiRay.visible=dot.visible=false;PERF.on=true;
   if(POST&&POST.G2&&st.saveRefl!==null){POST.G2.Q.refl=st.saveRefl;st.saveRefl=null}
+  if(st.saveShadow!==null){renderer.shadowMap.autoUpdate=st.saveShadow;st.saveShadow=null}
   if(st.camBefore!==null&&PCAR&&!FOOT()){CAM=st.camBefore;camVis()}st.camBefore=null;
+  if(WM.open&&WM.cv===mvc){const bm=$('bigmap');if(bm)bm.hidden=true;wmClose()}
   last=performance.now();resize();
-  if(MODE!=='menu'&&MODE!=='raceover'&&MODE!=='battleover'&&!PAUSED)togglePause();showBtn()}
- /* ---- the ENTER VR button and turning choice ---- */
- const css=document.createElement('style');css.textContent='#vr-bar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;font-family:Barlow,Arial,sans-serif}#vr-bar[hidden]{display:none}#vr-bar button{border:0;border-radius:999px;padding:12px 20px;font:700 17px/1 Barlow,Arial,sans-serif;letter-spacing:.06em;cursor:pointer}#vr-go{background:#ffd23f;color:#111}#vr-turn{background:rgba(20,22,26,.85);color:#fff}#vr-note{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;max-width:min(560px,92vw);background:rgba(20,22,26,.92);color:#fff;border-radius:14px;padding:12px 16px;font:500 15px/1.4 Barlow,Arial,sans-serif;text-align:center}#vr-note[hidden]{display:none}.vr-menu-tip{margin:10px 0 0;color:#ffd23f;font-weight:600}';document.head.appendChild(css);
+  if(MODE!=='menu'&&MODE!=='raceover'&&MODE!=='battleover'&&!PAUSED)togglePause();showBtn();if(STORE_APP)back.hidden=false}
+ /* ---- the ENTER VR button, turning choice, and the store app's "back to VR" screen ---- */
+ const css=document.createElement('style');css.textContent='#vr-bar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;font-family:Barlow,Arial,sans-serif}#vr-bar[hidden]{display:none}#vr-bar button,#vr-back button{border:0;border-radius:999px;padding:12px 20px;font:700 17px/1 Barlow,Arial,sans-serif;letter-spacing:.06em;cursor:pointer}#vr-go,#vr-back button{background:#ffd23f;color:#111}#vr-turn{background:rgba(20,22,26,.85);color:#fff}#vr-note{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;max-width:min(560px,92vw);background:rgba(20,22,26,.92);color:#fff;border-radius:14px;padding:12px 16px;font:500 15px/1.4 Barlow,Arial,sans-serif;text-align:center}#vr-note[hidden],#vr-back[hidden]{display:none}.vr-menu-tip{margin:10px 0 0;color:#ffd23f;font-weight:600}#vr-back{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#0c0f14;color:#fff;font:500 18px/1.4 Barlow,Arial,sans-serif;text-align:center;padding:24px}#vr-back b{font:400 44px/1 Anton,Impact,sans-serif;letter-spacing:.02em}#vr-back button{font-size:24px;padding:18px 34px}';document.head.appendChild(css);
  const btn=document.createElement('div');btn.id='vr-bar';btn.hidden=true;btn.innerHTML='<button type="button" id="vr-go">ENTER VR</button><button type="button" id="vr-turn"></button>';document.body.appendChild(btn);
+ const back=document.createElement('div');back.id='vr-back';back.hidden=true;back.innerHTML='<b>ACK RIVALS VR</b><span>Pull the trigger on the button to play.</span><button type="button" id="vr-back-go">PLAY IN VR</button>';document.body.appendChild(back);
  const note2=document.createElement('div');note2.id='vr-note';note2.hidden=true;document.body.appendChild(note2);
+ // once ACK Rivals VR is sold on the store, the plain web link can stop giving the VR game away (STORE_LOCK at the top of the game)
+ if(vrLocked()){const sb=document.createElement('div');sb.id='vr-store';const full=STORE_LOCK==='all';
+  sb.style.cssText=full?'position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0c0f14;color:#fff;font:500 18px/1.4 Barlow,Arial,sans-serif;text-align:center;padding:24px':'position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;background:rgba(20,22,26,.92);color:#fff;border-radius:999px;padding:12px 20px;font:600 16px/1.3 Barlow,Arial,sans-serif;text-align:center;max-width:92vw';
+  sb.innerHTML=(full?'<b style="font:400 44px/1 Anton,Impact,sans-serif">ACK RIVALS VR</b><span>Play the full game in VR on Meta Quest.</span>':'<span>Play it in VR: ACK Rivals VR is on the Meta Horizon Store. </span>')+(STORE_URL?'<a href="'+STORE_URL+'" style="color:#ffd23f;font-weight:700">Get it on Meta Quest</a>':'<span style="color:#ffd23f;font-weight:700">Search “ACK Rivals VR” in the Meta Horizon Store</span>');document.body.appendChild(sb)}
  function turnLbl(){$('vr-turn').textContent='Turning: '+(snap?'Snap':'Smooth')}turnLbl();
  $('vr-turn').addEventListener('click',()=>{snap=!snap;try{localStorage.setItem('ack-vr-turn',snap?'snap':'smooth')}catch(e){}turnLbl()});
- $('vr-go').addEventListener('click',()=>{enter()});
- function showBtn(){btn.hidden=!(supported&&!VR.on&&MODE!=='menu')}
+ $('vr-go').addEventListener('click',()=>{enter()});$('vr-back-go').addEventListener('click',()=>{enter()});
+ function showBtn(){btn.hidden=!(supported&&!VR.on&&!STORE_APP&&!vrLocked())}
  setInterval(showBtn,500);
  const quest=/OculusBrowser|Quest|Pico/i.test(navigator.userAgent);
  if(xr&&xr.isSessionSupported){xr.isSessionSupported('immersive-vr').then(ok=>{supported=!!ok;showBtn();
-   if(ok){const m=document.querySelector('#menu .lede');if(m){const p=document.createElement('p');p.className='vr-menu-tip';p.textContent='Headset: pick a mode, then tap ENTER VR at the bottom of the screen.';m.after(p)}}
-   else if(quest){note2.textContent='VR is blocked on this page. Open the game from its own link (not inside another page) to play in the headset.';note2.hidden=false;setTimeout(()=>note2.hidden=true,15000)}
+   if(ok&&STORE_APP){// the store app opens straight into the headset; the launch tap counts as the tap that starts VR
+    if(MODE!=='menu'&&!PAUSED)togglePause();enter()}
+   else if(ok&&!vrLocked()){const m=document.querySelector('#menu .lede');if(m){const p=document.createElement('p');p.className='vr-menu-tip';p.textContent='Headset: tap ENTER VR at the bottom of the screen. The whole game, menus included, works inside VR.';m.after(p)}}
+   else if(!ok&&quest){note2.textContent='VR is blocked on this page. Open the game from its own link (not inside another page) to play in the headset.';note2.hidden=false;setTimeout(()=>note2.hidden=true,15000)}
   }).catch(e=>{if(quest){note2.textContent='VR is blocked on this page ('+(e&&e.name||'error')+'). Open the game from its own link to play in the headset.';note2.hidden=false}})}
  else if(quest){note2.textContent='This browser page has no VR access. Open the game from a secure (https) link in the Meta Quest Browser.';note2.hidden=false}
- Object.assign(VR,{enter,leave,render,rig,cam,pad,get session(){return session},get supported(){return supported}});
+ Object.assign(VR,{enter,leave,render,rig,cam,pad,mapOpen,get session(){return session},get supported(){return supported}});
 })();
-
 buildMenu();setupPreview();if(GFX.stepped)setTimeout(()=>toast('Graphics turned down to '+GFX.stepped[0].toUpperCase()+GFX.stepped.slice(1)+' after a crash'),1200);setRoute(SETTINGS.route in ROUTES?SETTINGS.route:'town');applyTOD(SETTINGS.tod);requestAnimationFrame(frame);
 window.__ack={step,startRace,startBattle,startCTF,startOpen,startHarbor,go,get OPEN(){return OPEN},get POL(){return POL},get PD(){return PD},get CASH(){return CASH},get OWNER(){return OWNER},enter:()=>{enterInput=true},setCam:i=>{CAM=i;camVis()},get PCAR(){return PCAR},get PL(){return PL},keys,TOUCH,look,render:()=>renderFrame(),setSel:i=>{SEL=i;setupPreview()},skipCountdown:()=>{countdown=.001},auto:v=>AUTO=v,get MODE(){return MODE},get raceT(){return raceT},get CARS(){return CARS},get FIGHTERS(){return FIGHTERS},get CTF(){return CTF},applyTOD,get NET(){return NET},setNade:()=>{nadeInput=true},
  portrait:(k,w=1)=>{PAUSED=true;const P=PREVIEW,ch=P.chars;if(!ch.length)return;ch.forEach((q,i)=>{poseIdle(q,0,i);q.head.rotation.set(0,0,0)});const m=ch[w].g.position;const f=V3(-Math.sin(P.a),0,-Math.cos(P.a));if(k===0){camera.position.copy(m).addScaledVector(f,4.2).add(V3(0,1.1,0));camera.lookAt(m.x,m.y+.95,m.z)}else{camera.position.copy(m).addScaledVector(f,1.9).add(V3(0,1.62,0));camera.lookAt(m.x,m.y+1.58,m.z)}camera.fov=k?30:40;camera.updateProjectionMatrix();renderer.render(scene,camera)}};
