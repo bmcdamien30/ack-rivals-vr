@@ -2569,7 +2569,7 @@ $('t-map').addEventListener('pointerdown',e=>{e.preventDefault();$('bigmap').hid
  const lp=$('lookpad');let lid=null,lx=0,ly=0;lp.addEventListener('pointerdown',e=>{lid=e.pointerId;lx=e.clientX;ly=e.clientY;lp.setPointerCapture(lid)});
  lp.addEventListener('pointermove',e=>{if(e.pointerId!==lid)return;look.dx+=(e.clientX-lx)*2.2;look.dy+=(e.clientY-ly)*2.2;lx=e.clientX;ly=e.clientY});const lu=e=>{if(e.pointerId===lid)lid=null};lp.addEventListener('pointerup',lu);lp.addEventListener('pointercancel',lu)})();
 canvas.addEventListener('click',()=>{if((FOOT()||OPENISH()||TPR())&&!IS_TOUCH&&!PAUSED&&canvas.requestPointerLock)try{const p=canvas.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}});
-document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&(FOOT()||OPENISH()||TPR())&&!PAUSED&&!WM.open&&MODE!=='battleover'&&!ARMS.open)togglePause()});
+document.addEventListener('pointerlockchange',()=>{if(!VR.on&&!document.pointerLockElement&&(FOOT()||OPENISH()||TPR())&&!PAUSED&&!WM.open&&MODE!=='battleover'&&!ARMS.open)togglePause()});
 addEventListener('mousemove',e=>{if(document.pointerLockElement===canvas){if(tpMove(e.movementX,e.movementY))return;look.dx+=e.movementX;look.dy+=e.movementY}});
 addEventListener('wheel',e=>{const lk=document.pointerLockElement===canvas;if(lk&&e.cancelable)e.preventDefault();if(FOOT()&&OPENISH()&&PL&&PL.inv&&PL.inv.length>1&&!ARMS.open&&lk){let dn=e.deltaY>0;if(TP.on&&!IS_TOUCH){const now=performance.now();if(now-TP.wt>250)TP.wacc=0;TP.wt=now;TP.wacc+=e.deltaY;if(Math.abs(TP.wacc)<90||now-TP.wlast<420)return;dn=TP.wacc>0;TP.wacc=0;TP.wlast=now}const i=PL.inv.indexOf(PL.wpn||'marker');wpnInput=(i+(dn?1:PL.inv.length-1))%PL.inv.length}},{passive:false});
 let mouseDown=false;addEventListener('mousedown',e=>{if(e.button===0&&e.target===canvas)mouseDown=true});addEventListener('mouseup',e=>{if(e.button===0)mouseDown=false});
@@ -5685,7 +5685,10 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  const pad={id:'Meta Quest Touch (VR)',connected:true,mapping:'standard',index:0,timestamp:0,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,touched:false,value:0}))};
  try{const real=navigator.getGamepads?navigator.getGamepads.bind(navigator):()=>[];Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>VR.on?[pad]:real()})}catch(e){}
  let snap=true;try{snap=localStorage.getItem('ack-vr-turn')!=='smooth'}catch(e){}
- const st={yDown:0,yCam:false,snapArmed:true,prevYaw:0,headYaw:0,headPitch:0,prevA:false,prevX:false,saveRefl:null,camBefore:null,hint:0};
+ const st={yDown:0,yCam:false,snapArmed:true,prevYaw:0,headYaw:0,headPitch:0,prevA:false,prevX:false,prevTL:false,prevTR:false,bDown:0,mute:false,lastResume:0,ctl:'',err:'',errN:0,saveRefl:null,camBefore:null,hint:0};
+ const oops=e=>{st.errN++;if(!st.err){st.err=String(e&&e.message||e).slice(0,110);try{console.error('[ACK VR]',e)}catch(_){}}};
+ // resume from the pause screen; guarded so a trigger press and its select event can't toggle twice
+ function resume(){if(!PAUSED||MODE==='menu'||MODE==='raceover'||MODE==='battleover')return;const t=performance.now();if(t-st.lastResume<500)return;st.lastResume=t;st.mute=true;togglePause()}
  const _p=new T.Vector3(),_d=new T.Vector3(),_e=new T.Euler(0,0,0,'YXZ');
  /* ---- in-headset panel: a small dashboard below your eyeline that turns with you ---- */
  const hc=document.createElement('canvas');hc.width=1024;hc.height=440;const hx=hc.getContext('2d');
@@ -5699,7 +5702,8 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   const mini=$('mini');let x0=28;if(mini&&mini.width&&MODE!=='menu'){try{hx.save();hx.beginPath();hx.arc(28+180,H/2,180,0,TAU);hx.clip();hx.drawImage(mini,28,H/2-180,360,360);hx.restore()}catch(e){}x0=420}
   hx.textBaseline='top';hx.fillStyle='#fff';let y=30;const drive=!!PCAR&&!FOOT();
   if(PAUSED||MODE==='menu'||MODE==='raceover'||MODE==='battleover'){hx.font='700 54px Anton, Impact, sans-serif';hx.fillText(MODE==='menu'?'MAIN MENU':PAUSED?'PAUSED':'FINISHED',x0,y);y+=74;hx.font='500 34px Barlow, Arial, sans-serif';hx.fillStyle='#ffd23f';
-   y+=wrap(PAUSED?'A or X to resume. Hold Y to take the headset view off and use the menu.':'Hold Y to take the headset view off and pick what’s next.',x0,y,W-x0-36,42,4)*42}
+   y+=wrap(PAUSED?'Press A, X or a trigger to play. Hold Y or B for a second to take the headset view off and use the menu.':'Hold Y or B for a second to take the headset view off and pick what’s next.',x0,y,W-x0-36,42,4)*42;
+   hx.font='500 26px Barlow, Arial, sans-serif';hx.fillStyle='rgba(255,255,255,.7)';hx.fillText(st.ctl,x0,Math.min(H-80,y+8))}
   else{
    if(drive){hx.font='700 96px Anton, Impact, sans-serif';const s=txt('spd')||'0';hx.fillText(s,x0,y-6);const sw=hx.measureText(s).width;hx.font='600 30px Barlow, Arial, sans-serif';hx.fillStyle='#cfd6e0';hx.fillText('MPH',x0+sw+14,y+52);y+=104}
    hx.font='600 32px Barlow Condensed, Arial, sans-serif';hx.fillStyle='#e8edf3';
@@ -5710,11 +5714,14 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
    const big=txt('count')||(txt('wasted')?'SPLATTED':'')||txt('busted');if(big){hx.fillStyle='#ff5a3c';hx.font='700 44px Anton, Impact, sans-serif';hx.fillText(big.slice(0,28),x0,y);y+=52}
    const te=$('toast');if(te&&te.classList.contains('show')&&te.textContent){hx.fillStyle='#fff';hx.font='500 28px Barlow, Arial, sans-serif';y+=wrap(te.textContent.replace(/\s+/g,' '),x0,y,W-x0-36,34,3)*34}
    if(st.hint>0){hx.fillStyle='rgba(255,255,255,.75)';hx.font='500 22px Barlow, Arial, sans-serif';wrap('Triggers gas and brake (fire on foot) · grips fire and grenade · B in or out · A jump or drift · X weapons · tap Y camera, hold Y to leave VR',x0,H-84,W-x0-36,27,2)}}
+  if(st.err){hx.fillStyle='#ff8a7a';hx.font='500 22px Barlow, Arial, sans-serif';wrap('Error: '+st.err+(st.errN>1?' (x'+st.errN+')':''),28,H-52,W-56,26,2)}
   htex.needsUpdate=true}
  /* ---- Quest controllers become one standard gamepad, so the game's own controller code does the rest ---- */
  function readControllers(dt){const B=pad.buttons,A=pad.axes;B.forEach(b=>{b.pressed=false;b.value=0});A[0]=A[1]=A[2]=A[3]=0;
-  let L=null,R=null;if(session)for(const s of session.inputSources){if(!s.gamepad)continue;if(s.handedness==='left')L=s.gamepad;else if(s.handedness==='right')R=s.gamepad}
-  const v=(g,i)=>g&&g.buttons[i]?g.buttons[i].value:0,p=(g,i)=>!!(g&&g.buttons[i]&&g.buttons[i].pressed),ax=(g,i)=>g&&g.axes.length>i?g.axes[i]:0;
+  let L=null,R=null,other=null;const ss=(renderer.xr.getSession&&renderer.xr.getSession())||session;
+  if(ss&&ss.inputSources)for(const s of ss.inputSources){if(!s||!s.gamepad)continue;if(s.handedness==='left')L=s.gamepad;else if(s.handedness==='right')R=s.gamepad;else other=s.gamepad}
+  if(!R&&other)R=other;st.ctl='Controllers: left '+(L?'✓':'not found')+' · right '+(R?'✓':'not found');
+  const v=(g,i)=>g&&g.buttons[i]?(g.buttons[i].value||0):0,p=(g,i)=>!!(g&&g.buttons[i]&&(g.buttons[i].pressed||g.buttons[i].value>.5)),ax=(g,i)=>g&&g.axes&&g.axes.length>i?(g.axes[i]||0):0;
   const set=(i,on,val)=>{B[i].pressed=B[i].pressed||!!on;B[i].value=Math.max(B[i].value,val!==undefined?val:on?1:0)};
   const foot=FOOT(),aX=p(L,4),aY=p(L,5),aA=p(R,4),aB=p(R,5);
   A[0]=ax(L,2);A[1]=ax(L,3);
@@ -5723,10 +5730,18 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   set(7,v(R,0)>.05,v(R,0));set(6,v(L,0)>.05,v(L,0));       // triggers: gas / brake
   set(5,p(R,1)||(foot&&v(R,0)>.5));set(4,p(L,1));           // right grip (or trigger on foot) fires, left grip grenade
   set(0,aA);set(1,aB);set(15,aX);set(10,p(L,3));set(11,p(R,3));
-  // Y: tap changes the camera, hold to leave the headset view
-  if(aY){if(!st.yDown)st.yDown=performance.now();else if(performance.now()-st.yDown>900&&session){st.yDown=0;session.end().catch(()=>{});return}}
-  else if(st.yDown){if(performance.now()-st.yDown<600)set(8,true);st.yDown=0}
-  if(PAUSED&&MODE!=='menu'&&((aA&&!st.prevA)||(aX&&!st.prevX)))togglePause();st.prevA=aA;st.prevX=aX;pad.timestamp=performance.now()}
+  const now=performance.now(),tL=v(L,0)>.5,tR=v(R,0)>.5;
+  // hold Y (any time) or B (on the pause screen) for a second to leave the headset view; tap Y changes the camera
+  if(aY){if(!st.yDown)st.yDown=now;else if(now-st.yDown>900){st.yDown=0;exitVR();return}}
+  else if(st.yDown){if(now-st.yDown<600&&!PAUSED)set(8,true);st.yDown=0}
+  if(aB&&(PAUSED||MODE==='raceover'||MODE==='battleover')){if(!st.bDown)st.bDown=now;else if(now-st.bDown>900){st.bDown=0;exitVR();return}}else st.bDown=0;
+  // A, X or either trigger resumes from the pause screen
+  if(PAUSED&&((aA&&!st.prevA)||(aX&&!st.prevX)||(tL&&!st.prevTL)||(tR&&!st.prevTR)))resume();
+  st.prevA=aA;st.prevX=aX;st.prevTL=tL;st.prevTR=tR;
+  // after resuming, keep the buttons quiet until they are let go, so the press that resumed doesn't also jump or fire
+  if(st.mute){if(aA||aX||aB||tL||tR||p(R,1)||p(L,1))B.forEach(b=>{b.pressed=false;b.value=0});else st.mute=false}
+  pad.timestamp=now}
+ function exitVR(){const ss=(renderer.xr.getSession&&renderer.xr.getSession())||session;if(ss){try{const r=ss.end();if(r&&r.catch)r.catch(()=>leave())}catch(e){leave()}}else leave()}
  /* ---- per frame ---- */
  function pre(dt){readControllers(dt);shake=0;
   _e.setFromQuaternion(cam.quaternion,'YXZ');st.headYaw=_e.y;st.headPitch=_e.x;
@@ -5739,7 +5754,10 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   rig.position.copy(_p);rig.rotation.set(0,yaw-(headAim?st.headYaw:0),0);rig.updateMatrixWorld(true);
   if((hudT-=1)<=0){hudT=8;drawHud()}
   renderer.render(scene,cam)}
- function loop(now){const raw=now-last,dt=Math.min(.05,Math.max(0,raw)/1000);last=now;pre(dt);if(!PAUSED&&!WM.open){CLOCK+=dt;step(dt)}else{updateRemotes(0);netTick(.1)}renderFrame()}
+ function loop(now){const raw=now-last,dt=Math.min(.05,Math.max(0,raw)/1000);last=now;
+  try{pre(dt)}catch(e){oops(e)}
+  try{if(!PAUSED&&!WM.open){CLOCK+=dt;step(dt)}else{updateRemotes(0);netTick(.1)}}catch(e){oops(e)}
+  try{renderFrame()}catch(e){oops(e);try{render()}catch(e2){oops(e2)}}}
  /* ---- entering and leaving ---- */
  async function enter(){if(session||!xr)return;let s;try{s=await xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor','layers']})}catch(e){toast('The headset view could not start: '+(e&&e.message||e));return}
   session=s;renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');
@@ -5748,7 +5766,9 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   if(document.exitPointerLock)try{document.exitPointerLock()}catch(e){}
   if(FOOT()&&PL)PL.fp=true;else if(PCAR&&PCAR.kind!=='heli'){st.camBefore=CAM;CAM=2;camVis()}
   st.prevYaw=0;st.hint=25;hud.visible=true;hudT=0;last=performance.now();
-  s.addEventListener('end',leave);renderer.setAnimationLoop(loop);btn.hidden=true}
+  s.addEventListener('end',leave);s.addEventListener('selectstart',()=>{if(PAUSED)resume()});s.addEventListener('squeezestart',()=>{if(PAUSED)resume()});
+  st.err='';st.errN=0;st.mute=true;st.lastResume=0;if(PAUSED)resume();
+  renderer.setAnimationLoop(loop);btn.hidden=true}
  function leave(){if(!VR.on&&!session)return;VR.on=false;session=null;renderer.setAnimationLoop(null);renderer.xr.enabled=false;hud.visible=false;PERF.on=true;
   if(POST&&POST.G2&&st.saveRefl!==null){POST.G2.Q.refl=st.saveRefl;st.saveRefl=null}
   if(st.camBefore!==null&&PCAR&&!FOOT()){CAM=st.camBefore;camVis()}st.camBefore=null;
