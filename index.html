@@ -5997,15 +5997,24 @@ function nightTick(){if(!NIGHT_ON){if(HEADLIGHT.parent)HEADLIGHT.parent.remove(H
 /* ---------- music: a laid-back island one-drop, synthesized on the fly ---------- */
 const MUS={timer:null,bus:null,next:0,step:0,live:0,liveT:0,beat:0,t0:0,lp:null,crowd:null,gtr:null};
 const CHORDS=[[110,138.59,164.81],[82.41,103.83,123.47],[92.5,110,138.59],[73.42,92.5,110]];// A, E, F#m, D
-function musicStart(){const c=AU.ctx;if(!c||MUS.timer)return;MUS.bus=c.createGain();MUS.bus.gain.value=SETTINGS.music?.11:0;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;MUS.bus.connect(lp);lp.connect(AU.master);MUS.lp=lp;
+/* Miss Champagne's song: Damian's own "Deal or Disaster" track, streamed from his Higgsfield library the first time you get near The Box.
+   If it can't load, the house band plays its built-in tune instead. */
+const SONG_URL='https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/4ea2720d-af52-44d5-aed1-ed0683d1317c.wav',SONG_BPM=110,SONG_GAP=2.5,SONG_VOL=.45;
+function songLoad(){if(MUS.song||MUS.songReq||(MUS.songFail||0)>=3||!AU.ctx)return;MUS.songReq=1;
+ fetch(SONG_URL).then(r=>{if(!r.ok)throw new Error('song '+r.status);return r.arrayBuffer()}).then(b=>new Promise((res,rej)=>AU.ctx.decodeAudioData(b,res,rej))).then(buf=>{MUS.song=buf;MUS.songReq=0}).catch(()=>{MUS.songReq=0;MUS.songFail=(MUS.songFail||0)+1})}
+function songStep(t){if(!MUS.songG)return;if(MUS.songSrc&&t<MUS.songEnd+SONG_GAP)return;if(!MUS.songSrc&&MUS.step%16)return;
+ const c=AU.ctx,s=c.createBufferSource(),g=c.createGain();s.buffer=MUS.song;s.connect(g);g.connect(MUS.songG);const at=MUS.songSrc?Math.max(c.currentTime,MUS.songEnd+SONG_GAP):t;s.start(at);
+ MUS.songSrc=s;MUS.songGain=g;MUS.songT0=at;MUS.songEnd=at+MUS.song.duration}
+function songStop(){if(!MUS.songSrc)return;const c=AU.ctx;try{MUS.songGain.gain.setTargetAtTime(0,c.currentTime,.12);MUS.songSrc.stop(c.currentTime+.7)}catch(e){}MUS.songSrc=null;MUS.songT0=0}
+function musicStart(){const c=AU.ctx;if(!c||MUS.timer)return;MUS.bus=c.createGain();MUS.bus.gain.value=SETTINGS.music?.11:0;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;MUS.bus.connect(lp);lp.connect(AU.master);MUS.lp=lp;MUS.songG=c.createGain();MUS.songG.gain.value=SETTINGS.music?SONG_VOL:0;MUS.songG.connect(lp);
  // live band: an overdriven guitar bus and a room full of people
  const ws=c.createWaveShaper(),cur=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/511.5-1;cur[i]=Math.tanh(x*6)}ws.curve=cur;const gb=c.createGain();gb.gain.value=.5;const gl=c.createBiquadFilter();gl.type='lowpass';gl.frequency.value=3200;ws.connect(gl);gl.connect(gb);gb.connect(MUS.bus);MUS.gtr=ws;
  const cs=c.createBufferSource();cs.buffer=AU.noise;cs.loop=true;const cb=c.createBiquadFilter();cb.type='bandpass';cb.frequency.value=820;cb.Q.value=.6;const cg=c.createGain();cg.gain.value=0;cs.connect(cb);cb.connect(cg);cg.connect(lp);cs.start();MUS.crowd=cg;
  MUS.next=c.currentTime+.15;MUS.step=0;MUS.timer=setInterval(musicTick,40)}
-function toggleMusic(){SETTINGS.music=!SETTINGS.music;saveSettings();if(MUS.bus)MUS.bus.gain.setTargetAtTime(SETTINGS.music?.11:0,AU.ctx.currentTime,.1);const b=$('b-music');if(b)b.setAttribute('aria-pressed',SETTINGS.music);toast(SETTINGS.music?'Music on':'Music off')}
+function toggleMusic(){SETTINGS.music=!SETTINGS.music;saveSettings();if(MUS.bus)MUS.bus.gain.setTargetAtTime(SETTINGS.music?.11:0,AU.ctx.currentTime,.1);if(MUS.songG)MUS.songG.gain.setTargetAtTime(SETTINGS.music?SONG_VOL:0,AU.ctx.currentTime,.1);const b=$('b-music');if(b)b.setAttribute('aria-pressed',SETTINGS.music);toast(SETTINGS.music?'Music on':'Music off')}
 function musicTick(){const c=AU.ctx;if(!c||!SETTINGS.music)return;if(c.currentTime-MUS.next>.5){MUS.next=c.currentTime+.05}let guard=0;
- while(MUS.next<c.currentTime+.2&&guard++<32){if(MUS.step%16===0){const want=MUS.liveT>.5?1:0;if(want!==MUS.live){MUS.live=want;MUS.step=0;if(want)MUS.t0=MUS.next}}
-  if(MUS.live){liveStep(MUS.step,MUS.next);MUS.next+=60/LIVE_BPM/4}else{playStep(MUS.step,MUS.next);MUS.next+=60/92/4*(MUS.step%2?.9:1.1)}MUS.step=(MUS.step+1)%64}}
+ while(MUS.next<c.currentTime+.2&&guard++<32){if(MUS.step%16===0){const want=MUS.liveT>.5?1:0;if(want!==MUS.live){MUS.live=want;MUS.step=0;if(want)MUS.t0=MUS.next;else songStop()}}
+  if(MUS.live){if(MUS.song)songStep(MUS.next);else liveStep(MUS.step,MUS.next);MUS.next+=60/LIVE_BPM/4}else{playStep(MUS.step,MUS.next);MUS.next+=60/92/4*(MUS.step%2?.9:1.1)}MUS.step=(MUS.step+1)%64}}
 /* the house band: straight-ahead bar rock in E */
 const LIVE_BPM=118,LIVE_CH=[82.41,65.41,98,73.42];
 function pchord(f,t,d,g){[1,1.498,2].forEach((k,i)=>{const c=AU.ctx,o=c.createOscillator(),a=c.createGain();o.type='sawtooth';o.frequency.value=f*k*(1+(i-1)*.002);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.01);a.gain.setValueAtTime(g*.8,t+d*.7);a.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(a);a.connect(MUS.gtr);o.start(t);o.stop(t+d+.02)})}
@@ -6142,8 +6151,8 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  CBX.update(dt);SSX.update(dt);if(CYN)CYN.update(dt);if(DRT)DRT.update(dt);if(PD)PD.update(dt);if(HOSP)HOSP.update(dt);tpTick(dt);wmTick(dt);
  // distant parked cars and traffic are just a few pixels: skip drawing them
  {const cp=camera.position;for(const c of PARKED){if(c===PCAR)continue;const far=Math.hypot(c.p.x-cp.x,c.p.z-cp.z)>420;if(far!==!!c._far){c._far=far;c.j.g.visible=!far}}}
- if(AU.ctx&&MUS.lp){const ct=AU.ctx.currentTime,d=CBX.dist,ins=CBX.inside;MUS.liveT=ins||d<55?1:0;const close=clamp(1-(d-8)/50,0,1);MUS.lp.frequency.setTargetAtTime(MUS.live?(ins?9000:500+close*1500):5200,ct,.15);
-  MUS.crowd.gain.setTargetAtTime(SETTINGS.music&&MUS.live?(ins?.055:.02*close)*(1+.8*Math.max(0,Math.sin(ct*.37)*Math.sin(ct*.23))):0,ct,.3);if(MUS.live)MUS.beat=(ct-MUS.t0)*LIVE_BPM/60}
+ if(AU.ctx&&MUS.lp){const ct=AU.ctx.currentTime,d=CBX.dist,ins=CBX.inside;MUS.liveT=ins||d<55?1:0;if(MUS.liveT)songLoad();const close=clamp(1-(d-8)/50,0,1);MUS.lp.frequency.setTargetAtTime(MUS.live?(ins?9000:500+close*1500):5200,ct,.15);
+  MUS.crowd.gain.setTargetAtTime(SETTINGS.music&&MUS.live?(ins?.055:.02*close)*(1+.8*Math.max(0,Math.sin(ct*.37)*Math.sin(ct*.23))):0,ct,.3);if(MUS.live)MUS.beat=MUS.songSrc&&ct>=MUS.songT0?(ct-MUS.songT0)*SONG_BPM/60:(ct-MUS.t0)*LIVE_BPM/60}
  updateRemotes(dt);netTick(dt);nightTick();
  updateCamera(dt);if(MODE!=='menu'&&MODE!=='raceover'&&MODE!=='battleover'&&(PCAR||PL))updateHUD()}
 
