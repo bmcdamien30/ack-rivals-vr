@@ -430,7 +430,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 3D-guns 2</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 3D-guns 3</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -550,7 +550,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 3D-guns 2</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic Rex</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 3D-guns 3</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic Rex</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1888,7 +1888,7 @@ const BLG={glow:new T.MeshBasicMaterial({color:'#7ff3ff',toneMapped:false}),lens
 const HFM={ready:false,geo:{},info:{},wait:[],mat:null,tint:{}};
 function hfB64(t){const b=atob(t),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
 function hfWhen(f){if(HFM.ready)f();else HFM.wait.push(f)}
-function hfMat(){return HFM.mat||(HFM.mat=VSTD({color:'#ffffff',vertexColors:true,flatShading:true,roughness:.5,metalness:.05}))}
+const HELI_HFM=false;function hfMat(){return HFM.mat||(HFM.mat=VSTD({color:'#ffffff',vertexColors:true,flatShading:true,roughness:.5,metalness:.05}))}
 (function(){if(typeof HFM_DATA==='undefined')return;
  Promise.resolve().then(()=>{const lin=new Float32Array(256);for(let i=0;i<256;i++){const c=i/255;lin[i]=c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)}
   for(const k in HFM_DATA){try{const m=HFM_DATA[k],v=hfB64(m.v),ib=hfB64(m.i);
@@ -3821,7 +3821,7 @@ function makeHeliModel(V){V=V||{};const g=new T.Group(),body=new T.Group();g.add
  const beacon=glowSprite('#ff2a1a',1.4);beacon.position.set(0,3.1,-1.4);body.add(beacon);
  // swap the built-in body for the real 3D medevac model (skids on the ground, nose forward, rotor on its mast)
  const proc=body.children.filter(o=>o!==rotor&&o!==blur&&o!==beacon);
- hfWhen(()=>{const m=HFM.info.heli;if(!m||!HFM.geo.heli)return;const s=8.4/m.sz[2],zmax=m.mn[2]+m.sz[2],geo=V.red&&V.red!=='#c62828'?hfTinted('heli',V.red):HFM.geo.heli;
+ /* the low-poly Higgsfield helicopter looked worse than the built one, so it stays off */ if(HELI_HFM)hfWhen(()=>{const m=HFM.info.heli;if(!m||!HFM.geo.heli)return;const s=8.4/m.sz[2],zmax=m.mn[2]+m.sz[2],geo=V.red&&V.red!=='#c62828'?hfTinted('heli',V.red):HFM.geo.heli;
   const me=new T.Mesh(geo,hfMat());me.scale.setScalar(s);me.position.set(-s*(m.mn[0]+m.sz[0]/2),-s*m.mn[1],3.0-s*zmax);me.castShadow=true;me.receiveShadow=true;body.add(me);
   proc.forEach(o=>o.visible=false);const top=s*(m.ymax-m.mn[1]),mzz=me.position.z+s*m.ztop;rotor.position.set(0,top+.05,mzz);blur.position.set(0,top+.07,mzz);beacon.position.set(0,top-.35,mzz-1.1)});
  return{g,body,rotor,tail,blur,beacon,ws:[out.glass],seat:new T.Vector3(.45,.62,1.2),len:11}}
