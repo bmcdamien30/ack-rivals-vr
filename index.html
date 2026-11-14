@@ -430,7 +430,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 5</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 6</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -550,7 +550,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 5</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 6</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -781,12 +781,14 @@ THREE.ColorManagement.legacyMode=false;const T=Object.assign({},THREE);
 const GFX=(function(){let q=null;try{q=localStorage.getItem('ack-gfx')}catch(e){}
  const mobile=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<700;
  // iPhones and iPads give a web page far less graphics memory than a computer, so they start on Low
- const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const questUA=/OculusBrowser|Quest|Pico/i.test(navigator.userAgent),auto=ios||questUA?'low':mobile?'medium':'high';
+ const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const questUA=/OculusBrowser|Quest|Pico/i.test(navigator.userAgent),auto=ios?'low':questUA?'medium':mobile?'medium':'high';
  let level=['low','medium','high','ultra'].includes(q)?q:auto,stepped=null;
  // crash guard: ack-alive is '0' while loading or starting a mode and flips to '1' once things run; a '0' here means the last try died
  try{if(localStorage.getItem('ack-alive')==='0'&&level!=='low'){level={ultra:'high',high:'medium',medium:'low'}[level];localStorage.setItem('ack-gfx',level);q=level;stepped=level}localStorage.setItem('ack-alive','0')}catch(e){}
  const L={low:0,medium:1,high:2,ultra:3}[level];
- return{level,auto:!q,L,mobile,ios,stepped,pbr:L>=1,post:L>=1,msaa:L>=2,grass:[0,4200,11000,18000][L],grassR:[0,45,70,95][L],shadow:[1024,1536,2048,4096][L],shadowR:[60,70,90,120][L],pr:[1,mobile?1.35:1.5,2,2.5][L],scale:1}})();
+ const R0={level,auto:!q,L,mobile,ios,stepped,pbr:L>=1,post:L>=1,msaa:L>=2,grass:[0,4200,11000,18000][L],grassR:[0,45,70,95][L],shadow:[1024,1536,2048,4096][L],shadowR:[60,70,90,120][L],pr:[1,mobile?1.35:1.5,2,2.5][L],scale:1,quest:questUA},G=R0;
+ // Quest headsets: full detail (photo textures, lit houses, fuller trees) with a lighter grass and shadow budget so it holds 72 fps
+ if(questUA&&L===1)Object.assign(G,{grass:2200,grassR:38,shadow:1024,shadowR:60,pr:1,msaa:false});return G})();
 if(GFX.pbr){const Std=THREE.MeshStandardMaterial;
  // every Lambert/Phong material in the game becomes a physically based one, lit by the sky
  T.MeshLambertMaterial=function(p){return new Std(Object.assign({roughness:.9,metalness:0,envMapIntensity:.55},p||{}))};
@@ -1373,7 +1375,10 @@ const GRASS=(function(){if(!GFX.grass)return null;
  return{update,mesh,U}})();
 
 /* one call per frame: keeps sky, sea, grass and shadows centred on the camera, then draws through the post chain */
-function renderFrame(){realSync();const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
+/* headset frame guard: if the headset keeps missing frames, drop the grass, and start on Low next time */
+const VRG={t:0,ema:14,warm:0,stage:0,tick(){const n=performance.now(),d=this.t?n-this.t:14;this.t=n;if(!VR.on){this.warm=0;return}if(d>100)return;this.warm+=d;if(this.warm<5000)return;this.ema=lerp(this.ema,d,.02);
+ if(this.ema>16.5&&this.warm>8000){this.warm=5000;this.ema=14;this.stage++;if(this.stage===1&&GRASS)GRASS.mesh.visible=false;if(this.stage===2){try{localStorage.setItem('ack-gfx','low')}catch(e){}}}}};
+function renderFrame(){realSync();VRG.tick();const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
  if(GRASS)GRASS.update(cp,SKY_U.time.value);treeLOD(cp);scene.updateMatrixWorld();WHEELS.update();if(typeof FX!=='undefined')FX.update();if(VR.on)VR.render();else if(POST)POST.render();else renderer.render(scene,camera)}
 
 /* ================= vehicle kit: rounded panels, merged per material, instanced wheels ================= */
