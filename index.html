@@ -430,7 +430,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 3D-guns 3</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 4</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -550,7 +550,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 3D-guns 3</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 4</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1676,13 +1676,13 @@ function realToggle(on){RXR.on=on;try{localStorage.setItem('ack-realrex',on?'1':
 const _rq=new T.Quaternion(),_rI=new T.Quaternion();
 function realSync(){const L=RXR.list;if(!L.length)return;
  for(let n=L.length-1;n>=0;n--){const R=L[n],X=R.real,S=X.S;if(!R.g.parent){X.idle=(X.idle||0)+1;if(X.idle>900)L.splice(n,1);continue}X.idle=0;
-  // the driver's-eye camera hides the head: show the cartoon body there so the view isn't blocked
-  const want=RXR.on&&R.head.visible!==false;if(X.shown!==want)realShow(R,want);if(!want||!R.g.visible)continue;
+  // the driver's-eye camera (and VR) hides the head: keep the realistic body and fold its head away so the view isn't blocked
+  const want=RXR.on;if(X.shown!==want)realShow(R,want);if(!want||!R.g.visible)continue;
   const Q=X.Q,q=k=>Q[k]||(Q[k]=new T.Quaternion());
   q('hips').copy(R.hips.quaternion);q('torso').multiplyQuaternions(Q.hips,R.torso.quaternion);q('head').multiplyQuaternions(Q.torso,R.head.quaternion);
   ['aL','aR'].forEach(k=>{const a=R[k];if(!a)return;q(k+'.sh').multiplyQuaternions(Q.torso,a.sh.quaternion);q(k+'.el').multiplyQuaternions(Q[k+'.sh'],a.el.quaternion)});
   ['lL','lR'].forEach(k=>{const l=R[k];if(!l)return;q(k+'.hp').multiplyQuaternions(Q.hips,l.hp.quaternion);q(k+'.kn').multiplyQuaternions(Q[k+'.hp'],l.kn.quaternion)});
-  const B=S.B,W=X.W,bones=X.bones;
+  const B=S.B,W=X.W,bones=X.bones,hb=bones[S.idx.Head],hs=R.head.visible===false?1e-3:1;if(hb&&X.hs!==hs){X.hs=hs;hb.scale.fromArray(B[S.idx.Head].s).multiplyScalar(hs)}
   for(let i=0;i<B.length;i++){const p=B[i].p,pw=p<0?_rI:W[p],k=S.key[i];
    if(k&&Q[k]){W[i].multiplyQuaternions(Q[k],S.A[i]);bones[i].quaternion.copy(pw).invert().multiply(W[i])}
    else{W[i].multiplyQuaternions(pw,S.Lr[i]);bones[i].quaternion.copy(S.Lr[i])}}
