@@ -1764,7 +1764,7 @@ function sparkTex(){if(SPKT)return SPKT;SPKT=cvTex(256,256,(x,w,h)=>{x.fillStyle
  for(let i=0;i<900;i++){const v=rnd();x.fillStyle=v<.6?'rgba(232,190,90,'+(.35+rnd()*.6)+')':'rgba(255,240,200,.9)';const z=v<.9?1.6:3;x.fillRect(rnd()*w,rnd()*h,z,z)}
  x.strokeStyle='rgba(216,170,70,.5)';x.lineWidth=3;for(let k=0;k<5;k++){x.beginPath();x.moveTo(k*52,0);x.bezierCurveTo(k*52+40,80,k*52-30,170,k*52+20,256);x.stroke()}});SPKT.wrapS=SPKT.wrapT=T.RepeatWrapping;SPKT.repeat.set(2,3);return SPKT}
 function gownMat(){return GOWN||(GOWN=new T.MeshLambertMaterial({color:'#ffffff',map:sparkTex(),emissive:new T.Color('#ffffff'),emissiveMap:sparkTex(),emissiveIntensity:.22,side:T.DoubleSide}))}
-function decal(tex,w,h,parent,x,y,z,ry,rx){const m=mk(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:tex,transparent:true,toneMapped:true}),x,y,z,parent,false);m.rotation.set(rx||0,ry||0,0);m.userData.keep=true;return m}
+function wearDecal(tex,w,h,parent,x,y,z,ry,rx){const m=mk(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:tex,transparent:true,toneMapped:true}),x,y,z,parent,false);m.rotation.set(rx||0,ry||0,0);m.userData.keep=true;return m}
 // clothes that sit on top of the basic body: bomber jacket + hoodie, a stage gown, a suit with a cape
 function charWear(sp,o){const{torso,hips,S,bl}=o,SZ=.78+.1*(S-1);
  if(sp.jacket){const jm=mat(sp.jacket,{side:T.DoubleSide}),gap=.42;
@@ -1775,21 +1775,21 @@ function charWear(sp,o){const{torso,hips,S,bl}=o,SZ=.78+.1*(S-1);
   mk(new T.SphereGeometry(.13,14,10).scale(1.25*S,.75,.8),sp.shirt,0,.63,-.12,torso);// hood bunched behind the neck
   [-1,1].forEach(s=>mk(new T.CylinderGeometry(.006,.006,.16,5),'#f2efe6',s*.035,.48,.205*SZ+.012,torso,false));// hoodie strings
   const R=.24+bl*.6,pt=(a,y)=>[R*Math.sin(a)*S,y,R*Math.cos(a)*SZ*1.02+.006];
-  {const a=-(gap+.34),p=pt(a,.42);decal(gwTex(),.09,.09,torso,p[0],p[1],p[2],a)}// GarnettWork lion: wearer's right chest
-  {const a=gap+.34,p=pt(a,.41);decal(ackPatchT(),.08,.08,torso,p[0],p[1],p[2],a)}}
- if(sp.gown){const sk=[[.001,.08],[.19,.08],[.2,-.05],[.215,-.2],[.2,-.42],[.172,-.6],[.19,-.74],[.27,-.86],[.37,-.95],[.001,-.95]].map(q=>new T.Vector2(q[0],q[1]));
+  {const a=-(gap+.34),p=pt(a,.42);wearDecal(gwTex(),.09,.09,torso,p[0],p[1],p[2],a)}// GarnettWork lion: wearer's right chest
+  {const a=gap+.34,p=pt(a,.41);wearDecal(ackPatchT(),.08,.08,torso,p[0],p[1],p[2],a)}}
+ if(sp.gown){const sk=[[.001,.13],[.205,.13],[.2,-.05],[.215,-.2],[.2,-.42],[.172,-.6],[.19,-.74],[.27,-.86],[.37,-.95],[.001,-.95]].map(q=>new T.Vector2(q[0],q[1]));
   mk(new T.LatheGeometry(sk,26).scale(S,1,.92),o.shirt,0,0,0,hips);const gold=mat('#d8b45a');
   mk(new T.TorusGeometry(.145,.012,6,24).rotateX(Math.PI/2).scale(S,1,SZ),gold,0,.27,0,torso);mk(new T.TorusGeometry(.16,.01,6,24).rotateX(Math.PI/2).scale(S,1,SZ),gold,0,.555,0,torso);
-  decal(gwTex(),.055,.055,torso,0,.27,.145*SZ+.016,0)}// lion crest on the belt
+  wearDecal(gwTex(),.055,.055,torso,0,.27,.145*SZ+.016,0)}// lion crest on the belt
  if(sp.suitTrim){const gt=mat(sp.suitTrim);[-1,1].forEach(s=>mk(new T.BoxGeometry(.012,.42,.01),gt,s*.055*S,.32,.222*SZ+.006,torso));
-  mk(new T.TorusGeometry(.186*S,.012,6,24).rotateX(Math.PI/2).scale(1,1,.82),gt,0,.1,0,hips);decal(gwTex(),.07,.07,hips,0,.1,.186*S*.82+.016,0);
-  decal(gwTex(),.08,.08,torso,-.1*S,.43,.19*SZ+.01,-.48)}
+  mk(new T.TorusGeometry(.186*S,.012,6,24).rotateX(Math.PI/2).scale(1,1,.82),gt,0,.1,0,hips);wearDecal(gwTex(),.07,.07,hips,0,.1,.186*S*.82+.016,0);
+  wearDecal(gwTex(),.08,.08,torso,-.1*S,.43,.19*SZ+.01,-.48)}
  if(sp.cape){const cg=new T.CylinderGeometry(.24*S,.44*S,1.25,18,1,true,Math.PI*.58,Math.PI*.84);cg.scale(1,1,SZ*1.15);cg.translate(0,-.02,-.02);
   mk(cg,mat(sp.cape),0,0,0,torso);mk(cg.clone(),mat(sp.capeIn||'#c9a14a',{side:T.BackSide}),0,0,0,torso);
   [-1,1].forEach(s=>mk(new T.SphereGeometry(.028,10,8),sp.suitTrim||'#d8b45a',s*.12*S,.56,.12*SZ,torso))}}
 function longHair(sp,head,r){const hm=mat(sp.hair,{side:T.DoubleSide});
  const back=new T.CylinderGeometry(r*1.02,r*1.28,r*3.1,20,4,true,Math.PI*.36,Math.PI*1.28);back.translate(0,-r*1.35,-r*.06);mk(back,hm,0,0,0,head,false);
- for(let i=0;i<9;i++){const a=Math.PI*.42+i/8*Math.PI*1.16,rr=r*1.2;mk(new T.SphereGeometry(r*.3,10,8).scale(1,1.3,.8),sp.hairEnds||sp.hair,Math.sin(a)*rr,-r*2.85,Math.cos(a)*rr-r*.06,head,false)}
+ for(let i=0;i<7;i++){const a=Math.PI*.66+i/6*Math.PI*.68,rr=r*1.18;mk(new T.SphereGeometry(r*.32,10,8).scale(1.1,1.2,.6),sp.hairEnds||sp.hair,Math.sin(a)*rr,-r*2.85,Math.cos(a)*rr-r*.06,head,false)}
  [-1,1].forEach(s=>{const l=mk(new T.CapsuleGeometry(r*.2,r*1.6,4,8),hm,s*r*.98,-r*1.15,r*.22,head,false);l.rotation.z=s*.08})}
 // Ethan the Lion: a painted lion face, a mane of tufts, round ears and a nose
 function lionTex(sp){return cvTex(1024,512,x=>{x.fillStyle=sp.skin;x.fillRect(0,0,1024,512);
@@ -1822,7 +1822,7 @@ function makeKing(){const g=new T.Group(),body=new T.Group();g.add(body);
  mk(new T.SphereGeometry(.27,32,22).scale(1,1.05,1),new T.MeshStandardMaterial({map:kingFaceTex(),roughness:.35,metalness:.2}),0,0,0,head);
  mk(new T.CylinderGeometry(.2,.23,.1,20),gold,0,.27,0,head);mk(new T.CylinderGeometry(.16,.2,.14,20),blk,0,.38,0,head);
  const cr=new T.Group();cr.position.y=.58;head.add(cr);mk(new T.BoxGeometry(.06,.26,.06),gold,0,0,0,cr);mk(new T.BoxGeometry(.2,.06,.06),gold,0,.03,0,cr);
- decal(cvTex(128,128,x=>{x.fillStyle='#d8b45a';x.beginPath();x.arc(64,64,60,0,TAU);x.fill();x.fillStyle='#141416';x.beginPath();x.arc(64,64,48,0,TAU);x.fill();x.fillStyle='#d8b45a';x.font='bold 72px Georgia, serif';x.textAlign='center';x.textBaseline='middle';x.fillText('G',64,68)}),.17,.17,body,0,.72,.228,0);
+ wearDecal(cvTex(128,128,x=>{x.fillStyle='#d8b45a';x.beginPath();x.arc(64,64,60,0,TAU);x.fill();x.fillStyle='#141416';x.beginPath();x.arc(64,64,48,0,TAU);x.fill();x.fillStyle='#d8b45a';x.font='bold 72px Georgia, serif';x.textAlign='center';x.textBaseline='middle';x.fillText('G',64,68)}),.17,.17,body,0,.72,.228,0);
  const cg=new T.CylinderGeometry(.24,.42,1.0,18,1,true,Math.PI*.58,Math.PI*.84);mk(cg,blk,0,.68,-.02,body);mk(cg.clone(),new T.MeshStandardMaterial({color:'#c9a14a',roughness:.4,metalness:.6,side:T.BackSide}),0,.68,-.02,body);
  const arm=s=>{const sh=new T.Group();sh.position.set(s*.23,.95,.02);body.add(sh);mk(new T.CylinderGeometry(.035,.035,.32,8),blk,0,-.16,0,sh);mk(new T.SphereGeometry(.075,12,10).scale(1,1.15,.8),glove,0,-.35,0,sh);mk(new T.TorusGeometry(.058,.018,6,14).rotateX(Math.PI/2),glove,0,-.28,0,sh);return sh};
  const K={g,body,head,aL:arm(1),aR:arm(-1)};g.traverse(o=>{if(o.isMesh&&!o.material.transparent)o.castShadow=true});optimizeRig(g);return K}
@@ -1872,7 +1872,7 @@ function makeChar(sp){const g=new T.Group(),S=sp.build||1,skin=mat(sp.skin),shir
  // arms: sleeve, upper arm, forearm, a proper hand with a thumb
  const arm=s=>{const sh=new T.Group();sh.position.set(s*(.215*S+.02)*(sp.fem?.9:1),.52,0);torso.add(sh);const jm=sp.jacket?mat(sp.jacket):null,slM=jm||shirt,cv=jm||(sp.longSleeve?shirt:null),uaM=cv||skin,k=cv?1.22:1;
   if(sp.sleeveless)mk(new T.SphereGeometry(.06,12,10),skin,0,-.01,0,sh);else{mk(new T.SphereGeometry(.078*Math.sqrt(S),12,10),slM,0,-.01,0,sh);mk(new T.CylinderGeometry(.078*Math.sqrt(S),.07,.17,12),slM,0,-.07,0,sh)}mk(new T.CylinderGeometry(.056*Math.sqrt(S)*k*(sp.fem?.85:1),.05*k*(sp.fem?.85:1),.3,12),uaM,0,-.15,0,sh);
-  if(sp.jacket&&s>0)decal(islandPatchT(),.075,.047,sh,.075*Math.sqrt(S),-.12,0,Math.PI/2);
+  if(sp.jacket&&s>0)wearDecal(islandPatchT(),.075,.047,sh,.075*Math.sqrt(S),-.12,0,Math.PI/2);
   const el=new T.Group();el.position.y=-.29;sh.add(el);mk(new T.SphereGeometry(.05*k,10,8),uaM,0,0,0,el);mk(new T.CylinderGeometry(.05*k*(sp.fem?.85:1),.04*k*(sp.fem?.85:1),.25,12),uaM,0,-.13,0,el);if(cv)mk(new T.CylinderGeometry(.052,.05,.04,12),sp.jacket?(sp.jacketRib||'#3d4536'):(sp.suitTrim||'#222'),0,-.24,0,el);
   const hand=new T.Group();hand.position.y=-.28;el.add(hand);mk(new T.SphereGeometry(.05,12,10).scale(.8,1.15,.62),skin,0,-.02,0,hand);const th=mk(new T.CapsuleGeometry(.016,.04,3,6),skin,s*-.035,.0,.03,hand);th.rotation.z=s*.6;return{sh,el,hand}};
  const leg=s=>{const hp=new T.Group();hp.position.set(s*.095*S,0,0);hips.add(hp);const long=sp.legs==='jeans';mk(new T.CylinderGeometry(.088*Math.sqrt(S),.075,.44,12),pants,0,-.22,0,hp);
@@ -4797,7 +4797,7 @@ const STAFF={
  rocky:{key:'rocky',name:'Champ',skin:'#c9926e',cheek:'#c7765f',beard:'#5e5650',beardType:'stubble',hair:'#a39e97',brow:'#3b3029',iris:'#4a3a2c',eyes:'squint',cap:'#25272c',capBrim:'#8e2431',capChicken:true,capBack:false,glasses:'#121212',shirt:'#2f8f58',pants:'#3a4250',legs:'jeans',shoes:'#2b2b2e',build:1.1,belly:.05,headS:1.05,mouth:'grin',paint:'#2f8f58'},
  packy:{key:'packy',name:'Captain',skin:'#eba88c',cheek:'#e2786a',beard:'#9a8a7c',beardType:'none',hair:'#9a8a74',hairline:-.8,noCap:true,hairTilt:.55,brow:'#8a6a50',iris:'#5f86ad',eyes:'squint',shirt:'#6d7175',shirtArt:'chicken',pants:'#cfc19f',legs:'jeans',shoes:'#6b5a48',build:1.14,belly:.07,headS:1.07,mouth:'grin',paint:'#66686b'}};
 const BAND=[
- {key:'b1',name:'Miss Champagne',fem:true,skin:'#c68a64',cheek:'#c9776a',beard:'#000000',beardType:'none',hair:'#2e1c12',hairEnds:'#7a4a2a',noCap:true,longHair:true,hairTilt:.12,hairline:-.5,brow:'#24160e',iris:'#4a2c18',eyes:'normal',lips:'#b0303e',lashes:true,shirt:'#0d0b08',gown:true,sleeveless:true,pants:'#0d0b08',legs:'jeans',shoes:'#d8b45a',build:.9,belly:0,headS:.96,mouth:'talk'},
+ {key:'b1',name:'Miss Champagne',fem:true,skin:'#c68a64',cheek:'#c9776a',beard:'#000000',beardType:'none',hair:'#2e1c12',hairEnds:'#6a4026',noCap:true,longHair:true,hairTilt:.45,hairline:-.62,brow:'#24160e',iris:'#4a2c18',eyes:'normal',lips:'#b0303e',lashes:true,shirt:'#0d0b08',gown:true,sleeveless:true,pants:'#0d0b08',legs:'jeans',shoes:'#d8b45a',build:.9,belly:0,headS:.96,mouth:'talk'},
  {key:'b2',name:'Guitar',skin:'#f0c2a4',cheek:'#e59a8a',beard:'#8a5a30',beardType:'full',hair:'#8a5a30',noCap:true,hairTilt:.1,brow:'#6a4020',iris:'#3a5a78',eyes:'normal',shirt:'#7a2a2a',pants:'#2c3a52',legs:'jeans',shoes:'#3a2a20',build:1.02,belly:.02,headS:1,mouth:'flat'},
  {key:'b3',name:'Bass',skin:'#9c6a48',cheek:'#8a5a3c',beard:'#1a1410',beardType:'goatee',hair:'#1a1410',knit:true,cap:'#c9a33a',brow:'#1a1410',iris:'#2a1c14',eyes:'normal',shirt:'#e8e4da',pants:'#1f2024',legs:'jeans',shoes:'#e8e6e0',build:1.05,belly:.01,headS:1,mouth:'flat'},
  {key:'b4',name:'Drums',skin:'#e8b494',cheek:'#e08a7a',beard:'#d9a988',beardType:'stubble',hair:'#c9a36a',cap:'#1b2744',capBack:true,capStrap:'#11151e',brow:'#a07a4a',iris:'#3a5a78',eyes:'wide',shirt:'#3a86c8',pants:'#5c5a44',legs:'shorts',shoes:'#2b2b2e',build:1.08,belly:.03,headS:1.02,mouth:'talk'}];
