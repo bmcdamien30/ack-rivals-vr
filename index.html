@@ -435,7 +435,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 13</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 14</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 13</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 14</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1647,6 +1647,8 @@ try{if(localStorage.getItem('ack-realrex')==='0')RXR.on=false}catch(e){}
 const REAL_URL={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/48301f6c-2034-4d93-b801-27a5f99c8c58.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3e83307e-e10e-428b-afc3-1c2d0d262608.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a3296aed-5e7e-4886-9e27-da24261a4114.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a7733218-3867-4507-b6b0-67ee581778a7.json',
  // street people, cops, zombies and Kingston (Meshy 7, Nov 17); only the few nearest the player use these
  kingston:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/9483a8be-8f37-4d34-97c8-1d1ef9a99fe4.json',town0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/88b68a34-e22c-497a-aaf6-1dec245ab69d.json',town1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3c32a757-40bf-4b36-9529-108154df65f6.json',town2:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fc6b7fe4-d028-4e93-b670-e02b6b990876.json',town3:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fd034d32-7273-454e-a92f-df3ec685455b.json',chad:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/b9c1949b-5649-43fa-a3a4-ec1185d23a01.json',brad:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/6eab1dca-819d-420d-b7e5-bcef161e2a69.json',cop0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/250a7315-bdf9-45d3-b7f0-1269dd75ba11.json',cop1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a46872d9-c4a3-46b3-a2c8-f5357d0bb27a.json',zed1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fb3652ca-fcda-453a-9e02-eb28b50abcba.json',zboss:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/7d2904d5-9f33-443b-86e7-fec46f8c5557.json'};
+// Kingston (Nov 17): the 3D model didn't look like him, so he uses his hand-built look (skin, curls, hoodie) until a new one is made
+delete REAL_URL.kingston;
 // Captain Seaweed and his wild crew (Meshy 7, Nov 17)
 Object.assign(REAL_URL,{seaweed:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/505d5133-b034-45f3-9cf9-a723aa1f1461.json',seacrew:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/83ebb48c-d91a-4265-8c10-efd996854caa.json'});
 // Damian's upgraded model (Meshy 7, Nov 17); if it can't load, the earlier one is tried next
@@ -1725,7 +1727,7 @@ const DRIVERS=[
  {key:'peterson',name:'Peterson',skin:'#efc0a4',cheek:'#e6958a',beard:'#7a5536',beardType:'none',hair:'#6e4b2f',hairline:-.6,hairTilt:.38,brow:'#5e3f27',iris:'#3d5a78',eyes:'normal',noCap:true,shirt:'#d9d4c7',pants:'#2c3a52',legs:'jeans',shoes:'#3a3d44',build:1.32,belly:0,headS:1,mouth:'grin',paint:'#14b8a6',jeep:'#1d6f68',tag:'Tall guy, brown hair.'},
  {key:'damian',name:'Damian',nick:'GarnettWork',skin:'#e9b99c',cheek:'#e09684',beard:'#5a4a3e',beardType:'stubble',hair:'#2a221c',brow:'#2a221c',iris:'#3a2a1c',eyes:'normal',cap:'#141416',capBack:false,capLogo:'#d8b45a',glasses:'#111111',shades:true,shirt:'#e3a412',jacket:'#68745f',jacketRib:'#3d4536',fur:'#1c1a18',pants:'#151517',legs:'jeans',shoes:'#e8a21c',sole:'#121212',build:1.05,belly:.01,headS:1.04,mouth:'grin',paint:'#e8a21c',jeep:'#4f5a46',tag:'GarnettWork. Bomber, shades, gold kicks.'},
  {key:'ethan',name:'Ethan the Lion',nick:'The Hype',lion:true,bald:true,skin:'#d79a3c',cheek:'#d79a3c',beard:'#000000',beardType:'none',hair:'#b8742a',brow:'#5a3210',iris:'#e6a21a',eyes:'normal',mane:'#a9641f',mane2:'#e3a646',shirt:'#121214',longSleeve:true,suitTrim:'#d8b45a',cape:'#0e0e10',capeIn:'#c9a14a',pants:'#121214',legs:'jeans',shoes:'#121214',sole:'#d8b45a',build:1.18,belly:0,headS:1.15,mouth:'grin',paint:'#d8b45a',jeep:'#161618',tag:'Deal or Disaster. The hype, the heart.'},
- {key:'kingston',name:'Kingston',nick:'Ice Cream Boss',skin:'#b07a52',cheek:'#a86a48',beard:'#000000',beardType:'none',hair:'#1c1612',brow:'#1c1612',iris:'#2a1c12',eyes:'wide',noCap:true,shirt:'#efe6d2',jacket:'#4f6f9a',jacketRib:'#3b5578',fur:'#3b5578',pants:'#6b6b45',legs:'jeans',shoes:'#f2f2f0',sole:'#d9d9d9',build:.92,belly:0,headS:1.12,mouth:'grin',paint:'#f26d9a',jeep:'#f29bb6',tag:'Runs the ice cream stand. Denim jacket, cream hoodie.'}];
+ {key:'kingston',name:'Kingston',nick:'Ice Cream Boss',skin:'#8a5634',cheek:'#7c4a2e',curls:'#24160d',hood:'#efe6d2',cargo:'#535033',kid:.8,beard:'#000000',beardType:'none',hair:'#1c1612',brow:'#1c1612',iris:'#2a1c12',eyes:'wide',noCap:true,shirt:'#efe6d2',jacket:'#3e5f8e',jacketRib:'#2f4b72',fur:'#2f4b72',pants:'#615c3c',legs:'jeans',shoes:'#f2f2f0',sole:'#d9d9d9',build:.92,belly:0,headS:1.12,mouth:'grin',paint:'#f26d9a',jeep:'#f29bb6',tag:'Runs the ice cream stand. Denim jacket, cream hoodie.'}];
 /* who you can pick in the menu (Old Salt stays a local) */
 const PLAYABLE=[0,1,2,4,5,6,7,8];DRIVERS.forEach(d=>{d.base=d.name});
 /* ---------- painted faces: equirect textures that line up with a SphereGeometry ----------
@@ -1893,6 +1895,11 @@ function makeChar(sp){const g=new T.Group(),S=sp.build||1,skin=mat(sp.skin),shir
    const a=sph(s1*.66,-.06,r*1.08),b=sph(s1*1.48,-.02,r*1.02),v=new T.Vector3().subVectors(b,a),L=v.length(),tm=mk(new T.BoxGeometry(.006,.008,L),gm,0,0,0,head,false);tm.position.copy(a).addScaledVector(v,.5);tm.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),v.clone().normalize())});
   const br=mk(new T.BoxGeometry(r*.16,.008,.008),gm,0,0,0,head,false);br.position.copy(sph(0,-.08,r*1.13))}
  if(sp.bald){}
+ else if(sp.noCap&&sp.curls){// Kingston: short sides, a tight crop of curls on top (Nov 17, from Damian's picture of him)
+  const hc=mat(sp.curls),hg2=new T.SphereGeometry(r*1.03,28,16,0,TAU,0,Math.PI*.5);hg2.scale(1,1.06,1.03);const hm=mk(hg2,hc,0,r*.03,-r*.02,head);hm.rotation.x=-.3;
+  const G2=[],gold=Math.PI*(3-Math.sqrt(5));for(let i=0;i<150;i++){const t=(i+.5)/150,pol=Math.acos(1-t*.5),az=i*gold,x=Math.sin(pol)*Math.sin(az),y=Math.cos(pol),z=Math.sin(pol)*Math.cos(az);
+   if(pol>.98||z>.3&&pol>.9)continue;const top=1-pol,rad=r*(.07+.075*top)*(.85+((i*37)%10)/33),R2=r*(1.0+.1*top);const g=new T.SphereGeometry(rad,6,5);g.translate(x*R2,y*R2*1.06,z*R2*1.03);G2.push(g)}
+  mk(mergeFull(G2),hc,0,0,0,hm)}
  else if(sp.noCap){const hg2=new T.SphereGeometry(r*1.035,32,18,0,TAU,0,Math.PI*.5);hg2.scale(1,1.08,1.03);const hm=mk(hg2,new T.MeshLambertMaterial({color:sp.hair}),0,r*.02,-r*.03,head);hm.rotation.x=-(sp.hairTilt||.42);if(sp.longHair)longHair(sp,head,r)}
  else if(sp.knit){mk(new T.SphereGeometry(r*1.07,24,14,0,TAU,0,Math.PI*.48).scale(1,1.02,1.04),sp.cap,0,r*.12,0,head);mk(new T.TorusGeometry(r*1.04,r*.12,8,28).rotateX(Math.PI/2).scale(1,1,1.02),sp.cap,0,r*.1,0,head)}
  else{const cm=sp.cap==='camo'?new T.MeshLambertMaterial({map:camoTex()}):mat(sp.cap);const cg=new T.SphereGeometry(r*1.07,28,14,0,TAU,0,Math.PI*.44);cg.scale(1,.92,1.04);mk(cg,cm,0,r*.2,0,head);
@@ -1919,6 +1926,10 @@ function makeChar(sp){const g=new T.Group(),S=sp.build||1,skin=mat(sp.skin),shir
   const kn=new T.Group();kn.position.y=-.44;hp.add(kn);mk(new T.CylinderGeometry(long?.072:.06,long?.066:.052,.42,12),long?pants:skin,0,-.21,0,kn);
   mk(new T.CapsuleGeometry(.055,.14,4,8).rotateX(Math.PI/2).scale(1,.75,1),shoe,0,-.44,.045,kn);mk(new T.BoxGeometry(.105,.022,.25),sp.sole||'#f1efe9',0,-.475,.045,kn);return{hp,kn}};
  const R={g,hips,torso,head,aL:arm(1),aR:arm(-1),lL:leg(1),lR:leg(-1),sp};
+ if(sp.hood){const hm=mat(sp.hood);mk(new T.TorusGeometry(.12*S,.045,8,18).scale(1.15,1,.8).rotateX(Math.PI/2),hm,0,.7,-.045,torso);mk(new T.SphereGeometry(.13*S,12,8,0,TAU,0,Math.PI*.5).scale(1.1,.7,.6).rotateX(-1.9),hm,0,.66,-.13,torso);
+  for(const x of[-.035,.035])mk(new T.CylinderGeometry(.006,.006,.16,4),'#f7f3ea',x,.56,.14,torso,false)}
+ if(sp.cargo)for(const[L,s1]of[[R.lL,1],[R.lR,-1]])mk(new T.BoxGeometry(.035,.13,.12),sp.cargo,s1*.088,-.27,0,L.hp,false);
+ if(sp.kid)g.scale.setScalar(sp.kid);
  g.traverse(o=>{if(o.isMesh&&o.material&&!o.material.alphaTest&&!o.material.transparent)o.castShadow=true});optimizeRig(g);realAttach(R);return R}
 /* ---------- foam-dart blasters: white shell, your colour on the panels, a light strip, an orange safety tip on the muzzle ----------
    kind picks the shape: hand, smg, shotgun, sniper, machine, tube (rocket weapons), and the reward blasters mega, gatling, homing.
@@ -2455,7 +2466,7 @@ const ICE=(function(){const sh=HARBOR.shore;let at=null;
  const sign=new T.Mesh(new T.PlaneGeometry(2.2,.5),new T.MeshBasicMaterial({map:textTex([{t:'ICE CREAM',f:'bold 92px Arial',y:64}],512,128,{bg:'#fff4e0',color:'#e0457b'})}));sign.position.set(0,2.72,.62);g.add(sign);
  mk(new T.ConeGeometry(.16,.42,10).rotateX(Math.PI),'#d6a25e',.9,1.32,0,g);mk(new T.SphereGeometry(.16,10,8),'#f7c6d8',.9,1.55,0,g);mk(new T.SphereGeometry(.14,10,8),'#6b4a34',.9,1.75,0,g);
  addCollider({type:'b',x,z,c,s:-sn,hw:1.4,hd:.65,top:y+2.8});
- const kid=makeNPC({skin:'#b07a52',shirt:'#3f6fa6',pants:'#6b6b45',look:'kingston'});kid.g.scale.setScalar(.75);poseNPC(kid,0,0,0,null);kid.aR.sh.rotation.set(-.5,0,-.15);
+ const kid=makeChar(DRIVERS.find(d=>d.key==='kingston'));kid.aR.sh.rotation.set(-.5,0,-.15);
  {const[kx,kz]=W(1.9,.9);kid.g.position.set(kx,groundH(kx,kz),kz)}kid.g.rotation.y=g.rotation.y;scene.add(kid.g);
  return{g,kid,x:kid.g.position.x,z:kid.g.position.z,near:0}})();
 
