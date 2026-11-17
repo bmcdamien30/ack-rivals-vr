@@ -3655,8 +3655,8 @@ function allyFoes(){const L=[];for(const E of OPEN.pirates)if(E.dead<=0)L.push({
 function allyCall(){if(MODE!=='open'||!PL||PCAR||PL.dead>0||PL.swim||OPEN.allies.length||ALLY.cool>0)return;
  const pool=DRIVERS.map((d,i)=>i).filter(i=>i!==SEL&&DRIVERS[i].key!=='captain'),picks=[],eth=pool.findIndex(i=>DRIVERS[i].key==='ethan');if(eth>=0)picks.push(pool.splice(eth,1)[0]);
  while(picks.length<2&&pool.length)picks.push(pool.splice((rnd()*pool.length)|0,1)[0]);const guns=['minigun','shotgun','bazooka','smg'].sort(()=>rnd()-.5);
- picks.forEach((di,k)=>{for(let t=0;t<14;t++){const a=PL.yaw+Math.PI+(k?.75:-.75)+(rnd()-.5)*.6,r=3+rnd()*2,x=PL.p.x+Math.sin(a)*r,z=PL.p.z+Math.cos(a)*r;if(pointInCollider(x,z)||isWater(x,z,-.2))continue;
-  const f=new Fighter(DRIVERS[di],false);f.ally=true;f.crew=true;f.wpn=guns[k];f.spawn({x,z});f.p.y=surfaceY(x,z,PL.p.y+1);f.yaw=PL.yaw;f.calm=0;f.strafe=k?1:-1;OPEN.allies.push(f);break}});
+ picks.forEach((di,k)=>{for(let t=0;t<14;t++){const a=PL.yaw+Math.PI+(k?1.25:-1.25)+(rnd()-.5)*.5,r=4.5+rnd()*2,x=PL.p.x+Math.sin(a)*r,z=PL.p.z+Math.cos(a)*r;if(pointInCollider(x,z)||isWater(x,z,-.2))continue;
+  const f=new Fighter(DRIVERS[di],false);f.ally=true;f.crew=true;if(f.tag){f.c.g.remove(f.tag);f.tag=null}f.wpn=guns[k];f.spawn({x,z});f.p.y=surfaceY(x,z,PL.p.y+1);f.yaw=PL.yaw;f.calm=0;f.strafe=k?1:-1;OPEN.allies.push(f);break}});
  if(OPEN.allies.length)feed(OPEN.allies.map(f=>'<b>'+esc(f.spec.name)+'</b>').join(' and ')+' got your back',OPEN.allies[0].spec.paint)}
 function allyDrop(f,i){drop(f.c.g);OPEN.allies.splice(i,1)}
 function allyClear(){for(let i=OPEN.allies.length-1;i>=0;i--)allyDrop(OPEN.allies[i],i)}
