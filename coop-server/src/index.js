@@ -46,14 +46,22 @@ export class Room extends DurableObject {
 
   async fetch(req) {
     const url = new URL(req.url);
-    const want = url.searchParams.get('as'); // 'host' makes a room, 'guest' joins one
+    const want = url.searchParams.get('as'); // 'host' makes a room, 'guest' joins one, 'any' comes back after a dropout
     const now = this.players();
-    if (want === 'host' && now.length > 0) return new Response('Code taken', { status: 409 });
-    if (want === 'guest' && now.length === 0) return new Response('No room with that code', { status: 404 });
-    if (now.length >= MAX_PLAYERS) return new Response('Room full', { status: 423 });
+    let why = '';
+    if (want === 'host' && now.length > 0) why = 'taken';
+    else if (want === 'guest' && now.length === 0) why = 'none';
+    else if (now.length >= MAX_PLAYERS) why = 'full';
 
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
+    if (why) {
+      // tell the game why, then hang up (a browser can't read an HTTP error on a WebSocket)
+      server.accept();
+      server.send(JSON.stringify({ t: 'err', why }));
+      server.close(4000, why);
+      return new Response(null, { status: 101, webSocket: client });
+    }
     const role = now.length === 0 ? 'host' : 'guest';
     this.ctx.acceptWebSocket(server, [role]);
     server.serializeAttachment({ role });
