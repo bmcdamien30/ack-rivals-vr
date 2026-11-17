@@ -430,7 +430,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 8</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 9</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -550,7 +550,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 8</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 9</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1378,7 +1378,7 @@ const GRASS=(function(){if(!GFX.grass)return null;
 /* headset frame guard: if the headset keeps missing frames, drop the grass, and start on Low next time */
 const VRG={t:0,ema:14,warm:0,stage:0,tick(){const n=performance.now(),d=this.t?n-this.t:14;this.t=n;if(!VR.on){this.warm=0;return}if(d>100)return;this.warm+=d;if(this.warm<5000)return;this.ema=lerp(this.ema,d,.02);
  if(this.ema>16.5&&this.warm>8000){this.warm=5000;this.ema=14;this.stage++;if(this.stage===1&&GRASS)GRASS.mesh.visible=false;if(this.stage===2){try{localStorage.setItem('ack-gfx','low')}catch(e){}}}}};
-function renderFrame(){realSync();VRG.tick();const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
+function renderFrame(){try{npcLOD()}catch(e){}realSync();VRG.tick();const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
  if(GRASS)GRASS.update(cp,SKY_U.time.value);treeLOD(cp);scene.updateMatrixWorld();WHEELS.update();if(typeof FX!=='undefined')FX.update();if(VR.on)VR.render();else if(POST)POST.render();else renderer.render(scene,camera)}
 
 /* ================= vehicle kit: rounded panels, merged per material, instanced wheels ================= */
@@ -1628,13 +1628,15 @@ const REX_DATA={meta:{"nv":24330,"ni":93681,"layout":{"pos":[0,145980],"nrm":[14
    The cartoon rig keeps running every animation (walk, run, jump, aim, drive, swim, knocked down, sing). Its meshes are
    hidden and each of its joints drives the matching bone of the 3D skeleton, so the models can do everything the others do.
    Pause menu > "Realistic characters" switches between them and the cartoon versions (saved in this browser). */
-const RXR={on:true,list:[],kings:[],src:{},wait:{},fail:{}};
+const RXR={on:true,list:[],kings:[],src:{},wait:{},fail:{}};const NPCR={list:[],t:0};const _nv=new T.Vector3();
 try{if(localStorage.getItem('ack-realrex')==='0')RXR.on=false}catch(e){}
 // Damian, Ethan the Lion, Miss Champagne and King Stuart: realistic Higgsfield 3D models, loaded from Damian's Higgsfield library
 // the first time each one appears. Until a model arrives (or if it can't load) the cartoon version stays.
-const REAL_URL={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/48301f6c-2034-4d93-b801-27a5f99c8c58.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/82655789-954e-4d6d-b285-92dfbcb3c0b2.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/99549d6b-162a-4f57-9095-4ec083bc34e2.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/eecddd19-52a5-4e84-a51e-605d8c9bb57a.json'};
+const REAL_URL={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/48301f6c-2034-4d93-b801-27a5f99c8c58.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3e83307e-e10e-428b-afc3-1c2d0d262608.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a3296aed-5e7e-4886-9e27-da24261a4114.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a7733218-3867-4507-b6b0-67ee581778a7.json',
+ // street people, cops, zombies and Kingston (Meshy 7, Nov 17); only the few nearest the player use these
+ kingston:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/9483a8be-8f37-4d34-97c8-1d1ef9a99fe4.json',town0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/88b68a34-e22c-497a-aaf6-1dec245ab69d.json',town1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3c32a757-40bf-4b36-9529-108154df65f6.json',town2:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fc6b7fe4-d028-4e93-b670-e02b6b990876.json',town3:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fd034d32-7273-454e-a92f-df3ec685455b.json',cop0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/250a7315-bdf9-45d3-b7f0-1269dd75ba11.json',cop1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a46872d9-c4a3-46b3-a2c8-f5357d0bb27a.json',zed1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fb3652ca-fcda-453a-9e02-eb28b50abcba.json',zboss:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/7d2904d5-9f33-443b-86e7-fec46f8c5557.json'};
 // Damian's upgraded model (Meshy 7, Nov 17); if it can't load, the earlier one is tried next
-const REAL_ALT={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/08633f1f-1488-4ad3-b292-f319f21e1ce7.json'};
+const REAL_ALT={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/08633f1f-1488-4ad3-b292-f319f21e1ce7.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/82655789-954e-4d6d-b285-92dfbcb3c0b2.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/99549d6b-162a-4f57-9095-4ec083bc34e2.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/eecddd19-52a5-4e84-a51e-605d8c9bb57a.json'};
 // model bone <- cartoon rig joint
 const RXR_MAP={Hips:'hips',Spine02:'torso',Head:'head',LeftArm:'aL.sh',LeftForeArm:'aL.el',RightArm:'aR.sh',RightForeArm:'aR.el',LeftUpLeg:'lL.hp',LeftLeg:'lL.kn',RightUpLeg:'lR.hp',RightLeg:'lR.kn'};
 // for limbs: the bone that marks where each mapped bone points, so it can be lined up with the rig's straight-down rest pose
@@ -1644,7 +1646,7 @@ function realBuild(D){const M=D.meta,L=M.layout,raw=atob(D.bin),u8=new Uint8Arra
  const uq=new Uint16Array(buf,L.uv[0],nv*2),uv=new Float32Array(nv*2);for(let i=0;i<nv*2;i++)uv[i]=M.umin[i%2]+uq[i]*M.uscale[i%2];
  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(pos,3));geo.setAttribute('normal',new T.BufferAttribute(new Int8Array(buf,L.nrm[0],nv*3),3,true));
  geo.setAttribute('uv',new T.BufferAttribute(uv,2));if(M.bones){geo.setAttribute('skinIndex',new T.BufferAttribute(new Uint8Array(buf,L.ji[0],nv*4),4));geo.setAttribute('skinWeight',new T.BufferAttribute(new Uint8Array(buf,L.jw[0],nv*4),4,true))}
- geo.setIndex(new T.BufferAttribute(new Uint16Array(buf,L.idx[0],M.ni),1));geo.computeBoundingSphere();geo.computeBoundingBox();
+ geo.setIndex(new T.BufferAttribute(new Uint16Array(buf,L.idx[0],M.ni),1));geo.computeBoundingSphere();geo.computeBoundingBox();geo.userData.keep=true;
  const tex=(src,srgb)=>{const t=new T.Texture(),im=new Image();t.flipY=false;if(srgb)t.encoding=T.sRGBEncoding;t.anisotropy=4;im.onload=()=>{t.image=im;t.needsUpdate=true};im.src=src;return t};
  const mat=new T.MeshStandardMaterial({map:tex(D.tex,true),roughness:M.rough,metalness:M.metal,side:T.DoubleSide});if(D.nrm){mat.normalMap=tex(D.nrm,false);mat.normalScale.set(1,-1)}
  if(!M.bones)return{geo,mat,still:true};
@@ -1663,7 +1665,7 @@ function realGet(key,cb){const S=RXR.src[key];if(S)return cb(S);
 // the cartoon parts to hide, listed right away so things put in their hands later (blasters, carried items) stay visible
 function realParts(g){const hid=[];g.traverse(o=>{if((o.isMesh||o.isSprite)&&o.visible)hid.push(o)});return hid}
 function realAttach(R){const key=R&&R.sp&&R.sp.key;if(!key||!(key==='cap'||REAL_URL[key]))return;const hid=realParts(R.g);realGet(key,S=>realBind(R,S,hid))}
-function realBind(R,S,hid){if(R.real||S.still)return;const KY=S.KY,KXZ=1+((R.sp.build||1)-1)*.3;
+function realBind(R,S,hid){if(R.real||S.still)return;const KY=S.KY*(R.hy||.95)/.95,KXZ=1+((R.sp.build||1)-1)*.3;
  const root=new T.Group();root.name='realChar';root.scale.set(KXZ,KY,KXZ);const arm=new T.Group();arm.scale.setScalar(.01);root.add(arm);
  const bones=S.B.map(b=>{const o=new T.Bone();o.name=b.n;o.position.fromArray(b.t);o.quaternion.fromArray(b.r);o.scale.fromArray(b.s);return o});
  S.B.forEach((b,i)=>(b.p<0?arm:bones[b.p]).add(bones[i]));
@@ -1684,7 +1686,7 @@ const _rq=new T.Quaternion(),_rI=new T.Quaternion();
 function realSync(){const L=RXR.list;if(!L.length)return;
  for(let n=L.length-1;n>=0;n--){const R=L[n],X=R.real,S=X.S;if(!R.g.parent){X.idle=(X.idle||0)+1;if(X.idle>900)L.splice(n,1);continue}X.idle=0;
   // the driver's-eye camera (and VR) hides the head: keep the realistic body and fold its head away so the view isn't blocked
-  const want=RXR.on;if(X.shown!==want)realShow(R,want);if(!want||!R.g.visible)continue;
+  const want=RXR.on&&!R.lodOff;if(X.shown!==want)realShow(R,want);if(!want||!R.g.visible)continue;
   const Q=X.Q,q=k=>Q[k]||(Q[k]=new T.Quaternion());
   q('hips').copy(R.hips.quaternion);q('torso').multiplyQuaternions(Q.hips,R.torso.quaternion);q('head').multiplyQuaternions(Q.torso,R.head.quaternion);
   ['aL','aR'].forEach(k=>{const a=R[k];if(!a)return;q(k+'.sh').multiplyQuaternions(Q.torso,a.sh.quaternion);q(k+'.el').multiplyQuaternions(Q[k+'.sh'],a.el.quaternion)});
@@ -1694,7 +1696,7 @@ function realSync(){const L=RXR.list;if(!L.length)return;
    if(k&&Q[k]){W[i].multiplyQuaternions(Q[k],S.A[i]);bones[i].quaternion.copy(pw).invert().multiply(W[i])}
    else{W[i].multiplyQuaternions(pw,S.Lr[i]);bones[i].quaternion.copy(S.Lr[i])}}
   // hips height and sway follow the rig, keeping the model's own leg length so the feet stay on the ground
-  const h=bones[0],t=B[0].t,hp=R.hips.position;h.position.set(t[0]+hp.x/(.01*X.KXZ),t[1]+(hp.y-.95)/(.01*X.KY),t[2]+hp.z/(.01*X.KXZ))}}
+  const h=bones[0],t=B[0].t,hp=R.hips.position;h.position.set(t[0]+hp.x/(.01*X.KXZ),t[1]+(hp.y-(R.hy||.95))/(.01*X.KY),t[2]+hp.z/(.01*X.KXZ))}}
 {const rb=document.getElementById('b-preal');if(rb)rb.addEventListener('click',()=>{realToggle(!RXR.on);if(typeof pmLabels==='function')pmLabels();if(typeof pmDraw==='function')pmDraw()})}
 /* ---------- characters (faces +z, feet at y=0) ---------- */
 function camoTex(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#6f6a4a';x.fillRect(0,0,128,128);
@@ -2290,7 +2292,7 @@ function makeNPC(o={}){const g=new T.Group(),skin=o.skin||NPC_SKIN[(rnd()*5)|0],
   part(kn,new T.CylinderGeometry(.068,.054,.42,8),pants,0,-.2,0);part(kn,new T.BoxGeometry(.11,.085,.25),shoe,0,-.43,.045);return{hp,kn}};
  const aL=arm(1),aR=arm(-1),lL=leg(1),lR=leg(-1);
  const m=new T.SkinnedMesh(npcMerge(W),npcMat());m.castShadow=true;m.receiveShadow=true;m.add(hips);m.bind(new T.Skeleton(B));g.add(m);
- return{g,mesh:m,hips,torso,head,aL,aR,lL,lR}}
+ const n={g,mesh:m,hips,torso,head,aL,aR,lL,lR};if(!o.pirate){n.hy=.92;n.look=o.look||(o.cop?'cop'+((rnd()*2)|0):'town'+((rnd()*4)|0));NPCR.list.push(n)}return n}
 function poseNPC(n,ph,amt,t,state){const s=Math.sin(ph),c=Math.cos(ph),a=amt;
  n.hips.position.y=.92-.02*a+Math.abs(c)*.035*a;n.hips.rotation.set(0,s*.09*a,0);n.torso.rotation.set(.06*a,-s*.15*a,0);n.head.rotation.set(-.03*a,s*.07*a,0);
  n.lL.hp.rotation.set(s*.55*a,0,0);n.lR.hp.rotation.set(-s*.55*a,0,0);if(n.lL.kn){n.lL.kn.rotation.set(a*(.1+.9*Math.max(0,-c)),0,0);n.lR.kn.rotation.set(a*(.1+.9*Math.max(0,c)),0,0)}
@@ -2420,6 +2422,27 @@ const HARBOR=(function(){// walk east from Straight Wharf until we reach water
  let hc=null,hd=-1;for(let k=0;k<600;k++){const x=shore[0]+100+rnd()*1500,z=shore[1]-700+rnd()*900;if(!isWater(x,z,-2.5))continue;let d=0;for(let a=0;a<8;a++){let r=0;while(r<400&&isWater(x+Math.cos(a*TAU/8)*r,z+Math.sin(a*TAU/8)*r,-1.5))r+=10;d+=r}if(d>hd){hd=d;hc=[x,z]}}
  return{shore,dock,slips,walk,center:hc||[shore[0]+300,shore[1]-200],ferry:fg,buoys:buoyM}})();
 function onDock(x,z){const w=HARBOR.walk;if(x>w.x0&&x<w.x1&&Math.abs(z-w.z)<w.w)return true;for(const o of[8,16,24])if(Math.abs(x-(HARBOR.shore[0]+o))<.7&&Math.abs(Math.abs(z-HARBOR.shore[1])-7)<5)return true;return false}
+/* ---------- street people go realistic only near the player (max 8, 6 in the headset); the rest keep the light model ---------- */
+function npcLive(n){let o=n.g;while(o){if(!o.visible)return false;if(o===scene)return true;o=o.parent}return false}
+function npcLOD(){if((++NPCR.t)%24)return;const L=NPCR.list,me=ME(),cp=me&&me.p?me.p:camera.position,max=VR.on?6:8,C=[];
+ for(let i=L.length-1;i>=0;i--){const n=L[i];if(!npcLive(n)){if(!n.g.parent&&(n.gone=(n.gone||0)+1)>10){L.splice(i,1);continue}n.lodOff=true;continue}n.gone=0;
+  n.g.getWorldPosition(_nv);const d=Math.hypot(_nv.x-cp.x,_nv.z-cp.z);if(d<40&&RXR.on&&REAL_URL[n.look]&&(RXR.fail[n.look]||0)<2)C.push([d,n]);else n.lodOff=true}
+ C.sort((a,b)=>a[0]-b[0]);C.forEach(([d,n],i)=>{if(i>=max){n.lodOff=true;return}n.lodOff=false;if(!n.real&&!n.binding){n.binding=1;n.sp={key:n.look,build:1};realGet(n.look,S=>{n.binding=0;realBind(n,S,[n.mesh].concat(n.hidX||[]));if(n.real&&VR.on)n.real.mesh.castShadow=false})}});
+ if(ICE&&ICE.kid&&FOOT()&&MODE!=='battleover'){const d=Math.hypot(ICE.x-cp.x,ICE.z-cp.z);if(d<4.5&&!ICE.near){ICE.near=1;toast('Kingston: "Want some ice cream?"')}else if(d>9)ICE.near=0}}
+/* Kingston's ice cream stand by the harbor: off the road, nobody chases or hits him */
+const ICE=(function(){const sh=HARBOR.shore;let at=null;
+ for(let dx=10;dx<70&&!at;dx+=3)for(const dz of[6,-6,10,-10,14,-14,3,-3,18,-18]){const x=sh[0]-dx,z=sh[1]+dz;let ok=!onDock(x,z)&&Math.hypot(x-(sh[0]-4),z-(sh[1]+2))>7&&nearestRoad(x,z).d>6&&!pointInCollider(x,z);
+  for(const[ox,oz]of[[0,0],[3,3],[-3,3],[3,-3],[-3,-3]])if(ok&&(isWater(x+ox,z+oz,-.2)||pointInCollider(x+ox,z+oz)))ok=false;if(ok){at=[x,z];break}}
+ if(!at)return null;const[x,z]=at,y=groundH(x,z),g=new T.Group();g.position.set(x,y,z);g.rotation.y=-Math.PI/2;scene.add(g);const c=Math.cos(g.rotation.y),sn=Math.sin(g.rotation.y),W=(lx,lz)=>[x+lx*c+lz*sn,z-lx*sn+lz*c];
+ mk(new T.BoxGeometry(2.6,1.05,1.1),'#f3efe6',0,.52,0,g);mk(new T.BoxGeometry(2.7,.06,1.2),'#7a4a2c',0,1.08,0,g);mk(new T.BoxGeometry(2.62,.18,1.12),'#f29bb6',0,.18,0,g);
+ [[-1.25,-.5],[1.25,-.5],[-1.25,.5],[1.25,.5]].forEach(([px,pz])=>mk(new T.CylinderGeometry(.04,.04,2.3,6),'#d9d4c8',px,1.15,pz,g));
+ const aw=new T.Group();aw.position.set(0,2.32,.15);aw.rotation.x=.28;g.add(aw);for(let i=0;i<8;i++)mk(new T.BoxGeometry(.36,.05,1.7),i%2?'#ffffff':'#f26d9a',-1.26+i*.36,0,0,aw);
+ const sign=new T.Mesh(new T.PlaneGeometry(2.2,.5),new T.MeshBasicMaterial({map:textTex([{t:'ICE CREAM',f:'bold 92px Arial',y:64}],512,128,{bg:'#fff4e0',color:'#e0457b'})}));sign.position.set(0,2.72,.62);g.add(sign);
+ mk(new T.ConeGeometry(.16,.42,10).rotateX(Math.PI),'#d6a25e',.9,1.32,0,g);mk(new T.SphereGeometry(.16,10,8),'#f7c6d8',.9,1.55,0,g);mk(new T.SphereGeometry(.14,10,8),'#6b4a34',.9,1.75,0,g);
+ addCollider({type:'b',x,z,c,s:-sn,hw:1.4,hd:.65,top:y+2.8});
+ const kid=makeNPC({skin:'#b07a52',shirt:'#3f6fa6',pants:'#6b6b45',look:'kingston'});kid.g.scale.setScalar(.75);poseNPC(kid,0,0,0,null);kid.aR.sh.rotation.set(-.5,0,-.15);
+ {const[kx,kz]=W(1.9,.9);kid.g.position.set(kx,groundH(kx,kz),kz)}kid.g.rotation.y=g.rotation.y;scene.add(kid.g);
+ return{g,kid,x:kid.g.position.x,z:kid.g.position.z,near:0}})();
 
 /* ================= the Eagle: the Steamship Authority's slow boat, sailing out of Steamboat Wharf ================= */
 /* Built to the real ship's size (71 m long, 18 m wide; in service since 1987 on the Hyannis–Nantucket run). She ties up stern-first
@@ -4169,8 +4192,8 @@ function aaClear(){AA.man=null;AA.firing=false;AA.tracers.forEach(t=>scene.remov
 /* ---------- zombies in the hospital: three waves out of the morgue and the stairwell ---------- */
 const ZED={list:[],state:'idle',wave:0,t:0,cool:0,left:0,moan:0};
 const WAVES=[6,9,12];
-function makeZombie(p,boss){const n=makeNPC({skin:boss?'#6f9a5c':'#8db87a',shirt:boss?'#e9e6de':'#a9c7d9',pants:boss?'#3a5a6e':'#a9c7d9'});
- [-1,1].forEach(s=>mk(new T.BoxGeometry(.035,.025,.02),new T.MeshBasicMaterial({color:'#ff2a1a'}),s*.045,.02,.125,n.head,false));if(boss){n.g.scale.setScalar(1.45)}scene.add(n.g);
+function makeZombie(p,boss){const n=makeNPC({skin:boss?'#6f9a5c':'#8db87a',shirt:boss?'#e9e6de':'#a9c7d9',pants:boss?'#3a5a6e':'#a9c7d9'});n.look=boss?'zboss':'zed1';n.hidX=[];
+ [-1,1].forEach(s=>n.hidX.push(mk(new T.BoxGeometry(.035,.025,.02),new T.MeshBasicMaterial({color:'#ff2a1a'}),s*.045,.02,.125,n.head,false)));if(boss){n.g.scale.setScalar(1.45)}scene.add(n.g);
  const Z={n,p:p.clone(),yaw:rnd()*TAU,hp:boss?16:3,max:boss?16:3,boss,dead:0,ph:rnd()*6,spd:(boss?1.5:1.7+rnd()*.9),hitCool:0,lurch:rnd()*6,vx:0,vz:0};
  Z.tgt={owner:Z,r:boss?1.1:.75,foe:true,dead:()=>Z.dead>0||MODE!=='open',pos:()=>Z.p.clone().add(V3(0,boss?1.6:1.1,0)),hit:b=>zedHit(Z,b)};TARGETS.push(Z.tgt);ZED.list.push(Z);return Z}
 function zedHit(Z,b){if(Z.dead>0)return;if(!(b.owner===PL||b.owner===PCAR||b.owner===HELI))return;Z.hp-=b.nade?6:1;if(Z.hp<=0){Z.dead=3.5;pedSplat({n:Z.n},'#5f8f3a');sfx('splat',1);addCash(Z.boss?100:10,null,true);ZED.left--;if(Z.boss)feed('You put down the <b>Head Surgeon</b> · <b>+$100</b>','#5f8f3a')}
