@@ -262,7 +262,8 @@ kbd{display:inline-block;min-width:1.5em;padding:0 5px;border:1px solid rgba(236
 .toggle[aria-pressed=true]{border-color:var(--sea);color:var(--sea)}
 .toggle[aria-pressed=false]{color:var(--muted);text-decoration:line-through}
 .panel{display:grid;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:rgba(9,22,34,.55)}
-.coop-msg{margin:0;font-size:.92em;opacity:.85}.coop-msg.warn{color:#ffb39f;opacity:1}.coop-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.coop-msg{margin:0;font-size:.92em;opacity:.85}.coop-msg.warn{color:#ffb39f;opacity:1}.coop-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.coop-voice{font-weight:700;opacity:1;color:#bfe6ff}.coop-mute{font-size:1.05em;padding:10px 18px}.coop-mute.off{background:#ff5a3c;color:#fff}
+#talk{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:30;display:flex;gap:10px;align-items:center;pointer-events:none;font:700 18px var(--f-hud);letter-spacing:.06em;text-transform:uppercase}#talk b{background:#1f9d55;color:#fff;padding:8px 16px;border-radius:999px;box-shadow:0 0 0 4px rgba(31,157,85,.35)}#talk i{font-style:normal;background:#ff5a3c;color:#fff;padding:6px 12px;border-radius:999px;font-size:14px}
 #coop-code{width:6.4em;text-transform:uppercase;letter-spacing:.22em;font:inherit;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:#fff}
 #coop-big{font:700 2.1em Anton,Impact,sans-serif;letter-spacing:.18em;color:#ffd23f}
 .panel .lab{margin:0}
@@ -434,7 +435,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 12</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 13</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -455,10 +456,12 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
    <button type="button" id="b-music" class="toggle" aria-pressed="true">Music</button>
    <div id="gfx" class="chips small" role="group" aria-label="Graphics quality"><button type="button" data-v="auto">Auto</button><button type="button" data-v="low">Low</button><button type="button" data-v="medium">Med</button><button type="button" data-v="high">High</button><button type="button" data-v="ultra">Ultra</button></div>
   </div>
+  <div id="talk" hidden aria-live="polite"></div>
   <section id="coop" class="panel" hidden aria-label="Play together">
    <h2 class="lab">Play together <small id="coop-state">Private room for 2</small></h2>
-   <p id="coop-msg" class="coop-msg">Make a room and give your friend the 4 letters. No chat, and nobody else can join.</p>
-   <div class="coop-row"><button type="button" id="b-coop-make" class="btn primary small">Make a room</button><input id="coop-code" maxlength="4" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button type="button" id="b-coop-join" class="btn small">Join</button><button type="button" id="b-coop-go" class="btn primary small" hidden>Play Open Island</button><button type="button" id="b-coop-leave" class="btn small" hidden>Leave room</button></div>
+   <p id="coop-msg" class="coop-msg">Make a room, then tell your friend the 4 letters. Only the two of you can get in.</p>
+   <p id="coop-voice" class="coop-msg coop-voice" hidden></p>
+   <div class="coop-row"><button type="button" id="b-coop-make" class="btn primary small">Make a room</button><input id="coop-code" maxlength="4" placeholder="4 LETTERS" autocomplete="off" spellcheck="false" aria-label="Room code"><button type="button" id="b-coop-join" class="btn small">Join</button><button type="button" id="b-coop-go" class="btn primary small" hidden>Play Open Island</button><button type="button" id="b-coop-mute" class="btn small coop-mute" hidden>Mute my mic</button><button type="button" id="b-coop-leave" class="btn small" hidden>Leave room</button></div>
   </section>
   <section id="online" class="panel" hidden aria-label="Online">
    <h2 class="lab">On the island <small id="online-count">Just you</small></h2>
@@ -559,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 12</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 13</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -6389,6 +6392,77 @@ const COOP_URL='wss://ack-rivals-coop.garnettwork262.workers.dev';
 const COOP_LETTERS='BCDFGHJKLMNPQRSTVWXZ';
 const COOP={state:'off',role:null,code:'',ws:null,tries:0,fp:null,fpT:0,nid:0,snapT:0,pup:new Map(),cars:new Map(),lastW:0,obS:null,ob:'',went:false,wasG:false,msg:'',warn:false,prevRoom:null,quit:false};
 const COOPUI={open:false,code:''};
+/* ---------- voice (Build 13): the two players in a private room can talk. Sound goes straight from one headset to the other
+   (WebRTC). The room server only passes the short hello messages that connect them. Nothing is recorded or kept. No text chat. ---------- */
+const VOICE={mic:null,micState:'',pc:null,state:'off',muted:false,friendMuted:false,ready:false,friendReady:false,pend:[],el:null,ctx:null,an:null,buf:null,talk:0,retry:0,said:false};
+const VOICE_ICE=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
+const voiceTalking=()=>VOICE.state==='on'&&performance.now()-VOICE.talk<450;
+function voiceAsk(){
+ if(VOICE.mic)return Promise.resolve(VOICE.mic);
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.RTCPeerConnection){VOICE.micState='none';coopUI();return Promise.resolve(null)}
+ if(VOICE.asking)return VOICE.asking;
+ VOICE.micState='asking';coopUI();
+ VOICE.asking=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false}).then(s=>{
+   VOICE.asking=null;if(!coopOn()){s.getTracks().forEach(t=>t.stop());VOICE.micState='';return null}
+   VOICE.mic=s;VOICE.micState='ok';s.getAudioTracks().forEach(t=>t.enabled=!VOICE.muted);voiceMicIn();coopUI();return s})
+  .catch(()=>{VOICE.asking=null;VOICE.micState='denied';coopUI();return null});
+ return VOICE.asking}
+function voiceMicIn(){const pc=VOICE.pc,t=VOICE.mic&&VOICE.mic.getAudioTracks()[0];if(!pc||!t)return;const tr=pc.getTransceivers()[0];if(tr&&tr.sender.track!==t){try{tr.direction='sendrecv';tr.sender.replaceTrack(t)}catch(e){}}}
+function voiceStart(){if(!coopTogether())return;VOICE.ready=false;if(VOICE.state==='off')VOICE.state='connecting';coopUI();
+ voiceAsk().then(()=>{if(!coopTogether())return;VOICE.ready=true;
+  if(COOP.role==='host'){if(VOICE.friendReady)voiceCall();else coopSend({t:'vr',m:VOICE.muted?1:0})}
+  else coopSend({t:'vr',m:VOICE.muted?1:0})})}
+function voicePc(){voiceClosePc();let pc;try{pc=new RTCPeerConnection({iceServers:VOICE_ICE})}catch(e){VOICE.state='failed';coopUI();return null}
+ VOICE.pc=pc;VOICE.pend=[];
+ pc.onicecandidate=e=>{if(VOICE.pc===pc&&e.candidate)coopSend({t:'vi',c:e.candidate.toJSON?e.candidate.toJSON():e.candidate})};
+ pc.ontrack=e=>{if(VOICE.pc!==pc)return;voicePlay(e.streams&&e.streams[0]||new MediaStream([e.track]))};
+ pc.onconnectionstatechange=()=>{if(VOICE.pc!==pc)return;const s=pc.connectionState;
+  if(s==='connected'){VOICE.state='on';VOICE.retry=0;if(!VOICE.said){VOICE.said=true;sfx('beep',.6);toast(VOICE.mic?(VOICE.muted?'Voice is on. Your mic is off.':`Voice is on! Just talk, ${coopFriendName()} can hear you`):`Voice is on. You can hear ${coopFriendName()}.`)}coopUI()}
+  else if(s==='failed'){VOICE.state='failed';coopUI();if(COOP.role==='host'&&VOICE.retry<2&&coopTogether()){VOICE.retry++;setTimeout(()=>{if(coopTogether()&&VOICE.state==='failed')voiceCall()},1500)}}};
+ return pc}
+async function voiceCall(){const pc=voicePc();if(!pc)return;VOICE.state='connecting';coopUI();
+ try{const tr=pc.addTransceiver('audio',{direction:'sendrecv'});const t=VOICE.mic&&VOICE.mic.getAudioTracks()[0];if(t)await tr.sender.replaceTrack(t);
+  await pc.setLocalDescription(await pc.createOffer());if(VOICE.pc===pc)coopSend({t:'vo',s:pc.localDescription.sdp})}catch(e){if(VOICE.pc===pc){VOICE.state='failed';coopUI()}}}
+async function voiceOffer(sdp){const pc=voicePc();if(!pc)return;VOICE.state='connecting';coopUI();
+ try{await pc.setRemoteDescription({type:'offer',sdp});const tr=pc.getTransceivers()[0];const t=VOICE.mic&&VOICE.mic.getAudioTracks()[0];if(tr){tr.direction='sendrecv';if(t)await tr.sender.replaceTrack(t)}
+  await pc.setLocalDescription(await pc.createAnswer());if(VOICE.pc!==pc)return;coopSend({t:'va',s:pc.localDescription.sdp});voiceFlush(pc)}catch(e){if(VOICE.pc===pc){VOICE.state='failed';coopUI()}}}
+async function voiceAnswer(sdp){const pc=VOICE.pc;if(!pc||pc.signalingState!=='have-local-offer')return;try{await pc.setRemoteDescription({type:'answer',sdp});voiceFlush(pc)}catch(e){}}
+function voiceFlush(pc){const L=VOICE.pend;VOICE.pend=[];L.forEach(c=>{pc.addIceCandidate(c).catch(()=>{})})}
+function voiceMsg(m){
+ if(m.t==='vr'){VOICE.friendReady=true;VOICE.friendMuted=!!m.m;
+  if(COOP.role==='host'){if(VOICE.ready)voiceCall()}
+  else if(VOICE.ready&&!(VOICE.pc&&/connect/.test(VOICE.pc.connectionState)))coopSend({t:'vr',m:VOICE.muted?1:0});coopUI();return}
+ if(m.t==='vo'&&typeof m.s==='string'&&COOP.role==='guest'){voiceOffer(m.s);return}
+ if(m.t==='va'&&typeof m.s==='string'&&COOP.role==='host'){voiceAnswer(m.s);return}
+ if(m.t==='vi'&&m.c&&typeof m.c==='object'){const pc=VOICE.pc;if(pc&&pc.remoteDescription)pc.addIceCandidate(m.c).catch(()=>{});else if(VOICE.pend.length<60)VOICE.pend.push(m.c);return}
+ if(m.t==='vm'){VOICE.friendMuted=!!m.m;toast(VOICE.friendMuted?`${coopFriendName()} turned their mic off`:`${coopFriendName()} turned their mic on`);coopUI();return}}
+function voicePlay(stream){if(!VOICE.el){const a=document.createElement('audio');a.autoplay=true;a.setAttribute('playsinline','');a.hidden=true;document.body.appendChild(a);VOICE.el=a}
+ VOICE.el.srcObject=stream;const p=VOICE.el.play();if(p&&p.catch)p.catch(()=>{const go=()=>{removeEventListener('pointerdown',go,true);removeEventListener('keydown',go,true);if(VOICE.el)VOICE.el.play().catch(()=>{})};addEventListener('pointerdown',go,true);addEventListener('keydown',go,true)});
+ try{if(!VOICE.ctx)VOICE.ctx=new (window.AudioContext||window.webkitAudioContext)();if(VOICE.ctx.state==='suspended')VOICE.ctx.resume();
+  const src=VOICE.ctx.createMediaStreamSource(stream),an=VOICE.ctx.createAnalyser();an.fftSize=512;src.connect(an);VOICE.an=an;VOICE.buf=new Uint8Array(an.fftSize)}catch(e){VOICE.an=null}}
+function voiceClosePc(){const pc=VOICE.pc;VOICE.pc=null;VOICE.pend=[];if(pc)try{pc.close()}catch(e){}VOICE.an=null;if(VOICE.el){try{VOICE.el.srcObject=null}catch(e){}}VOICE.talk=0}
+function voiceStop(){voiceClosePc();VOICE.ready=false;VOICE.friendReady=false;VOICE.friendMuted=false;VOICE.state='off';VOICE.said=false;VOICE.retry=0}
+function voiceRelease(){voiceStop();if(VOICE.mic){VOICE.mic.getTracks().forEach(t=>t.stop());VOICE.mic=null}VOICE.micState='';VOICE.muted=false}
+function voiceMute(v){VOICE.muted=v==null?!VOICE.muted:!!v;if(VOICE.mic)VOICE.mic.getAudioTracks().forEach(t=>t.enabled=!VOICE.muted);if(coopTogether())coopSend({t:'vm',m:VOICE.muted?1:0});
+ sfx('beep',.5);toast(VOICE.muted?'Your mic is off. Nobody can hear you.':'Your mic is on');coopUI()}
+const voiceMuteLabel=()=>VOICE.muted?'Turn my mic on':'Mute my mic';
+function voiceLine(){const n=coopFriendName();if(!coopOn())return'';
+ if(VOICE.micState==='asking')return'Your headset is asking to use your microphone. Press ALLOW so you can talk.';
+ if(!coopTogether())return VOICE.micState==='denied'?'Your mic is blocked, so your friend won’t hear you. You will still hear them.':'';
+ let s=VOICE.state==='on'?(VOICE.micState==='ok'?(VOICE.muted?'Your mic is off. Press Turn my mic on to talk.':`Voice is on. Just talk, ${n} can hear you.`):`Voice is on. You can hear ${n}, but your mic is blocked.`)
+  :VOICE.state==='failed'?'Voice didn’t connect this time. You can still play together.':'Turning on voice…';
+ if(VOICE.state==='on'&&VOICE.friendMuted)s+=` ${n}’s mic is off.`;return s}
+// how loud the friend is right now: the browser reports it for incoming sound; the sound meter is a backup
+setInterval(()=>{if(VOICE.state!=='on'||!VOICE.pc){voiceSign();return}let lv=-1;
+ try{const r=VOICE.pc.getReceivers().find(x=>x.track&&x.track.kind==='audio');const ss=r&&r.getSynchronizationSources?r.getSynchronizationSources():[];if(ss.length&&typeof ss[0].audioLevel==='number'&&performance.now()-(ss[0].timestamp||0)<1000)lv=ss[0].audioLevel}catch(e){}
+ if(lv<0&&VOICE.an){VOICE.an.getByteTimeDomainData(VOICE.buf);let sum=0;for(let i=0;i<VOICE.buf.length;i++){const v=(VOICE.buf[i]-128)/128;sum+=v*v}lv=Math.sqrt(sum/VOICE.buf.length)}
+ if(!VOICE.friendMuted&&lv>.03)VOICE.talk=performance.now();voiceSign()},110);
+let VOICE_SIG='';
+function voiceSign(){const talk=voiceTalking(),sig=(talk?'t':'')+(coopTogether()&&VOICE.state==='on'&&VOICE.muted?'m':'');if(sig===VOICE_SIG)return;VOICE_SIG=sig;
+ const el=$('talk');if(el){el.hidden=!sig;el.innerHTML=(talk?`<b>${esc(coopFriendName())} is talking</b>`:'')+(sig.includes('m')?'<i>Your mic is off · T</i>':'');el.classList.toggle('on',talk)}
+ if(VOICE_SIGN.draw)VOICE_SIGN.draw(talk,sig.includes('m'))}
+const VOICE_SIGN={draw:null};
+addEventListener('keydown',e=>{if(e.code==='KeyT'&&!e.repeat&&coopTogether()&&!(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))){e.preventDefault();voiceMute()}});
 const coopOn=()=>COOP.state!=='off';
 const coopTogether=()=>COOP.state==='together';
 const coopBothOpen=()=>coopTogether()&&MODE==='open'&&!!COOP.fp&&COOP.fp.m==='open';
@@ -6401,13 +6475,13 @@ function coopFriendName(){const d=COOP.fp&&DRIVERS.find(x=>x.key===COOP.fp.d);re
 function coopNewCode(){const a=new Uint8Array(4);try{crypto.getRandomValues(a)}catch(e){for(let i=0;i<4;i++)a[i]=(Math.random()*256)|0}let c='';for(let i=0;i<4;i++)c+=COOP_LETTERS[a[i]%COOP_LETTERS.length];return c}
 function coopSay(t,warn){COOP.msg=t||'';COOP.warn=!!warn;coopUI()}
 function coopStatus(){const n=coopFriendName();
- if(COOP.state==='off')return COOP.msg||'Make a room and give your friend the 4 letters. No chat, and nobody else can join.';
+ if(COOP.state==='off')return COOP.msg||'Make a room, then tell your friend the 4 letters. Only the two of you can get in.';
  if(COOP.state==='connecting')return COOP.msg||'Connecting…';
- if(COOP.state==='waiting')return `Room ${COOP.code} is open. Your friend picks Play together, enters ${COOP.code} and presses Join.`;
+ if(COOP.state==='waiting')return `Tell your friend these 4 letters: ${COOP.code.split('').join(' ')}. They pick Play together and type them in.`;
  if(MODE==='open'&&COOP.fp&&COOP.fp.m==='open')return `${n} is on the island with you.${COOP.role==='guest'?' Your friend starts the missions.':''}`;
- return COOP.fp?`${n} is here. Pick Open Island to play together.`:'Your friend is joining…'}
+ return COOP.fp?`${n} is here! Pick Open Island to play together.`:'Your friend is joining…'}
 function coopStart(role,code){if(!COOP_URL)return;if(code&&!/^[BCDFGHJKLMNPQRSTVWXZ]{4}$/.test(code)){coopSay('Enter the 4 letters from your friend’s screen',true);return}
- coopLeave(true);COOP.quit=false;COOP.role=role;COOP.code=code||coopNewCode();COOP.state='connecting';COOP.tries=0;COOP.msg='';COOP.warn=false;COOPUI.code='';coopConnect(role);coopUI()}
+ coopLeave(true);COOP.quit=false;COOP.role=role;voiceAsk();COOP.code=code||coopNewCode();COOP.state='connecting';COOP.tries=0;COOP.msg='';COOP.warn=false;COOPUI.code='';coopConnect(role);coopUI()}
 function coopConnect(as){let ws;try{ws=new WebSocket(COOP_URL.replace(/\/$/,'')+'/room/'+COOP.code+'?as='+as)}catch(e){coopFail('Couldn’t reach the room. Check the internet and try again.');return}
  COOP.ws=ws;ws.onmessage=e=>{if(COOP.ws!==ws)return;let m;try{m=JSON.parse(e.data)}catch(_){return}if(m&&typeof m==='object')coopMsg(m,as)};
  ws.onerror=()=>{};
@@ -6415,7 +6489,7 @@ function coopConnect(as){let ws;try{ws=new WebSocket(COOP_URL.replace(/\/$/,'')+
   if(COOP.state==='connecting'&&COOP.tries===0&&as!=='any'){coopFail('Couldn’t reach the room. Check the internet and try again.');return}
   if(COOP.tries<5){COOP.tries++;coopDropFriend();COOP.state='connecting';coopSay('Reconnecting…');setTimeout(()=>{if(COOP.state==='connecting'&&!COOP.ws&&!COOP.quit)coopConnect('any')},800*COOP.tries)}
   else coopFail('Lost the room. Make a new one to keep playing.')}}
-function coopFail(t){const q=COOP.ws;COOP.quit=true;COOP.ws=null;if(q)try{q.close()}catch(e){}coopDropFriend();coopRestore();COOP.state='off';COOP.code='';COOP.role=null;coopSay(t,true);toast(t)}
+function coopFail(t){voiceRelease();const q=COOP.ws;COOP.quit=true;COOP.ws=null;if(q)try{q.close()}catch(e){}coopDropFriend();coopRestore();COOP.state='off';COOP.code='';COOP.role=null;coopSay(t,true);toast(t)}
 function coopMsg(m,as){
  if(m.t==='err'){if(m.why==='taken'&&as==='host'&&COOP.tries<3){COOP.tries++;const q=COOP.ws;COOP.ws=null;try{q.close()}catch(e){}COOP.code=coopNewCode();coopConnect('host');return}
   if(m.why==='none'&&as==='any'){coopFail('Your friend left the room. Make a new one to keep playing.');return}
@@ -6426,14 +6500,15 @@ function coopMsg(m,as){
  if(m.t==='left'){coopDropFriend();if(COOP.state!=='off'){COOP.state='waiting';toast(`${coopFriendName()} left the room`)}coopUI();return}
  if(m.t==='pong')return;
  if(!coopTogether())return;
+ if(typeof m.t==='string'&&m.t.length===2&&m.t[0]==='v'){voiceMsg(m);return}
  if(m.t==='p'&&m.p&&typeof m.p==='object'){const first=!COOP.fp;COOP.fp=m.p;COOP.fpT=performance.now();if(first){coopPeers();renderOnline();coopUI()}else NET.peers[1]&&(NET.peers[1].presence=m.p);return}
  if(m.t==='w'&&COOP.role==='guest'){coopWorld(m);return}
  if(m.t==='f'&&COOP.role==='guest'){coopFoeShotIn(m);return}
  if(m.t==='k'&&COOP.role==='guest'){coopKillCredit(m);return}}
-function coopFriendIn(){sfx('beep',.8);toast('Your friend is in the room');coopUI()}
-function coopDropFriend(){COOP.fp=null;dropRemote('friend');coopClearPuppets();COOP.wasG=false;if(NET.room===COOP_ROOM){coopPeers();renderOnline()}coopUI()}
+function coopFriendIn(){sfx('beep',.8);toast(`${COOP.fp?coopFriendName():'Your friend'} is in the room!`);voiceStart();coopUI()}
+function coopDropFriend(){voiceStop();COOP.fp=null;dropRemote('friend');coopClearPuppets();COOP.wasG=false;if(NET.room===COOP_ROOM){coopPeers();renderOnline()}coopUI()}
 function coopRestore(){if(NET.room===COOP_ROOM){NET.room=COOP.prevRoom||null;NET.peers=[];NET.myPeer=null;renderOnline()}COOP.prevRoom=null}
-function coopLeave(quiet){const w=COOP.ws;COOP.quit=true;COOP.ws=null;if(w)try{w.close(1000,'bye')}catch(e){}const was=COOP.state!=='off';coopDropFriend();coopRestore();COOP.state='off';COOP.code='';COOP.role=null;COOP.msg='';COOP.warn=false;if(was&&!quiet)toast('You left the room');coopUI()}
+function coopLeave(quiet){voiceRelease();const w=COOP.ws;COOP.quit=true;COOP.ws=null;if(w)try{w.close(1000,'bye')}catch(e){}const was=COOP.state!=='off';coopDropFriend();coopRestore();COOP.state='off';COOP.code='';COOP.role=null;COOP.msg='';COOP.warn=false;if(was&&!quiet)toast('You left the room');coopUI()}
 /* --- host: share the fight --- */
 function coopTick(dt){if(COOP.state==='off')return;const g=coopGuest();
  if(g&&!COOP.wasG){coopClearFoes();feed(`Playing together with <b>${esc(coopFriendName())}</b> · they run the missions`,'#ffd23f');COOP.went=false}
@@ -6491,10 +6566,11 @@ function coopClose(){COOPUI.open=false;coopUI()}
 function coopUI(){if(VR.dirty)VR.dirty();const el=$('coop');if(!el)return;el.hidden=!COOP_URL;if(!COOP_URL)return;const on=coopOn();
  $('coop-state').textContent=COOP.state==='together'?`Room ${COOP.code} · 2 players`:COOP.state==='waiting'?`Room ${COOP.code} · waiting`:COOP.state==='connecting'?'Connecting…':'Private room for 2';
  const m=$('coop-msg');m.textContent=coopStatus();m.classList.toggle('warn',!!COOP.warn&&!on);
+ const vl=$('coop-voice'),vt=voiceLine();if(vl){vl.textContent=vt;vl.hidden=!vt}const mb=$('b-coop-mute');if(mb){mb.hidden=!(coopTogether()&&VOICE.micState==='ok');mb.textContent=voiceMuteLabel();mb.classList.toggle('off',VOICE.muted)}
  $('b-coop-make').hidden=on;$('coop-code').hidden=on;$('b-coop-join').hidden=on;$('b-coop-leave').hidden=!on;$('b-coop-go').hidden=!(coopTogether()&&MODE!=='open')}
 (function(){const el=$('coop');if(!el)return;
  $('b-coop-make').addEventListener('click',()=>{try{audioStart()}catch(e){}coopStart('host')});
- const inp=$('coop-code');inp.addEventListener('input',()=>{inp.value=inp.value.toUpperCase().replace(/[^BCDFGHJKLMNPQRSTVWXZ]/g,'').slice(0,4)});
+ const inp=$('coop-code');inp.addEventListener('input',()=>{inp.value=inp.value.toUpperCase().replace(/[^BCDFGHJKLMNPQRSTVWXZ]/g,'').slice(0,4);if(inp.value.length===4)join()});$('b-coop-mute').addEventListener('click',()=>voiceMute());
  const join=()=>{try{audioStart()}catch(e){}coopStart('guest',inp.value.toUpperCase())};$('b-coop-join').addEventListener('click',join);inp.addEventListener('keydown',e=>{if(e.key==='Enter')join()});
  $('b-coop-go').addEventListener('click',()=>go('open'));$('b-coop-leave').addEventListener('click',()=>coopLeave());coopUI()})();
 setInterval(()=>{if(COOP.ws&&COOP.ws.readyState===1)try{COOP.ws.send('{"t":"ping"}')}catch(e){}},20000);
@@ -6590,6 +6666,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  function menuItems(){
   if(PAUSED)return[{t:'Resume',go:resume},
    ...(MODE!=='menu'?[{t:'Island map',go:()=>{st.mute=true;if(PAUSED)togglePause();mapOpen()}}]:[]),
+   ...(coopTogether()&&VOICE.micState==='ok'?[{t:VOICE.muted?'Turn my mic on':'Mute my mic',go:()=>voiceMute()}]:[]),
    ...(COOP_URL?[{t:coopOn()?'Play together · room '+COOP.code:'Play together',go:coopOpen}]:[]),
    ...(PCAR?[{t:'Back on the road',go:()=>{resetInput=true;resume()}}]:[]),
    {t:'Music: '+(SETTINGS.music?'on':'off'),go:()=>{if(typeof toggleMusic==='function')toggleMusic()}},
@@ -6661,6 +6738,15 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  const btex=new T.CanvasTexture(bc);btex.encoding=T.sRGBEncoding;btex.anisotropy=4;
  const big=new T.Mesh(new T.PlaneGeometry(1.44,.9),new T.MeshBasicMaterial({map:btex,transparent:true,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
  big.renderOrder=9998;big.frustumCulled=false;big.userData.noRefl=true;big.visible=false;rig.add(big);
+ /* ---- voice sign: floats at the top of your view when your friend talks, or when your mic is off ---- */
+ const tc=document.createElement('canvas');tc.width=768;tc.height=112;const tx=tc.getContext('2d');const ttex=new T.CanvasTexture(tc);ttex.encoding=T.sRGBEncoding;
+ const tsign=new T.Mesh(new T.PlaneGeometry(.42,.0613),new T.MeshBasicMaterial({map:ttex,transparent:true,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
+ tsign.position.set(0,.2,-.8);tsign.rotation.x=.22;tsign.renderOrder=10003;tsign.frustumCulled=false;tsign.userData.noRefl=true;tsign.visible=false;cam.add(tsign);
+ VOICE_SIGN.draw=(talk,muted)=>{tx.clearRect(0,0,768,112);if(!talk&&!muted){tsign.visible=false;return}
+  const t=talk?(coopFriendName()+' is talking').toUpperCase():'YOUR MIC IS OFF';tx.font='700 52px Barlow, Arial, sans-serif';const w=Math.min(744,tx.measureText(t).width+(talk?110:60));
+  tx.fillStyle=talk?'#1f9d55':'#d9452b';rr(tx,(768-w)/2,12,w,88,44);tx.fill();tx.fillStyle='#fff';tx.textBaseline='middle';tx.textAlign='center';
+  if(talk){const cx=(768-w)/2+52;for(let i=0;i<3;i++){tx.fillRect(cx-18+i*14,56-(10+i*8),8,2*(10+i*8))}tx.fillText(t,768/2+26,58)}else tx.fillText(t,768/2,58);tx.textAlign='left';
+  ttex.needsUpdate=true;tsign.visible=VR.on};
  const SURF={hud:{mesh:hud,W:1024,H:440,w:.78,h:.335,hits:[]},big:{mesh:big,W:BW,H:BH,w:1.44,h:.9,hits:[]}};
  const ptr={surf:null,x:0,y:0,id:'',hover:''};let bigDirty=true,bigT=0;
  let hudT=0;
@@ -6742,7 +6828,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   const gl=gfxPref();button(980,y,210,64,'Graphics: '+gl,'gfx',()=>{const nx=gl==='Low'?'medium':'low';try{localStorage.setItem('ack-gfx',nx)}catch(e){}toast('Graphics '+nx+' from the next time you start the game')},f24);
   button(1200,y,140,64,'Recenter','rec',recenter,f24);
   if(!STORE_APP)button(1350,y,150,64,'Leave VR','leave',exitVR,f24);
-  if(COOP_URL)button(40,694,BW-80,84,coopOn()?'PLAY TOGETHER · room '+COOP.code+(coopTogether()?' · '+coopFriendName()+' is here':''):'PLAY TOGETHER · a private room for you and one friend','coop',coopOpen,{font:'700 34px Barlow, Arial, sans-serif'});
+  if(COOP_URL)button(40,694,BW-80,84,coopOn()?'PLAY TOGETHER · room '+COOP.code+(coopTogether()?' · '+coopFriendName()+' is here'+(VOICE.state==='on'?(VOICE.muted?' · your mic is off':' · voice on'):''):''):'PLAY TOGETHER · play and talk with one friend','coop',coopOpen,{font:'700 34px Barlow, Arial, sans-serif'});
   statusLine(BH-46)}
  function gfxPref(){let q=null;try{q=localStorage.getItem('ack-gfx')}catch(e){}const v=q||GFX.level;return v==='low'?'Low':v==='medium'?'Medium':v==='high'?'High':'Ultra'}
  /* ---- play together (private room for two) ---- */
@@ -6751,18 +6837,21 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   const F=s=>({font:'700 '+s+'px Barlow, Arial, sans-serif'}),msg=coopStatus();bx.textBaseline='top';
   if(!coopOn()){
    button(40,160,560,120,'MAKE A ROOM','cmake',()=>{coopStart('host');bigDirty=true},{primary:true,font:'700 46px Anton, Impact, sans-serif'});
-   bx.fillStyle=COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText('You get 4 letters to read out to your friend.',40,292);
-   bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('OR ENTER YOUR FRIEND’S CODE',660,160);
+   bx.fillStyle=COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText('You get 4 letters to read out to your friend.',40,292);bx.fillText('Your headset asks to use your mic. Press Allow so you can talk.',40,322);
+   bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('OR TYPE YOUR FRIEND’S 4 LETTERS',660,160);
    for(let i=0;i<4;i++){const x=660+i*100;bx.fillStyle=COL.card;rr(bx,x,196,86,96,16);bx.fill();bx.fillStyle='#ffd23f';bx.font='700 60px Anton, Impact, sans-serif';bx.textAlign='center';bx.textBaseline='middle';bx.fillText(COOPUI.code[i]||'',x+43,246);bx.textAlign='left';bx.textBaseline='top'}
    button(1066,196,200,96,'Delete','cdel',()=>{COOPUI.code=COOPUI.code.slice(0,-1);bigDirty=true},F(30));
    const ok=COOPUI.code.length===4;button(1276,196,220,96,'Join','cjoin',()=>{if(COOPUI.code.length===4)coopStart('guest',COOPUI.code);bigDirty=true},{primary:ok,off:!ok,font:'700 36px Barlow, Arial, sans-serif'});
-   const L=COOP_LETTERS,kw=(BW-80-9*12)/10;for(let i=0;i<L.length;i++){const r=(i/10)|0,c=i%10,x=40+c*(kw+12),y=340+r*122;button(x,y,kw,108,L[i],'ck'+L[i],()=>{if(COOPUI.code.length<4)COOPUI.code+=L[i];bigDirty=true},{font:'700 54px Anton, Impact, sans-serif'})}
+   const L=COOP_LETTERS,kw=(BW-80-9*12)/10;for(let i=0;i<L.length;i++){const r=(i/10)|0,c=i%10,x=40+c*(kw+12),y=340+r*122;button(x,y,kw,108,L[i],'ck'+L[i],()=>{if(COOPUI.code.length<4)COOPUI.code+=L[i];if(COOPUI.code.length===4)coopStart('guest',COOPUI.code);bigDirty=true},{font:'700 54px Anton, Impact, sans-serif'})}
    bx.fillStyle=COOP.warn?'#ffb39f':COL.dim;bx.font='600 30px Barlow, Arial, sans-serif';wrapOn(bx,msg,40,610,BW-80,38,3)}
   else{
    bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('ROOM CODE',40,150);
    bx.fillStyle='#ffd23f';bx.font='700 150px Anton, Impact, sans-serif';bx.fillText(COOP.code.split('').join(' '),40,222);
-   bx.fillStyle='#fff';bx.font='600 34px Barlow, Arial, sans-serif';wrapOn(bx,msg,40,420,BW-80,44,3);
-   const y=560;let x=40;
+   bx.fillStyle='#fff';bx.font='600 34px Barlow, Arial, sans-serif';wrapOn(bx,msg,40,404,BW-80,44,2);
+   const vt=voiceLine();if(vt){bx.fillStyle=VOICE.state==='failed'||VOICE.micState==='denied'?'#ffb39f':'#bfe6ff';bx.font='700 34px Barlow, Arial, sans-serif';wrapOn(bx,vt,40,500,BW-80,42,2)}
+   if(voiceTalking()){bx.fillStyle='#1f9d55';rr(bx,BW-600,150,560,70,35);bx.fill();bx.fillStyle='#fff';bx.font='700 36px Barlow, Arial, sans-serif';bx.textAlign='center';bx.textBaseline='middle';bx.fillText((coopFriendName()+' is talking').toUpperCase(),BW-320,186);bx.textAlign='left';bx.textBaseline='top'}
+   if(coopTogether()&&VOICE.micState==='ok')button(40,730,BW-80,120,VOICE.muted?'TURN MY MIC ON':'MUTE MY MIC','cmute',()=>{voiceMute();bigDirty=true},{primary:!VOICE.muted,on:VOICE.muted,font:'700 52px Anton, Impact, sans-serif'});
+   const y=600;let x=40;
    if(coopTogether()&&MODE!=='open'){button(x,y,520,110,'START OPEN ISLAND','cgo',()=>{coopClose();if(PAUSED)togglePause();st.mute=true;go('open')},{primary:true,font:'700 40px Anton, Impact, sans-serif'});x+=540}
    if(coopTogether()&&MODE==='open'&&COOP.fp&&COOP.fp.m==='open'){button(x,y,420,110,'Go to my friend','cfind',()=>{coopClose();if(PAUSED)togglePause();coopGoTo()},{primary:true,font:'700 36px Barlow, Arial, sans-serif'});x+=440}
    button(x,y,300,110,'Leave room','cleave',()=>{coopLeave();bigDirty=true},F(34))}
