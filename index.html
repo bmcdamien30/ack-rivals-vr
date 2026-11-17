@@ -434,7 +434,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 11</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 12</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -559,7 +559,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 11</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 12</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -6385,7 +6385,7 @@ function renderOnline(){const el=$('online');if(!el)return;if(!NET.room){el.hidd
    The room server only passes messages between the two players. Codes are 4 consonants so they can't spell words.
    No chat, no typed names (everyone shows up as their driver), nothing stored. Whoever makes the room hosts:
    their game runs the pirates, the preps and the missions, and the friend's game shows the same fight. */
-const COOP_URL='';
+const COOP_URL='wss://ack-rivals-coop.garnettwork262.workers.dev';
 const COOP_LETTERS='BCDFGHJKLMNPQRSTVWXZ';
 const COOP={state:'off',role:null,code:'',ws:null,tries:0,fp:null,fpT:0,nid:0,snapT:0,pup:new Map(),cars:new Map(),lastW:0,obS:null,ob:'',went:false,wasG:false,msg:'',warn:false,prevRoom:null,quit:false};
 const COOPUI={open:false,code:''};
