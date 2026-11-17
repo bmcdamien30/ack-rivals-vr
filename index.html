@@ -430,7 +430,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 6</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 8</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -550,7 +550,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 6</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 8</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1632,7 +1632,9 @@ const RXR={on:true,list:[],kings:[],src:{},wait:{},fail:{}};
 try{if(localStorage.getItem('ack-realrex')==='0')RXR.on=false}catch(e){}
 // Damian, Ethan the Lion, Miss Champagne and King Stuart: realistic Higgsfield 3D models, loaded from Damian's Higgsfield library
 // the first time each one appears. Until a model arrives (or if it can't load) the cartoon version stays.
-const REAL_URL={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/08633f1f-1488-4ad3-b292-f319f21e1ce7.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/82655789-954e-4d6d-b285-92dfbcb3c0b2.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/99549d6b-162a-4f57-9095-4ec083bc34e2.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/eecddd19-52a5-4e84-a51e-605d8c9bb57a.json'};
+const REAL_URL={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/48301f6c-2034-4d93-b801-27a5f99c8c58.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/82655789-954e-4d6d-b285-92dfbcb3c0b2.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/99549d6b-162a-4f57-9095-4ec083bc34e2.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/eecddd19-52a5-4e84-a51e-605d8c9bb57a.json'};
+// Damian's upgraded model (Meshy 7, Nov 17); if it can't load, the earlier one is tried next
+const REAL_ALT={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/08633f1f-1488-4ad3-b292-f319f21e1ce7.json'};
 // model bone <- cartoon rig joint
 const RXR_MAP={Hips:'hips',Spine02:'torso',Head:'head',LeftArm:'aL.sh',LeftForeArm:'aL.el',RightArm:'aR.sh',RightForeArm:'aR.el',LeftUpLeg:'lL.hp',LeftLeg:'lL.kn',RightUpLeg:'lR.hp',RightLeg:'lR.kn'};
 // for limbs: the bone that marks where each mapped bone points, so it can be lined up with the rig's straight-down rest pose
@@ -1655,7 +1657,7 @@ function realBuild(D){const M=D.meta,L=M.layout,raw=atob(D.bin),u8=new Uint8Arra
  return{geo,mat,B,idx,ibms,P,Lr,A,key,KY:.95/P[idx.Hips].y}}
 function realGet(key,cb){const S=RXR.src[key];if(S)return cb(S);
  if(key==='cap'){if(typeof REX_DATA==='undefined')return;try{cb(RXR.src.cap=realBuild(REX_DATA))}catch(e){console.warn('realistic Rex unavailable',e)}return}
- const url=REAL_URL[key];if(!url||(RXR.fail[key]||0)>=2)return;const W=RXR.wait[key];if(W){W.push(cb);return}RXR.wait[key]=[cb];
+ const url=(RXR.fail[key]&&REAL_ALT[key])||REAL_URL[key];if(!url||(RXR.fail[key]||0)>=2)return;const W=RXR.wait[key];if(W){W.push(cb);return}RXR.wait[key]=[cb];
  fetch(url).then(r=>{if(!r.ok)throw new Error('model '+r.status);return r.json()}).then(D=>{const S=RXR.src[key]=realBuild(D),L=RXR.wait[key];delete RXR.wait[key];L.forEach(f=>{try{f(S)}catch(e){console.warn(e)}})})
   .catch(e=>{console.warn('realistic model unavailable',key,e);delete RXR.wait[key];RXR.fail[key]=(RXR.fail[key]||0)+1})}
 // the cartoon parts to hide, listed right away so things put in their hands later (blasters, carried items) stay visible
