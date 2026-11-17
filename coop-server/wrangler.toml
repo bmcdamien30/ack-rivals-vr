@@ -1,0 +1,14 @@
+# ACK Rivals VR co-op room server (Cloudflare Workers, free plan).
+# Private 2-player rooms joined by a 4-letter code. It only passes game moves between
+# the two headsets in a room. No chat, no names, nothing saved.
+name = "ack-rivals-coop"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
