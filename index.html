@@ -430,7 +430,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 9</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 10</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -550,7 +550,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 9</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 10</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1634,7 +1634,7 @@ try{if(localStorage.getItem('ack-realrex')==='0')RXR.on=false}catch(e){}
 // the first time each one appears. Until a model arrives (or if it can't load) the cartoon version stays.
 const REAL_URL={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/48301f6c-2034-4d93-b801-27a5f99c8c58.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3e83307e-e10e-428b-afc3-1c2d0d262608.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a3296aed-5e7e-4886-9e27-da24261a4114.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a7733218-3867-4507-b6b0-67ee581778a7.json',
  // street people, cops, zombies and Kingston (Meshy 7, Nov 17); only the few nearest the player use these
- kingston:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/9483a8be-8f37-4d34-97c8-1d1ef9a99fe4.json',town0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/88b68a34-e22c-497a-aaf6-1dec245ab69d.json',town1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3c32a757-40bf-4b36-9529-108154df65f6.json',town2:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fc6b7fe4-d028-4e93-b670-e02b6b990876.json',town3:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fd034d32-7273-454e-a92f-df3ec685455b.json',cop0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/250a7315-bdf9-45d3-b7f0-1269dd75ba11.json',cop1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a46872d9-c4a3-46b3-a2c8-f5357d0bb27a.json',zed1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fb3652ca-fcda-453a-9e02-eb28b50abcba.json',zboss:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/7d2904d5-9f33-443b-86e7-fec46f8c5557.json'};
+ kingston:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/9483a8be-8f37-4d34-97c8-1d1ef9a99fe4.json',town0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/88b68a34-e22c-497a-aaf6-1dec245ab69d.json',town1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/3c32a757-40bf-4b36-9529-108154df65f6.json',town2:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fc6b7fe4-d028-4e93-b670-e02b6b990876.json',town3:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fd034d32-7273-454e-a92f-df3ec685455b.json',chad:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/b9c1949b-5649-43fa-a3a4-ec1185d23a01.json',brad:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/6eab1dca-819d-420d-b7e5-bcef161e2a69.json',cop0:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/250a7315-bdf9-45d3-b7f0-1269dd75ba11.json',cop1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/a46872d9-c4a3-46b3-a2c8-f5357d0bb27a.json',zed1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/fb3652ca-fcda-453a-9e02-eb28b50abcba.json',zboss:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/7d2904d5-9f33-443b-86e7-fec46f8c5557.json'};
 // Damian's upgraded model (Meshy 7, Nov 17); if it can't load, the earlier one is tried next
 const REAL_ALT={damian:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/08633f1f-1488-4ad3-b292-f319f21e1ce7.json',ethan:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/82655789-954e-4d6d-b285-92dfbcb3c0b2.json',b1:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/99549d6b-162a-4f57-9095-4ec083bc34e2.json',king:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/eecddd19-52a5-4e84-a51e-605d8c9bb57a.json'};
 // model bone <- cartoon rig joint
@@ -2183,7 +2183,7 @@ const isWater=(x,z,d=-.6)=>groundH(x,z)<d;
 
 /* ---------- road cars: sedan, SUV, pickup, van (face +z like the jeep) ---------- */
 function makeCarModel(kind,color){const g=new T.Group(),body=new T.Group();g.add(body);body.position.y=.5;const K=VKit(),y0=-.5;
- const D={sedan:{L:4.55,W:1.82,bh:.6,by:.66,ch:.5,cl:2.25,cz:-.2,cw:.84,wr:.35},suv:{L:4.75,W:1.92,bh:.8,by:.8,ch:.6,cl:2.85,cz:-.3,cw:.9,wr:.4},pickup:{L:5.3,W:1.96,bh:.78,by:.8,ch:.62,cl:1.65,cz:.55,cw:.9,wr:.41},van:{L:4.95,W:1.96,bh:1.02,by:.9,ch:.72,cl:3.55,cz:-.45,cw:.94,wr:.37}}[kind]||{L:4.5,W:1.8,bh:.6,by:.66,ch:.5,cl:2.2,cz:-.2,cw:.84,wr:.35};
+ const D={sedan:{L:4.55,W:1.82,bh:.6,by:.66,ch:.5,cl:2.25,cz:-.2,cw:.84,wr:.35},suv:{L:4.75,W:1.92,bh:.8,by:.8,ch:.6,cl:2.85,cz:-.3,cw:.9,wr:.4},pickup:{L:5.3,W:1.96,bh:.78,by:.8,ch:.62,cl:1.65,cz:.55,cw:.9,wr:.41},van:{L:4.95,W:1.96,bh:1.02,by:.9,ch:.72,cl:3.55,cz:-.45,cw:.94,wr:.37},defender:{L:4.55,W:1.96,bh:.86,by:.86,ch:.72,cl:2.95,cz:-.3,cw:.97,wr:.44},wagoneer:{L:5.0,W:1.92,bh:.72,by:.78,ch:.6,cl:2.8,cz:-.35,cw:.92,wr:.38}}[kind]||{L:4.5,W:1.8,bh:.6,by:.66,ch:.5,cl:2.2,cz:-.2,cw:.84,wr:.35};
  const{L,W,bh,by,ch,cl,cz,cw,wr}=D,top=by+bh/2,tl=tailMat();
  K.add('paint',rbox(W,bh,L,.2),0,by+y0,0);
  // glasshouse + roof + pillars
@@ -2191,7 +2191,7 @@ function makeCarModel(kind,color){const g=new T.Group(),body=new T.Group();g.add
  [-1,1].forEach(s=>{[cl/2-.08,-(cl/2-.1),0].forEach((pz,k)=>{if(k===2&&cl<2)return;K.add('paint',rbox(.07,ch-.02,k===2?.14:.18,.03),s*(W*cw/2-.01),top+ch/2-.04+y0,cz+pz,k===0?-.35:k===1?.3:0)})});
  K.add('chrome',rbox(W*cw+.02,.03,cl*.97,.012),0,top+.005+y0,cz);
  if(kind==='pickup'){K.add('paint',rbox(W,.42,1.95,.06),0,top+.2+y0,-1.6);K.add('trim',rbox(W-.18,.38,1.84,.04),0,top+.24+y0,-1.6)}
- if(kind==='suv'||kind==='van')[-1,1].forEach(s=>K.add('dark',rbox(.05,.05,cl*.8,.02),s*W*.36,top+ch+.03+y0,cz));
+ if(kind==='suv'||kind==='van'||kind==='wagoneer')[-1,1].forEach(s=>K.add(kind==='wagoneer'?'chrome':'dark',rbox(.05,.05,cl*.8,.02),s*W*.36,top+ch+.03+y0,cz));if(kind==='defender'){K.add('roofw',rbox(W*cw+.02,.07,cl*1.02,.03),0,top+ch+y0,cz);[-1,1].forEach(s=>K.add('dark',rbox(.05,.08,cl*.95,.02),s*W*.42,top+ch+.1+y0,cz));for(let i=0;i<4;i++)K.add('dark',rbox(W*.86,.04,.05,.01),0,top+ch+.14+y0,cz-cl*.4+i*cl*.27);const sp=new T.CylinderGeometry(.4,.4,.24,18);sp.rotateX(Math.PI/2);K.add('dark',sp,0,by+.05+y0,-L/2-.14);K.add('chrome',new T.CylinderGeometry(.16,.16,.26,12).rotateX(Math.PI/2),0,by+.05+y0,-L/2-.14);K.add('dark',rbox(W+.08,.2,.18,.04),0,by-bh/2+.1+y0,L/2+.05)}if(kind==='wagoneer')[-1,1].forEach(s=>{K.add('wood',rbox(.03,bh*.48,L*.8,.01),s*(W/2+.012),by-.04+y0,-.05);K.add('chrome',rbox(.035,.025,L*.8,.008),s*(W/2+.014),by+bh*.21+y0,-.05);K.add('chrome',rbox(.035,.025,L*.8,.008),s*(W/2+.014),by-bh*.29+y0,-.05)});
  // face: grille, lamps, bumpers, plates; tail lamps; mirrors; door seams; arches
  K.add('dark',rbox(W*.52,bh*.3,.05,.03),0,by+bh*.05+y0,L/2);K.add('chrome',rbox(W*.54,.03,.06,.01),0,by+bh*.22+y0,L/2+.005);
  [-1,1].forEach(s=>{K.add('lamp',rbox(.36,.13,.06,.04),s*(W/2-.27),by+bh*.22+y0,L/2-.01);K.add('tail',rbox(.34,.13,.06,.04),s*(W/2-.26),by+bh*.24+y0,-L/2+.01);
@@ -2214,10 +2214,10 @@ function makeCarModel(kind,color){const g=new T.Group(),body=new T.Group();g.add
   // trunk strip, exhaust, roof aerial
   K.add('chrome',rbox(W*.42,.022,.03,.008),0,by+bh*.24+y0,-fz-.005);K.add('lamp',rbox(W*.16,.05,.03,.012),0,by+bh*.38+y0,-fz+.0);
   K.add('chrome',new T.CylinderGeometry(.045,.045,.2,10),-W*.3,low+.05,-fz-.02,Math.PI/2);K.add('dark',rbox(.035,.08,.2,.015),0,top+ch+.03+y0,cz-cl*.34,.2)}
- const out=K.build(body,{paint:paintMat(color),glass:VMAT.glass,chrome:VMAT.chrome,trim:VMAT.trim,dark:VMAT.dark,lamp:VMAT.lamp,tail:tl,plate:VMAT.plate,seat:VMAT.seat,amber:VAMB()},['glass','lamp','seat','amber']);
+ const out=K.build(body,{paint:paintMat(color),glass:VMAT.glass,chrome:VMAT.chrome,trim:VMAT.trim,dark:VMAT.dark,lamp:VMAT.lamp,tail:tl,plate:VMAT.plate,seat:VMAT.seat,amber:VAMB(),wood:paintMat('#7a4a28'),roofw:paintMat('#f1efe8')},['glass','lamp','seat','amber']);
  const sw=new T.Group();sw.position.set(.38,top+.22-.5,cz+cl*.28);sw.rotation.x=-1.1;body.add(sw);mk(new T.TorusGeometry(.17,.022,6,18),'#161616',0,0,0,sw,false);
- const wz=L/2-.86,wheels=wheelSet(g,[[W/2-.1,wz],[-(W/2-.1),wz],[W/2-.1,-wz],[-(W/2-.1),-wz]],wr,.26,kind==='pickup'?'#3a3b3e':'#cfd0d2');
- return{g,body,wheels,sw,ws:[out.glass],tail:tl,seat:new T.Vector3(.38,top-.96,cz+cl*.05),seatY:{sedan:-.45,suv:-.28,pickup:-.3,van:-.2}[kind]||-.4,len:L,col:color}}
+ const wz=L/2-.86,wheels=wheelSet(g,[[W/2-.1,wz],[-(W/2-.1),wz],[W/2-.1,-wz],[-(W/2-.1),-wz]],wr,kind==='defender'?.3:.26,kind==='pickup'||kind==='defender'?'#3a3b3e':'#cfd0d2');
+ return{g,body,wheels,sw,ws:[out.glass],tail:tl,seat:new T.Vector3(.38,top-.96,cz+cl*.05),seatY:{sedan:-.45,suv:-.28,pickup:-.3,van:-.2,defender:-.22,wagoneer:-.32}[kind]||-.4,len:L,col:color}}
 
 /* ---------- center-console skiff ---------- */
 function makeBoat(color,style){const g=new T.Group(),body=new T.Group();g.add(body);const K=VKit();
@@ -2291,7 +2291,7 @@ function makeNPC(o={}){const g=new T.Group(),skin=o.skin||NPC_SKIN[(rnd()*5)|0],
  const leg=s=>{const hp=bone(hips,s*.092*build,-.02,0),kn=bone(hp,0,-.44,0);part(hp,new T.CylinderGeometry(.088,.072,.46,10),pants,0,-.21,0);
   part(kn,new T.CylinderGeometry(.068,.054,.42,8),pants,0,-.2,0);part(kn,new T.BoxGeometry(.11,.085,.25),shoe,0,-.43,.045);return{hp,kn}};
  const aL=arm(1),aR=arm(-1),lL=leg(1),lR=leg(-1);
- const m=new T.SkinnedMesh(npcMerge(W),npcMat());m.castShadow=true;m.receiveShadow=true;m.add(hips);m.bind(new T.Skeleton(B));g.add(m);
+ const m=new T.SkinnedMesh(npcMerge(W),npcMat());m.castShadow=true;m.receiveShadow=true;if(o.prep){g.add(m);g.add(hips);g.updateMatrixWorld(true);m.bind(new T.Skeleton(B))}else{m.add(hips);m.bind(new T.Skeleton(B));g.add(m)}
  const n={g,mesh:m,hips,torso,head,aL,aR,lL,lR};if(!o.pirate){n.hy=.92;n.look=o.look||(o.cop?'cop'+((rnd()*2)|0):'town'+((rnd()*4)|0));NPCR.list.push(n)}return n}
 function poseNPC(n,ph,amt,t,state){const s=Math.sin(ph),c=Math.cos(ph),a=amt;
  n.hips.position.y=.92-.02*a+Math.abs(c)*.035*a;n.hips.rotation.set(0,s*.09*a,0);n.torso.rotation.set(.06*a,-s*.15*a,0);n.head.rotation.set(-.03*a,s*.07*a,0);
@@ -3037,15 +3037,20 @@ function spentTick(dt){for(let i=DART.list.length-1;i>=0;i--){const d=DART.list[
 function stuckDart(parent,col,x,y,z){const m=new T.Mesh(DART.spent,DART.mat(col));m.position.set(x,y,z);m.rotation.set((Math.random()-.5)*.5,Math.PI+(Math.random()-.5)*.5,0);m.scale.setScalar(1.5);parent.add(m);return m}
 function fireBall(owner,o,dir,speed,col,remote,quiet,opt){if(opt===true)opt={fast:true};opt=opt||{};const dart=isDart(owner),fast=!!opt.fast;
  const m=dart?new T.Mesh(DART.fly,DART.mat(col)):new T.Mesh(BALL_GEO,mat(col));m.position.copy(o);if(dart){m.lookAt(o.x+dir.x,o.y+dir.y,o.z+dir.z);m.frustumCulled=false}scene.add(m);
- BALLS.push({m,v:dir.clone().multiplyScalar(fast?speed*GUN.speedK:speed),g:opt.homing?0:fast?GUN.grav:11,owner,col,life:opt.life||(fast?GUN.life:2.2),remote,dart,tgt:opt.tgt||null});
+ const big=!!(owner&&(owner===PL||owner.ally));if(big)m.scale.setScalar(1.6);
+ BALLS.push({m,v:dir.clone().multiplyScalar(fast?speed*GUN.speedK:speed),g:opt.homing?0:fast?GUN.grav:11,owner,col,life:opt.life||(fast?GUN.life:2.2),remote,dart,tgt:opt.tgt||null,big});
  if(!quiet)sfx(dart?'dart':'shot',owner===ME()?1:.35)}
+// muzzle flash: a quick bright puff at the barrel (a small pool, so heavy fire stays cheap on Quest)
+const MFX=[];function mflash(o,col,sz){let f=MFX.find(q=>q.t<=0);if(!f){if(MFX.length>=6)return;const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex(),blending:T.AdditiveBlending,transparent:true,depthWrite:false}));f={sp,t:0};MFX.push(f)}
+ if(f.sp.parent!==scene)scene.add(f.sp);f.sp.position.copy(o);f.sp.material.color.set(col);f.sp.scale.setScalar(sz);f.sp.visible=true;f.t=.055}
+function mflashTick(dt){for(const f of MFX)if(f.t>0){f.t-=dt;if(f.t<=0)f.sp.visible=false}}
 let TARGETS=[];// {owner,pos:()=>Vector3,r,hit:(ball)=>{},dead?:()=>bool,team?}
 function surfaceY(x,z,y){const gh=groundH(x,z),rd=nearestRoad(x,z);return Math.max(rd.r>=0&&rd.d<ROADS[rd.r].w/2+.3?gh+ROAD_Y[ROADS[rd.r].type]:gh,rampH(x,z),PLATS.length?platH(x,z,y):-1e9)}
-function updateBalls(dt){spentTick(dt);if(typeof oilTick==='function'&&OPENISH())oilTick(dt);if(typeof pickTick==='function')pickTick(dt);for(let i=BALLS.length-1;i>=0;i--){const b=BALLS[i],p=b.m.position;b.v.y-=(b.g===undefined?11:b.g)*dt;
+function updateBalls(dt){spentTick(dt);mflashTick(dt);if(typeof oilTick==='function'&&OPENISH())oilTick(dt);if(typeof pickTick==='function')pickTick(dt);for(let i=BALLS.length-1;i>=0;i--){const b=BALLS[i],p=b.m.position;b.v.y-=(b.g===undefined?11:b.g)*dt;
  if(b.tgt){if(b.tgt.dead&&b.tgt.dead())b.tgt=null;else{const sp=b.v.length(),want=b.tgt.pos().sub(p).normalize().multiplyScalar(sp);b.v.lerp(want,Math.min(1,5*dt)).setLength(sp)}}
  if(b.dart)b.m.lookAt(p.x+b.v.x,p.y+b.v.y,p.z+b.v.z);const step=b.v.clone().multiplyScalar(dt),n=Math.max(1,Math.ceil(step.length()/.8));let dead=false;
  for(let k=0;k<n&&!dead;k++){p.addScaledVector(step,1/n);
-  for(const t of TARGETS){if(t.owner===b.owner||t.dead&&t.dead())continue;if(t.team!==undefined&&b.owner&&b.owner.team===t.team)continue;const c=t.pos();if(c.distanceTo(p)<t.r){t.hit(b);dead=true;if(b.dart){FX.spray(p.x,p.y,p.z,b.col,6,2.4,.1);FX.spray(p.x,p.y,p.z,'#ffffff',4,2,.07);sfx('pop',t.owner===ME()?1:.5);b.gone=true}else{FX.spray(p.x,p.y,p.z,b.col,10,3.2);sfx('splat',t.owner===ME()?1:.5)}break}}
+  for(const t of TARGETS){if(t.owner===b.owner||t.dead&&t.dead())continue;if(t.team!==undefined&&b.owner&&b.owner.team===t.team)continue;const c=t.pos();if(c.distanceTo(p)<t.r){t.hit(b);dead=true;if(b.dart){FX.spray(p.x,p.y,p.z,b.col,b.big?12:6,b.big?3.4:2.4,b.big?.14:.1);FX.spray(p.x,p.y,p.z,'#ffffff',b.big?7:4,2,.07);sfx('pop',t.owner===ME()?1:.5);b.gone=true}else{FX.spray(p.x,p.y,p.z,b.col,b.big?18:10,b.big?4.2:3.2);sfx('splat',t.owner===ME()?1:.5)}break}}
   if(dead)break;const gh=groundH(p.x,p.z),top=surfaceY(p.x,p.z,p.y);
   if(p.y<top){if(b.dart){if(gh>-.3){p.y=top+.05;FX.spray(p.x,top+.05,p.z,b.col,3,1.4,.07)}else{FX.splash(p.x,.1,p.z,3,1.2);b.gone=true}dead=true;sfx('pop',.2)}else{if(gh>-.3){decal(p.x,top,p.z,0,1,0,b.col,1.4);FX.spray(p.x,top+.05,p.z,b.col,5,2)}else FX.splash(p.x,.1,p.z,4,1.5);dead=true;sfx('splat',.25)}}
   else{const o=pointInCollider(p.x,p.z,p.y);if(o&&b.dart){p.addScaledVector(b.v,-.012);FX.spray(p.x,p.y,p.z,b.col,3,1.6,.07);dead=true;sfx('pop',.2)}else if(o){const vx=-b.v.x,vz=-b.v.z,L=Math.hypot(vx,vz)||1;decal(p.x,p.y,p.z,vx/L,0,vz/L,b.col,1.1);FX.spray(p.x,p.y,p.z,b.col,6,2.4);dead=true;sfx('splat',.25)}
@@ -3232,18 +3237,18 @@ function racePos(c){if(c.done)return 1e9-c.time;const cp=CPS[Math.min(c.cp,CPS.l
 
 /* ---------- on-foot fighters ---------- */
 /* weapons: the marker everyone starts with, plus what you win from Bob upstairs at the Shop and Stop */
-const WPNS={marker:{name:'Hand Blaster',ammo:12,cool:.2,reload:1.1,speed:60,spread:.012,kind:'hand'},
- smg:{name:'Swift SMG Blaster',ammo:32,cool:.075,reload:1.5,speed:62,spread:.032,res:160,kind:'smg'},
- shotgun:{name:'Scatter Blaster',ammo:6,cool:.7,reload:1.9,speed:54,pellets:8,spread:.075,res:36,kind:'shotgun'},
- rifle:{name:'Sniper Blaster',ammo:5,cool:.85,reload:2.2,speed:96,spread:0,res:30,kind:'sniper',zoom:6,lock:320,life:3.2},
- minigun:{name:'Mega Machine Blaster',ammo:100,cool:.055,reload:2.8,speed:76,spread:.03,res:300,kind:'machine',zoom:2.5},
- launcher:{name:'Foam Lobber',ammo:6,cool:.75,reload:2.4,speed:30,rocket:true,heavy:true,res:24,kind:'tube'},
- bazooka:{name:'Foam Rocket Launcher',ammo:4,cool:1.1,reload:2.6,speed:38,rocket:true,res:16,kind:'tube'},
- cannon:{name:'Splat Cannon',ammo:3,cool:1.3,reload:3.4,speed:44,rocket:true,big:true,res:9,kind:'tube'},
+const WPNS={marker:{name:'Hand Blaster',ammo:20,cool:.13,reload:.8,speed:62,spread:.012,kind:'hand',kick:.05,flash:.5},
+ smg:{name:'Swift SMG Blaster',ammo:50,cool:.052,reload:1.1,speed:66,spread:.03,res:300,kind:'smg',kick:.06,flash:.7},
+ shotgun:{name:'Scatter Blaster',ammo:8,cool:.48,reload:1.4,speed:58,pellets:12,spread:.08,res:64,kind:'shotgun',kick:.24,flash:1.2},
+ rifle:{name:'Sniper Blaster',ammo:8,cool:.6,reload:1.6,speed:100,spread:0,res:48,kind:'sniper',zoom:6,lock:320,life:3.2,kick:.2,flash:.9},
+ minigun:{name:'Mega Machine Blaster',ammo:160,cool:.038,reload:2.1,speed:80,spread:.03,res:520,kind:'machine',zoom:2.5,kick:.08,flash:1},
+ launcher:{name:'Foam Lobber',ammo:8,cool:.55,reload:1.8,speed:32,rocket:true,heavy:true,res:40,kind:'tube',kick:.26,flash:1.3},
+ bazooka:{name:'Foam Rocket Launcher',ammo:6,cool:.8,reload:1.9,speed:42,rocket:true,res:28,kind:'tube',kick:.3,flash:1.4},
+ cannon:{name:'Splat Cannon',ammo:4,cool:1,reload:2.5,speed:46,rocket:true,big:true,res:14,kind:'tube',kick:.36,flash:1.6},
  // special reward blasters: earned by winning, beating a boss or finishing a mission. Each win is one full load, and pickups don't refill them.
- mega:{name:'Mega Dart Launcher',ammo:8,cool:.9,reload:0,speed:46,rocket:true,big:true,special:true,kind:'mega'},
- gatling:{name:'Gatling Foam Cannon',ammo:240,cool:.035,reload:0,speed:80,spread:.035,special:true,kind:'gatling',zoom:2.5},
- homing:{name:'Homing Dart Blaster',ammo:40,cool:.16,reload:0,speed:64,spread:0,homing:true,special:true,kind:'homing',lock:200}};
+ mega:{name:'Mega Dart Launcher',ammo:10,cool:.7,reload:0,speed:48,rocket:true,big:true,special:true,kind:'mega',kick:.36,flash:1.6},
+ gatling:{name:'Gatling Foam Cannon',ammo:320,cool:.028,reload:0,speed:84,spread:.035,special:true,kind:'gatling',zoom:2.5,kick:.09,flash:1.1},
+ homing:{name:'Homing Dart Blaster',ammo:50,cool:.12,reload:0,speed:66,spread:0,homing:true,special:true,kind:'homing',lock:200,kick:.05,flash:.6}};
 const SPECIALS=['mega','gatling','homing'];
 const SPECIAL={ch:{},save(){try{localStorage.setItem('ack-special',JSON.stringify(SPECIAL.ch))}catch(e){}}};
 try{Object.assign(SPECIAL.ch,JSON.parse(localStorage.getItem('ack-special')||'{}')||{})}catch(e){}
@@ -3276,10 +3281,11 @@ class Fighter{constructor(spec,player,team){this.spec=spec;this.player=player;th
   if(this.jbuf>0&&this.coyote>0&&!this.swim){this.vy=5.8;this.ground=false;this.coyote=0;this.jbuf=0}
   const wasAir=!this.ground,fall=this.vy;if(this.chute)this.vy+=(-5-this.vy)*(1-Math.exp(-2.5*dt));else this.vy-=18*dt;this.p.y+=this.vy*dt;if(this.p.y<=gh){if(wasAir&&fall<-3.5){this.landed=clamp(-fall/11,.25,1);if(fall<-7&&typeof puff==='function')for(let i=0;i<5;i++)puff(this.p.x+(rnd()-.5)*.8,gh+.1,this.p.z+(rnd()-.5)*.8,'#d8cdb4',.8,.6,.3)}this.p.y=gh;this.vy=0;this.ground=true}else if(this.p.y>gh+.15)this.ground=false;if(this.chute)chuteTick(this,dt);this.aimT+=dt;
   this.spd=Math.hypot(this.vx,this.vz);this.ph+=this.spd*dt*2.1;this.cool-=dt;this.nadeCool-=dt;if(this.reload>0){this.reload-=dt;if(this.reload<=0)this.ammo=refill(this)}}
- shoot(dir){if(this.cool>0||this.reload>0||this.dead||this.swim)return false;const W=WPNS[this.wpn||'marker'];this.cool=W.cool*(this.player?1:1.6);this.aimT=0;this.shot=true;this.bodyYaw=this.ayaw!==undefined?this.ayaw:this.yaw;this.ammo--;if(this.ammo<=0){if(this.player)outOf(this,W);else this.reload=W.reload}let o;if(this.player&&VR.on&&this.fp&&VR.muzzle)o=VR.muzzle.clone();else{o=this.eye().addScaledVector(dir,.8);o.y-=.12}if(this.player&&typeof assistAim==='function'){ARMS.lastLock=null;dir=assistAim(o,dir,W);if(W.heavy&&!ARMS.lastLock){dir=dir.clone();dir.y+=.17;dir.normalize()}}
+ shoot(dir){if(this.cool>0||this.reload>0||this.dead||this.swim)return false;const W=WPNS[this.wpn||'marker'];this.cool=W.cool*(this.player||this.ally?1:1.6);this.aimT=0;this.shot=true;this.bodyYaw=this.ayaw!==undefined?this.ayaw:this.yaw;this.ammo--;if(this.ammo<=0){if(this.player)outOf(this,W);else this.reload=W.reload}let o;if(this.player&&VR.on&&this.fp&&VR.muzzle)o=VR.muzzle.clone();else{o=this.eye().addScaledVector(dir,.8);o.y-=.12}if(this.player&&typeof assistAim==='function'){ARMS.lastLock=null;dir=assistAim(o,dir,W);if(W.heavy&&!ARMS.lastLock){dir=dir.clone();dir.y+=.17;dir.normalize()}}
   if(W.rocket)fireRocket(this,o,dir,W.speed,this.spec.paint,W.big,W.heavy);
-  else if(W.pellets){for(let i=0;i<W.pellets;i++){const d=dir.clone();if(i){d.x+=(Math.random()-.5)*W.spread*2;d.y+=(Math.random()-.5)*W.spread*1.4;d.z+=(Math.random()-.5)*W.spread*2}fireBall(this,o,d.normalize(),W.speed,this.spec.paint,false,i>0,this.player?{fast:true}:null)}}
-  else{const sp=W.spread*(this.player&&adsNow()?GUN.adsSpread:1);const d=sp?dir.clone().add(V3((Math.random()-.5)*sp,(Math.random()-.5)*sp,(Math.random()-.5)*sp)).normalize():dir;fireBall(this,o,d,W.speed,this.spec.paint,false,false,this.player?{fast:true,life:W.life,homing:W.homing,tgt:W.homing?ARMS.lastLock:null}:null)}
+  else if(W.pellets){for(let i=0;i<W.pellets;i++){const d=dir.clone();if(i){d.x+=(Math.random()-.5)*W.spread*2;d.y+=(Math.random()-.5)*W.spread*1.4;d.z+=(Math.random()-.5)*W.spread*2}fireBall(this,o,d.normalize(),W.speed,this.spec.paint,false,i>0,this.player||this.ally?{fast:true}:null)}}
+  else{const sp=W.spread*(this.player&&adsNow()?GUN.adsSpread:1);const d=sp?dir.clone().add(V3((Math.random()-.5)*sp,(Math.random()-.5)*sp,(Math.random()-.5)*sp)).normalize():dir;fireBall(this,o,d,W.speed,this.spec.paint,false,false,this.player?{fast:true,life:W.life,homing:W.homing,tgt:W.homing?ARMS.lastLock:null}:this.ally?{fast:true}:null)}
+  if(this.player||this.ally){mflash(o,'#fff1c4',W.flash||.6);if(this.player&&!VR.on)shake=Math.max(shake,W.kick||.05)}
   if(this.player&&typeof netShot==='function')netShot(o,dir,W.speed);return true}
  nade(dir){if(this.nades<=0||this.dead||this.nadeCool>0&&!this.player)return false;this.nades--;this.nadeCool=7+rnd()*5;const o=this.eye().addScaledVector(dir,.6);throwNade(this,o,dir,this.spec.paint);if(this.player&&typeof netNade==='function')netNade(o,dir);return true}
  sync(dt){const g=this.c.g;if(g.parent!==scene)return;dt=dt||1/60;g.position.copy(this.p);
@@ -3288,7 +3294,7 @@ class Fighter{constructor(spec,player,team){this.spec=spec;this.player=player;th
   const tgt=aiming?(this.ayaw!==undefined?this.ayaw:this.yaw):spd>.5?Math.atan2(vx,vz):this.bodyYaw;this.bodyYaw+=angWrap(tgt-this.bodyYaw)*(1-Math.exp(-(aiming?16:10)*dt));g.rotation.y=this.bodyYaw;
   if(this.dead>0){poseDown(this.c);return}if(this.swim){poseSwim(this.c,CLOCK);return}
   const b=this.bodyYaw,sb=Math.sin(b),cb=Math.cos(b),fwd=vx*sb+vz*cb,side=vx*cb-vz*sb,acc=((vx-this.pvx)*sb+(vz-this.pvz)*cb)/dt;
-  {const gk=WPNS[this.wpn||'marker'].kind;if(gk!==this._gk){this._gk=gk;this.c.aR.el.remove(this.gun);this.gun=makeBlaster(this.spec.paint,gk);this.c.aR.el.add(this.gun);this.gun.position.set(0,-.3,.06);this.gun.rotation.x=Math.PI/2}}
+  {const gk=WPNS[this.wpn||'marker'].kind;if(gk!==this._gk){this._gk=gk;this.c.aR.el.remove(this.gun);this.gun=makeBlaster(this.spec.paint,gk);this.c.aR.el.add(this.gun);this.gun.position.set(0,-.3,.06);this.gun.rotation.x=Math.PI/2;if(this.player||this.ally)this.gun.scale.setScalar(1.35)}}
   animChar(this.c,{spd,fwd,side,ground:this.ground,vy:this.vy,aim:aiming?1:0,pitch:this.apitch!==undefined?this.apitch:this.pitch,landed:this.landed,shot:this.shot,accel:acc,turn:angWrap(b-prev)/dt,look:angWrap(this.yaw-b),t:CLOCK},dt);this.landed=0;this.shot=false}}
 function aimDir(f){return V3(Math.sin(f.yaw)*Math.cos(f.pitch),Math.sin(f.pitch),Math.cos(f.yaw)*Math.cos(f.pitch)).normalize()}
 
@@ -3522,7 +3528,7 @@ function setupPreview(){PREVIEW.group.clear();PREVIEW.group.visible=true;PREVIEW
 function updatePreview(){PREVIEW.chars.forEach((c,i)=>{if(PREVIEW.di&&PREVIEW.di[i]===SEL)poseCheer(c,CLOCK);else poseIdle(c,CLOCK,i)})}
 
 /* ================= Open Island (GTA-style), Harbor War, traffic, townsfolk, pirates, orcas ================= */
-const OPEN={veh:[],traffic:[],peds:[],pirates:[],pboats:[],orcas:[],markers:[],active:null,hp:4,wasted:0,area:'',areaT:0,ambushT:60,respect:0,done:{},score:{}};
+const OPEN={veh:[],traffic:[],peds:[],pirates:[],preps:[],allies:[],pboats:[],orcas:[],markers:[],active:null,hp:4,wasted:0,area:'',areaT:0,ambushT:60,respect:0,done:{},score:{}};
 try{OPEN.done=JSON.parse(localStorage.getItem('ack-missions')||'{}')}catch(e){}
 
 /* ---------- parked cars: real vehicles that sit in the lot and along town curbs ---------- */
@@ -3535,13 +3541,13 @@ const PARKED=[];
   if(slots.some(q=>Math.hypot(q.x-x,q.z-z)<6))return;slots.push({x,z,h:Math.atan2(s.dx,s.dz)+(side>0?0:Math.PI),col:cols[(rnd()*cols.length)|0],model:['sedan','suv','sedan','pickup','van','sedan'][(rnd()*6)|0]})});
  slots.forEach(sl=>{const c=new Car({name:'Parked car',paint:'#dddddd',jeep:sl.col},false,{model:sl.model,driver:false});c.slot=sl;c.parked=true;c.awake=0;c.place(sl.x,sl.z,sl.h);PARKED.push(c)})})();
 function resetParked(){PARKED.forEach(c=>{if(c.c&&c.c!==(PL&&PL.c))c.seat(null);c.driverKind=null;c.place(c.slot.x,c.slot.z,c.slot.h);c.awake=0;c.j.g.visible=true;c._far=false;(c._sp||[]).forEach(m=>c.j.body.remove(m));c._sp=[]})}
-const worldVehicles=()=>PARKED.concat(OPEN.veh,OPEN.traffic.map(t=>t.car),POL.cops.map(C=>C.car),CARS.filter(c=>!PARKED.includes(c)&&!OPEN.veh.includes(c)));
+const worldVehicles=()=>PARKED.concat(OPEN.veh,OPEN.preps.map(P=>P.car),OPEN.traffic.map(t=>t.car),POL.cops.map(C=>C.car),CARS.filter(c=>!PARKED.includes(c)&&!OPEN.veh.includes(c)));
 function pushFromVehicles(q,r,y){for(const v of worldVehicles()){if(v===PCAR||v.kind!=='car')continue;if(y!==undefined&&Math.abs(v.p.y-y)>2)continue;const dx=q.x-v.p.x,dz=q.z-v.p.z;if(Math.abs(dx)>4||Math.abs(dz)>4)continue;
  const s=Math.sin(v.h),c=Math.cos(v.h),lx=dx*c-dz*s,lz=dx*s+dz*c,hw=1+r,hd=(v.j.len||4.4)/2+r;if(Math.abs(lx)<hw&&Math.abs(lz)<hd){const px=hw-Math.abs(lx),pz=hd-Math.abs(lz);if(px<pz){const k=Math.sign(lx)*px;q.x+=c*k;q.z-=s*k}else{const k=Math.sign(lz)*pz;q.x+=s*k;q.z+=c*k}}}}
-const targetVehicles=()=>PARKED.concat(OPEN.veh,OPEN.traffic.map(t=>t.car),POL.cops.map(C=>C.car),OPEN.pboats);
-function vehicleTargets(){for(const v of targetVehicles()){if(v.tgt)continue;v.tgt={owner:v,r:2.3,foe:()=>!!v.pirate,pos:()=>v.p.clone().add(V3(0,.9,0)),hit:b=>{if(b.owner&&b.owner.crew&&!v.pirate)return;if(v.player||v===PCAR)return carHit(v,b);carSplatVisual(v,b.col);if(v.traffic)v.traffic.scared=4;if(v.cop&&(b.owner===PL||b.owner===PCAR))polCrime('copcar',{C:v.copE});if(v.pirate)pirateBoatHit(v,b)}};}
+const targetVehicles=()=>PARKED.concat(OPEN.veh,OPEN.preps.map(P=>P.car),OPEN.traffic.map(t=>t.car),POL.cops.map(C=>C.car),OPEN.pboats);
+function vehicleTargets(){for(const v of targetVehicles()){if(v.tgt)continue;v.tgt={owner:v,r:2.3,foe:()=>!!(v.pirate||v.prepAI),pos:()=>v.p.clone().add(V3(0,.9,0)),hit:b=>{if(b.owner&&b.owner.crew&&!v.pirate)return;if(v.player||v===PCAR)return carHit(v,b);carSplatVisual(v,b.col);if(v.traffic)v.traffic.scared=4;if(v.cop&&(b.owner===PL||b.owner===PCAR))polCrime('copcar',{C:v.copE});if(v.prepAI&&b.owner!==v){v.prepAI.hits++;v.spinT=.5;v.spinD=rnd()<.5?1:-1}if(v.pirate)pirateBoatHit(v,b)}};}
  for(const v of targetVehicles())if(!TARGETS.includes(v.tgt))TARGETS.push(v.tgt)}
-function parkedTick(dt){const moving=CARS.concat(OPEN.veh.filter(v=>v.kind==='car'),OPEN.traffic.map(t=>t.car),POL.cops.map(C=>C.car)).filter(v=>Math.abs(v.vf)>1);
+function parkedTick(dt){const moving=CARS.concat(OPEN.veh.filter(v=>v.kind==='car'),OPEN.preps.map(P=>P.car),OPEN.traffic.map(t=>t.car),POL.cops.map(C=>C.car)).filter(v=>Math.abs(v.vf)>1);
  for(const c of PARKED){if(c===PCAR)continue;for(const m of moving){if(m===c)continue;const cs=carSep(m,c);if(cs){const nx=cs.nx,nz=cs.nz,push=cs.pen+.01;c.p.x+=nx*push*.6;m.p.x-=nx*push*.4;c.p.z+=nz*push*.6;m.p.z-=nz*push*.4;const rv=(m.vx-c.vx)*nx+(m.vz-c.vz)*nz;if(rv>0){c.vx+=nx*rv*.7;c.vz+=nz*rv*.7;m.vx-=nx*rv*.5;m.vz-=nz*rv*.5;c.awake=3;if(m===PCAR){shake=Math.max(shake,.35);sfx('land',.7);if(rv>7)polCrime('reckless',{why:'crashing into parked cars'})}}}}
   if(c.awake>0){c.awake-=dt;c.update(dt,STOP(c))}}}
 
@@ -3598,14 +3604,18 @@ function pedTick(dt){const me=ME();if(!me)return;const want=IS_TOUCH?10:16;
   P.p.y=surfaceY(P.p.x,P.p.z);P.ph+=spd*dt*2.2;P.n.g.position.copy(P.p);P.n.g.rotation.y=P.h;poseNPC(P.n,P.ph,clamp(spd/3,0,1),CLOCK,P.state==='down'?'down':P.state==='flee'?'flee':null)}
  if(OPEN.peds.length<want&&rnd()<dt*3)spawnPed(rnd()<.85)}
 
-/* ---------- the Coatue Pirates: a rival paint crew ---------- */
-function spawnPirate(x,z,opts={}){for(let k=0;k<20;k++){const a=rnd()*TAU,r=k?4+rnd()*12:0,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(pointInCollider(px,pz)||isWater(px,pz,-.2))continue;
-  const n=makeNPC({pirate:true,shirt:'#1b1b1f',pants:'#2c2c30'});scene.add(n.g);const gun=makeMarker('#ff6a13');n.aR.sh.add(gun);gun.position.set(0,-.55,.08);gun.rotation.x=Math.PI/2;
-  const E={n,p:V3(px,surfaceY(px,pz),pz),yaw:rnd()*6,pitch:0,dead:0,cool:2+rnd()*1.5,think:0,strafe:rnd()<.5?1:-1,nades:opts.nades?2:0,nadeCool:4+rnd()*4,ph:0,spd:0,spec:{name:'Coatue Pirate',paint:'#ff6a13'},mission:opts.mission||null};
+/* ---------- the Coatue Pirates: a rival paint crew (Chad and Brad fight on foot with the same brain) ---------- */
+const PREP_COL='#e8735a',PREP_CARS=[['defender',['#2f4a35','#ecebe4','#1d2a4a']],['wagoneer',['#7b2a26','#e5dcc6','#2b3b55']]];
+function spawnPirate(x,z,opts={}){const pr=opts.prep;for(let k=0;k<20;k++){const a=rnd()*TAU,r=k?4+rnd()*12:0,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(pointInCollider(px,pz)||isWater(px,pz,-.2))continue;
+  const n=pr?makeNPC({prep:true,look:pr,shirt:pr==='chad'?'#f4f4f2':'#1d2a4a',pants:'#d9675a'}):makeNPC({pirate:true,shirt:'#1b1b1f',pants:'#2c2c30'});scene.add(n.g);const gun=makeMarker(pr?PREP_COL:'#ff6a13');n.aR.sh.add(gun);gun.position.set(0,-.55,.08);gun.rotation.x=Math.PI/2;
+  const E={n,p:V3(px,surfaceY(px,pz),pz),yaw:rnd()*6,pitch:0,dead:0,cool:2+rnd()*1.5,think:0,strafe:rnd()<.5?1:-1,nades:opts.nades?2:0,nadeCool:4+rnd()*4,ph:0,spd:0,spec:pr?{name:pr==='chad'?'Chad':'Brad',paint:PREP_COL}:{name:'Coatue Pirate',paint:'#ff6a13'},prep:pr||null,hp:pr?3:1,mission:opts.mission||null};
   E.tgt={owner:E,r:.75,foe:true,dead:()=>E.dead>0,pos:()=>E.p.clone().add(V3(0,1.1,0)),hit:b=>pirateDown(E,b)};TARGETS.push(E.tgt);OPEN.pirates.push(E);return E}return null}
-function pirateDown(E,b){if(E.dead>0)return;E.dead=4;pedSplat(E,b.col||'#ff3b30');const mine=b.owner===PL||b.owner===PCAR||b.byCar;sfx('splat',1);
- if(mine){OPEN.respect++;addCash(25,null,true);feed(`You splatted a <b>Coatue Pirate</b>${b.byCar?' (bowled over)':''} · <b>+$25</b>`,DRIVERS[SEL].paint);if(OPEN.active&&OPEN.active.type==='turf'&&E.mission===OPEN.active.id){OPEN.active.got++;missionHud();if(OPEN.active.got>=OPEN.active.count)missionDone()}}}
-function pirateTick(dt){const me=ME();
+function pirateDown(E,b){if(E.dead>0)return;const mine=b.owner===PL||b.owner===PCAR||b.byCar,ally=!!(b.owner&&b.owner.ally);
+ if(E.hp>1&&!b.byCar){E.hp--;if(E.hp===2)pedSplat(E,b.col||'#ff3b30');sfx('splat',.8);return}
+ E.dead=4;pedSplat(E,b.col||'#ff3b30');sfx('splat',1);const cash=E.prep?40:25,who=E.prep?`<b>${E.spec.name}</b>`:'a <b>Coatue Pirate</b>';
+ if(ally){feed(`<b>${esc(b.owner.spec.name)}</b> splatted ${E.prep?'<b>'+E.spec.name+'</b>':'a <b>Coatue Pirate</b>'}`,b.owner.spec.paint);if(OPEN.active&&OPEN.active.type==='turf'&&E.mission===OPEN.active.id){OPEN.active.got++;missionHud();if(OPEN.active.got>=OPEN.active.count)missionDone()}}
+ if(mine){OPEN.respect++;addCash(cash,null,true);feed(`You splatted ${who}${b.byCar?' (bowled over)':''} · <b>+$${cash}</b>`,DRIVERS[SEL].paint);if(OPEN.active&&OPEN.active.type==='turf'&&E.mission===OPEN.active.id){OPEN.active.got++;missionHud();if(OPEN.active.got>=OPEN.active.count)missionDone()}}}
+function pirateTick(dt){const me=ME();prepTick(dt);allyTick(dt);
  for(let k=OPEN.pirates.length-1;k>=0;k--){const E=OPEN.pirates[k];if(E.dead>0){E.dead-=dt;poseNPC(E.n,0,0,CLOCK,'down');E.n.g.position.copy(E.p);if(E.dead<=0){drop(E.n.g);const i=TARGETS.indexOf(E.tgt);if(i>=0)TARGETS.splice(i,1);OPEN.pirates.splice(k,1)}continue}
   if(!me)continue;const tp=me.p,dx=tp.x-E.p.x,dz=tp.z-E.p.z,d=Math.hypot(dx,dz);
   if(d>420&&!E.mission){drop(E.n.g);const i=TARGETS.indexOf(E.tgt);if(i>=0)TARGETS.splice(i,1);OPEN.pirates.splice(k,1);continue}
@@ -3616,10 +3626,52 @@ function pirateTick(dt){const me=ME();
   if(d>28)m2=1;else if(d<10)m2=-.6;m1=E.strafe*.7;
   const sy=Math.sin(E.yaw),cy=Math.cos(E.yaw),spd=d>28?4.2:3.2,wx=(sy*m2+cy*m1),wz=(cy*m2-sy*m1),L=Math.hypot(wx,wz)||1;
   const q={x:E.p.x+wx/L*spd*dt,z:E.p.z+wz/L*spd*dt};collide(q,.4,E.p.y+.5);pushFromVehicles(q,.45);if(!isWater(q.x,q.z,-.3)){E.p.x=q.x;E.p.z=q.z}E.p.y=surfaceY(E.p.x,E.p.z,E.p.y);E.spd=spd;E.ph+=spd*dt*2.1;
-  E.cool-=dt;E.nadeCool-=dt;if(sees&&E.cool<=0&&d<60){E.cool=.85+rnd()*1.1;const o=E.p.clone().add(V3(0,1.45,0)),t=tp.clone().add(V3(0,me===PL?1.1:.9,0)),sp=2.4+d*.03;t.x+=(me.vx||0)*d/58+(rnd()-.5)*sp;t.z+=(me.vz||0)*d/58+(rnd()-.5)*sp;t.y+=d*d*.0011+(rnd()-.5)*.8;fireBall(E,o,t.sub(o).normalize(),58,'#ff6a13')}
-  if(sees&&E.nades>0&&E.nadeCool<=0&&d>9&&d<24){E.nades--;E.nadeCool=8;const dir=V3(dx,0,dz).normalize();dir.y=.32+d*.004;throwNade(E,E.p.clone().add(V3(0,1.6,0)),dir.normalize(),'#ff6a13')}
+  E.cool-=dt;E.nadeCool-=dt;if(sees&&E.cool<=0&&d<60){E.cool=.85+rnd()*1.1;const o=E.p.clone().add(V3(0,1.45,0)),t=tp.clone().add(V3(0,me===PL?1.1:.9,0)),sp=2.4+d*.03;t.x+=(me.vx||0)*d/58+(rnd()-.5)*sp;t.z+=(me.vz||0)*d/58+(rnd()-.5)*sp;t.y+=d*d*.0011+(rnd()-.5)*.8;fireBall(E,o,t.sub(o).normalize(),58,E.spec.paint)}
+  if(sees&&E.nades>0&&E.nadeCool<=0&&d>9&&d<24){E.nades--;E.nadeCool=8;const dir=V3(dx,0,dz).normalize();dir.y=.32+d*.004;throwNade(E,E.p.clone().add(V3(0,1.6,0)),dir.normalize(),E.spec.paint)}
   E.n.g.position.copy(E.p);E.n.g.rotation.y=E.yaw;poseNPC(E.n,E.ph,1,CLOCK,sees&&d<60?'aim':null);if(sees&&d<60){E.n.lL.hp.rotation.x=Math.sin(E.ph)*.5;E.n.lR.hp.rotation.x=-Math.sin(E.ph)*.5}}
- if(MODE==='open'&&!OPEN.active){OPEN.ambushT-=dt;if(OPEN.ambushT<=0){OPEN.ambushT=80+rnd()*60;if(me&&!isWater(me.p.x,me.p.z,-.2)){const a=rnd()*TAU;let n=0;for(let i=0;i<3;i++)if(spawnPirate(me.p.x+Math.cos(a)*70,me.p.z+Math.sin(a)*70))n++;if(n)toast('The Coatue Pirates are looking for you!')}}}}
+ if(MODE==='open'&&!OPEN.active){OPEN.ambushT-=dt;if(OPEN.ambushT<=0){OPEN.ambushT=45+rnd()*35;if(me&&!isWater(me.p.x,me.p.z,-.2)){if(!OPEN.preps.length&&rnd()<.5&&spawnPreps(me))toast('Chad and Brad are coming for you!');else{const a=rnd()*TAU;let n=0;for(let i=0;i<4;i++)if(spawnPirate(me.p.x+Math.cos(a)*70,me.p.z+Math.sin(a)*70))n++;if(n){toast('The Coatue Pirates are looking for you!');ALLY.wake=1}}}}}}
+
+/* ---------- Chad and Brad: Nantucket preps who roll up in a Land Rover or a wood-paneled Wagoneer, spray you on the way in, then jump out and fight ---------- */
+function spawnPreps(me){const s=copSpot(me.p.x,me.p.z,110,220,true);if(!s)return null;const R_=ROADS[s.ri];let bi=0,bd=1e9;R_.pts.forEach((q,i)=>{const d=Math.hypot(q[0]-s.x,q[1]-s.z);if(d<bd){bd=d;bi=i}});
+ const p=R_.pts[bi],pc=PREP_CARS[(rnd()*2)|0],model=pc[0],col=pc[1][(rnd()*pc[1].length)|0];
+ const car=new Car({name:model==='defender'?'Chad’s Land Rover':'Brad’s Wagoneer',paint:PREP_COL,jeep:col},false,{model,driver:false});
+ const n=makeNPC({prep:true,look:model==='defender'?'chad':'brad',shirt:'#f4f4f2',pants:'#d9675a'});n.npc=true;car.seat(n);car.place(p[0],p[1],Math.atan2(me.p.x-p[0],me.p.z-p[1]));
+ const P={car,rev:0,side:rnd()<.5?1:-1,stuckT:0,t:0,hits:0,fire:2.5};car.prepAI=P;OPEN.preps.push(P);vehicleTargets();return P}
+function prepGone(P,k){const c=P.car;OPEN.preps.splice(k,1);c.prepAI=null;drop(c.j.g);const i=TARGETS.indexOf(c.tgt);if(i>=0)TARGETS.splice(i,1)}
+function prepBail(P,k){const c=P.car;OPEN.preps.splice(k,1);c.prepAI=null;const drv=c.c;c.seat(null);if(drv)drop(drv.g);c.awake=3;OPEN.veh.push(c);
+ const s=Math.sin(c.h),co=Math.cos(c.h);let n=0;[['chad',1],['brad',-1]].forEach(([look,side])=>{if(spawnPirate(c.p.x+co*2.7*side,c.p.z-s*2.7*side,{prep:look,nades:true}))n++});
+ if(n)feed(`<b>Chad and Brad</b> jumped out of the ${c.model==='defender'?'Land Rover':'Wagoneer'}`,PREP_COL);ALLY.wake=1}
+function prepTick(dt){const me=ME();for(let k=OPEN.preps.length-1;k>=0;k--){const P=OPEN.preps[k],c=P.car;P.t+=dt;
+  if(!me||MODE!=='open'){prepGone(P,k);continue}
+  const dx=me.p.x-c.p.x,dz=me.p.z-c.p.z,d=Math.hypot(dx,dz);if(d>480){prepGone(P,k);continue}
+  if(P.hits>=5||P.t>55||(d<16&&Math.hypot(me.vx||0,me.vz||0)<9)){prepBail(P,k);continue}
+  copChase(P,dt,me.p.x,me.p.z,d>70?27:d>30?20:12);
+  // drive-by: the passenger leans out and sprays you
+  P.fire-=dt;if(d<50&&d>5&&P.fire<=0&&!blocked(c.p.x,c.p.z,me.p.x,me.p.z,c.p.y+1.6)){P.fire=.4+rnd()*.45;const o=c.p.clone().add(V3(0,1.9,0)),t=me.p.clone().add(V3(0,me===PL?1.1:.9,0));t.x+=(me.vx||0)*d/60+(rnd()-.5)*2.6;t.z+=(me.vz||0)*d/60+(rnd()-.5)*2.6;t.y+=d*d*.0015+(rnd()-.5)*.8;fireBall(c,o,t.sub(o).normalize(),60,PREP_COL)}}}
+
+/* ---------- your crew has your back: when a fight starts and you're on foot, two of them run in with heavy blasters ---------- */
+const ALLY={cool:0,wake:0};
+function allyFoes(){const L=[];for(const E of OPEN.pirates)if(E.dead<=0)L.push({p:E.p,y:1.2});for(const P of OPEN.preps)L.push({p:P.car.p,y:1});return L}
+function allyCall(){if(MODE!=='open'||!PL||PCAR||PL.dead>0||PL.swim||OPEN.allies.length||ALLY.cool>0)return;
+ const pool=DRIVERS.map((d,i)=>i).filter(i=>i!==SEL&&DRIVERS[i].key!=='captain'),picks=[],eth=pool.findIndex(i=>DRIVERS[i].key==='ethan');if(eth>=0)picks.push(pool.splice(eth,1)[0]);
+ while(picks.length<2&&pool.length)picks.push(pool.splice((rnd()*pool.length)|0,1)[0]);const guns=['minigun','shotgun','bazooka','smg'].sort(()=>rnd()-.5);
+ picks.forEach((di,k)=>{for(let t=0;t<14;t++){const a=PL.yaw+Math.PI+(k?1.25:-1.25)+(rnd()-.5)*.5,r=4.5+rnd()*2,x=PL.p.x+Math.sin(a)*r,z=PL.p.z+Math.cos(a)*r;if(pointInCollider(x,z)||isWater(x,z,-.2))continue;
+  const f=new Fighter(DRIVERS[di],false);f.ally=true;f.crew=true;if(f.tag){f.c.g.remove(f.tag);f.tag=null}f.wpn=guns[k];f.spawn({x,z});f.p.y=surfaceY(x,z,PL.p.y+1);f.yaw=PL.yaw;f.calm=0;f.strafe=k?1:-1;OPEN.allies.push(f);break}});
+ if(OPEN.allies.length)feed(OPEN.allies.map(f=>'<b>'+esc(f.spec.name)+'</b>').join(' and ')+' got your back',OPEN.allies[0].spec.paint)}
+function allyDrop(f,i){drop(f.c.g);OPEN.allies.splice(i,1)}
+function allyClear(){for(let i=OPEN.allies.length-1;i>=0;i--)allyDrop(OPEN.allies[i],i)}
+function allyTick(dt){ALLY.cool-=dt;const foes=allyFoes();
+ if(ALLY.wake&&foes.length){if(!OPEN.allies.length)allyCall();if(OPEN.allies.length)ALLY.wake=0}else if(!foes.length)ALLY.wake=0;
+ const L=OPEN.allies;if(!L.length)return;if(MODE!=='open'||!PL){allyClear();return}let any=false;
+ for(let i=L.length-1;i>=0;i--){const f=L[i],dP=Math.hypot(PL.p.x-f.p.x,PL.p.z-f.p.z);if(dP>140){allyDrop(f,i);continue}
+  let best=null,bd=70;const e=f.eye();for(const F of foes){const d=Math.hypot(F.p.x-f.p.x,F.p.z-f.p.z);if(d<bd&&!blocked(e.x,e.z,F.p.x,F.p.z,Math.min(e.y,F.p.y+F.y))){bd=d;best=F}}
+  let m1=0,m2=0;const toward=(gx,gz,spd)=>{const dx=gx-f.p.x,dz=gz-f.p.z,gd=Math.hypot(dx,dz);if(gd<1)return;const wx=dx/gd*spd,wz=dz/gd*spd,sy=Math.sin(f.yaw),cy=Math.cos(f.yaw);m1+=wx*cy-wz*sy;m2+=wx*sy+wz*cy};
+  if(best){any=true;f.calm=0;const dx=best.p.x-f.p.x,dz=best.p.z-f.p.z,want=Math.atan2(dx,dz);f.yaw=lerp(f.yaw,f.yaw+angWrap(want-f.yaw),1-Math.exp(-7*dt));
+   f.think=(f.think||0)-dt;if(f.think<=0){f.think=.6+rnd()*.6;if(rnd()<.35)f.strafe*=-1}m1=f.strafe*.6;m2=bd>26?1:bd<9?-.5:0;
+   if(Math.abs(angWrap(want-f.yaw))<.2){const t=best.p.clone();t.y+=best.y;const dir=t.sub(e).normalize();dir.x+=(rnd()-.5)*.04;dir.z+=(rnd()-.5)*.04;dir.normalize();f.pitch=Math.asin(clamp(dir.y,-1,1));f.shoot(dir)}}
+  else{f.calm+=dt;f.pitch*=.9;if(dP>5){const a=Math.atan2(PL.p.x-f.p.x,PL.p.z-f.p.z);f.yaw=lerp(f.yaw,f.yaw+angWrap(a-f.yaw),1-Math.exp(-5*dt));toward(PL.p.x,PL.p.z,dP>12?1:.6)}}
+  f.move(dt,m1,m2,dP>14&&!best,false);f.sync(dt)}
+ if(!any&&L.length&&L.every(f=>f.calm>20)){feed('Your crew heads back to The Box','#999',true);allyClear();ALLY.cool=25}}
 
 /* ---------- boats at the town pier, pirate boats, and the orcas ---------- */
 function boatAI(b,dt,target,aggr=1){const tp=target?target.p:b.wp||b.p;const dx=tp.x-b.p.x,dz=tp.z-b.p.z,d=Math.hypot(dx,dz);let des=Math.atan2(dx,dz);
@@ -3659,8 +3711,8 @@ function orcaTick(dt){const boats=OPEN.veh.filter(v=>v.kind==='boat').concat(OPE
 
 /* ---------- getting in and out ---------- */
 function nearestVehicle(){if(!PL)return null;let best=null,bd=1e9;
- for(const v of worldVehicles().concat(OPEN.pboats,[HELI,FERRY.heli].filter((h,i,a)=>h&&a.indexOf(h)===i&&h.j.g.visible&&h.dead<=0))){if(v.capsized>0||v.cop)continue;const d=Math.hypot(v.p.x-PL.p.x,v.p.z-PL.p.z),reach=v.kind==='boat'?(PL.swim?4.5:6):v.kind==='heli'?5.5:4.2;if(d<reach&&d<bd){bd=d;best=v}}return best}
-function vehicleName(v){if(v.kind==='heli')return v.ferry?'Eagle’s patrol helicopter':'MedFlight helicopter';if(v.kind==='boat')return v.pirate?'pirate boat':'boat';if(v.model==='jeep')return v.spec.key===DRIVERS[SEL].key?'your jeep':`${v.spec.name}’s jeep`;return{sedan:'sedan',suv:'SUV',pickup:'pickup',van:'van'}[v.model]||'car'}
+ for(const v of worldVehicles().concat(OPEN.pboats,[HELI,FERRY.heli].filter((h,i,a)=>h&&a.indexOf(h)===i&&h.j.g.visible&&h.dead<=0))){if(v.capsized>0||v.cop||v.prepAI)continue;const d=Math.hypot(v.p.x-PL.p.x,v.p.z-PL.p.z),reach=v.kind==='boat'?(PL.swim?4.5:6):v.kind==='heli'?5.5:4.2;if(d<reach&&d<bd){bd=d;best=v}}return best}
+function vehicleName(v){if(v.kind==='heli')return v.ferry?'Eagle’s patrol helicopter':'MedFlight helicopter';if(v.kind==='boat')return v.pirate?'pirate boat':'boat';if(v.model==='jeep')return v.spec.key===DRIVERS[SEL].key?'your jeep':`${v.spec.name}’s jeep`;return{sedan:'sedan',suv:'SUV',pickup:'pickup',van:'van',defender:'Land Rover',wagoneer:'Wagoneer'}[v.model]||'car'}
 function enterVehicle(v){if(!v||!PL)return;
  if(v.traffic){polCrime('jack');const T_=v.traffic,i=OPEN.traffic.indexOf(T_);if(i>=0)OPEN.traffic.splice(i,1);v.traffic=null;OPEN.veh.push(v);const npc=v.c;v.seat(null);if(npc){scene.add(npc.g);const s=Math.sin(v.h),c=Math.cos(v.h);const P={n:npc,p:V3(v.p.x+c*2,groundH(v.p.x,v.p.z),v.p.z-s*2),h:v.h+Math.PI/2,state:'flee',t:5,ph:0,spd:1.3,from:v.p.clone()};
    P.tgt={owner:P,r:.7,pos:()=>P.p.clone().add(V3(0,1.1,0)),hit:b=>{if(b.dart)stuckDart(P.n.torso,b.col,(Math.random()-.5)*.2,.3,.2);else pedSplat(P,b.col);P.state='flee';P.t=6}};TARGETS.push(P.tgt);OPEN.peds.push(P);feed('Hey! That’s my car!','#999',true)}}
@@ -3760,8 +3812,8 @@ function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
   if(A.t>A.limit){missionFail('The order went cold. Grab another at The Box.');return}if(Math.floor(A.t*2)!==Math.floor((A.t-dt)*2))missionHud()}}
 
 /* ---------- mode: Open Island ---------- */
-function openClear(){polClear();skyClear();zedClear();ZED.state='idle';shopClose();OPEN.veh.forEach(v=>{if(!PARKED.includes(v))drop(v.j.g)});OPEN.traffic.forEach(t=>drop(t.car.j.g));OPEN.peds.forEach(p=>drop(p.n.g));OPEN.pirates.forEach(e=>drop(e.n.g));OPEN.pboats.forEach(b=>drop(b.j.g));OPEN.orcas.forEach(o=>drop(o.m.g));OPEN.markers.forEach(m=>drop(m.g));
- OPEN.veh=[];OPEN.traffic=[];OPEN.peds=[];OPEN.pirates=[];OPEN.pboats=[];OPEN.orcas=[];OPEN.markers=[];OPEN.active=null;if(PCAR&&PL&&PCAR.c===PL.c)PCAR.seat(null);if(PL&&PL.c.g.parent&&PL.c.g.parent!==scene)PL.c.g.parent.remove(PL.c.g);
+function openClear(){polClear();skyClear();zedClear();ZED.state='idle';shopClose();OPEN.veh.forEach(v=>{if(!PARKED.includes(v))drop(v.j.g)});OPEN.traffic.forEach(t=>drop(t.car.j.g));OPEN.peds.forEach(p=>drop(p.n.g));OPEN.pirates.forEach(e=>drop(e.n.g));OPEN.preps.forEach(P=>drop(P.car.j.g));OPEN.allies.forEach(f=>drop(f.c.g));OPEN.pboats.forEach(b=>drop(b.j.g));OPEN.orcas.forEach(o=>drop(o.m.g));OPEN.markers.forEach(m=>drop(m.g));
+ OPEN.veh=[];OPEN.traffic=[];OPEN.peds=[];OPEN.pirates=[];OPEN.preps=[];OPEN.allies=[];OPEN.pboats=[];OPEN.orcas=[];OPEN.markers=[];OPEN.active=null;if(PCAR&&PL&&PCAR.c===PL.c)PCAR.seat(null);if(PL&&PL.c.g.parent&&PL.c.g.parent!==scene)PL.c.g.parent.remove(PL.c.g);
  PARKED.forEach(c=>{if(c.c)c.seat(null);c.player=false});ferryClear();const el=$('obj');if(el)el.hidden=true;const w=$('orca-warn');if(w)w.hidden=true}
 function makeCrewJeep(di,x,z,h){const sp=DRIVERS[di],c=new Car(sp,false,{driver:false});c.place(x,z,h);OPEN.veh.push(c);return c}
 function startOpen(){clearWorld();resetParked();CBX.spawnStaff();MODE='open';OPEN.hp=4;OPEN.wasted=0;OPEN.ambushT=70;OPEN.markerCool=3;
@@ -3784,9 +3836,9 @@ function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  if(enterInput){enterInput=false;const pa=polAction();if(ARMS.open)shopClose();else if(POL.arrest){if(pa)pa.act()}else if(PCAR){if(PCAR.kind==='heli'&&!PCAR.canExit())toast(IS_TOUCH?'Land first: hold BRAKE to come down':TPK()?'Land first: hold ↓ to come down':'Land first: hold Shift to come down');else exitVehicle()}else if(pa)pa.act();else if(PL.dead<=0&&CBX.offer){CBX.takeOffer()}else if(PL.dead<=0&&CBX.talkable){CBX.talk(CBX.talkable)}else if(PL.dead<=0&&SSX.takeable){SSX.take()}else if(PL.dead<=0&&CYN&&CYN.takeable){CYN.take()}else if(PL.dead<=0&&DRT&&DRT.talkable){DRT.interact()}else if(PL.dead<=0){const v=nearestVehicle();if(v)enterVehicle(v);else{const m=OPEN.markers.find(q=>Math.hypot(PL.p.x-q.x,PL.p.z-q.z)<5.5);if(m&&!OPEN.active)missionStart(m.M)}}}
  if(OPEN.wasted>0){OPEN.wasted-=dt;PL.dead=OPEN.wasted;if(OPEN.wasted<=0){$('wasted').hidden=true;OPEN.hp=4;PL.dead=0;const f=OPEN.home||{x:HUB.cb.front[0],z:HUB.cb.front[1]};PL.spawn({x:f.x,z:f.z});if(f.yaw!==undefined)PL.yaw=f.yaw;toast(/^near /i.test(OPEN.homeName||'')?'Back '+OPEN.homeName.replace(/^Near/,'near'):'Back at '+(OPEN.homeName||'The Box'))}}
  if(PCAR){const inp=POL.arrest?STOP(PCAR):PCAR.kind==='heli'?heliInput():driveInput();if(resetInput){PCAR.respawn();resetInput=false;TP.vyaw=null}PCAR.update(dt,inp);
-  if(!PCAR){}else if(PCAR.kind==='heli'){if(inp.fire)PCAR.shoot();if(nadeInput){nadeInput=false;PCAR.rocket()}}else if(inp.fire){const cands=OPEN.pirates.filter(e=>e.dead<=0).concat(OPEN.pboats,OPEN.traffic.map(t=>t.car),typeof remoteCars==='function'?remoteCars():[]);PCAR.shoot(aimTarget(PCAR,cands,.35,80))}
+  if(!PCAR){}else if(PCAR.kind==='heli'){if(inp.fire)PCAR.shoot();if(nadeInput){nadeInput=false;PCAR.rocket()}}else if(inp.fire){const cands=OPEN.pirates.filter(e=>e.dead<=0).concat(OPEN.preps.map(P=>P.car),OPEN.pboats,OPEN.traffic.map(t=>t.car),typeof remoteCars==='function'?remoteCars():[]);PCAR.shoot(aimTarget(PCAR,cands,.35,80))}
   if(PCAR&&PCAR.kind==='car'&&nadeInput){nadeInput=false;oilDrop(PCAR)}
-  if(PCAR&&PCAR.kind==='car'){const bl=[PCAR,...OPEN.veh.filter(v=>v.kind==='car'&&v!==PCAR),...OPEN.traffic.map(t=>t.car),...POL.cops.map(C=>C.car)];carPush(bl)}
+  if(PCAR&&PCAR.kind==='car'){const bl=[PCAR,...OPEN.veh.filter(v=>v.kind==='car'&&v!==PCAR),...OPEN.preps.map(P=>P.car),...OPEN.traffic.map(t=>t.car),...POL.cops.map(C=>C.car)];carPush(bl)}
   if(PCAR)PL.p.copy(PCAR.p)}
  else{if(AA.man)aaManTick(dt);else if(OPEN.wasted<=0&&!POL.arrest&&!ARMS.open)footInput(dt);if(!POL.arrest)PL.sync(dt)}
  OPEN.veh.forEach(v=>{if(v===PCAR)return;if(v.kind==='boat'){v.update(dt,{gas:0,brake:0,steer:0})}else if(Math.abs(v.vf)>.3||v.awake>0){v.update(dt,STOP(v));v.awake=(v.awake||0)-dt}});
