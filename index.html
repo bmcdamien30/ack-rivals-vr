@@ -262,6 +262,9 @@ kbd{display:inline-block;min-width:1.5em;padding:0 5px;border:1px solid rgba(236
 .toggle[aria-pressed=true]{border-color:var(--sea);color:var(--sea)}
 .toggle[aria-pressed=false]{color:var(--muted);text-decoration:line-through}
 .panel{display:grid;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:rgba(9,22,34,.55)}
+.coop-msg{margin:0;font-size:.92em;opacity:.85}.coop-msg.warn{color:#ffb39f;opacity:1}.coop-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#coop-code{width:6.4em;text-transform:uppercase;letter-spacing:.22em;font:inherit;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:#fff}
+#coop-big{font:700 2.1em Anton,Impact,sans-serif;letter-spacing:.18em;color:#ffd23f}
 .panel .lab{margin:0}
 #online-list,#records-list{list-style:none;margin:0;padding:0;display:grid;gap:5px}
 #online-list li,#records-list li{display:flex;align-items:center;gap:8px;font:600 15px var(--f-hud);min-width:0}
@@ -452,6 +455,11 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
    <button type="button" id="b-music" class="toggle" aria-pressed="true">Music</button>
    <div id="gfx" class="chips small" role="group" aria-label="Graphics quality"><button type="button" data-v="auto">Auto</button><button type="button" data-v="low">Low</button><button type="button" data-v="medium">Med</button><button type="button" data-v="high">High</button><button type="button" data-v="ultra">Ultra</button></div>
   </div>
+  <section id="coop" class="panel" hidden aria-label="Play together">
+   <h2 class="lab">Play together <small id="coop-state">Private room for 2</small></h2>
+   <p id="coop-msg" class="coop-msg">Make a room and give your friend the 4 letters. No chat, and nobody else can join.</p>
+   <div class="coop-row"><button type="button" id="b-coop-make" class="btn primary small">Make a room</button><input id="coop-code" maxlength="4" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button type="button" id="b-coop-join" class="btn small">Join</button><button type="button" id="b-coop-go" class="btn primary small" hidden>Play Open Island</button><button type="button" id="b-coop-leave" class="btn small" hidden>Leave room</button></div>
+  </section>
   <section id="online" class="panel" hidden aria-label="Online">
    <h2 class="lab">On the island <small id="online-count">Just you</small></h2>
    <ul id="online-list"></ul>
@@ -1713,9 +1721,10 @@ const DRIVERS=[
  {key:'christian',name:'Christian',skin:'#e8b296',cheek:'#e08f80',beard:'#2b211c',beardType:'full',hair:'#231a15',hairline:-.55,hairTilt:.5,brow:'#2a1f19',iris:'#3a2a1c',eyes:'normal',noCap:true,shirt:'#2f4a3a',pants:'#3a4250',legs:'jeans',shoes:'#e6e2da',build:1.12,belly:.03,headS:1.04,mouth:'flat',paint:'#8b5cf6',jeep:'#3f2f6e',tag:'Short dark hair, full beard.'},
  {key:'peterson',name:'Peterson',skin:'#efc0a4',cheek:'#e6958a',beard:'#7a5536',beardType:'none',hair:'#6e4b2f',hairline:-.6,hairTilt:.38,brow:'#5e3f27',iris:'#3d5a78',eyes:'normal',noCap:true,shirt:'#d9d4c7',pants:'#2c3a52',legs:'jeans',shoes:'#3a3d44',build:1.32,belly:0,headS:1,mouth:'grin',paint:'#14b8a6',jeep:'#1d6f68',tag:'Tall guy, brown hair.'},
  {key:'damian',name:'Damian',nick:'GarnettWork',skin:'#e9b99c',cheek:'#e09684',beard:'#5a4a3e',beardType:'stubble',hair:'#2a221c',brow:'#2a221c',iris:'#3a2a1c',eyes:'normal',cap:'#141416',capBack:false,capLogo:'#d8b45a',glasses:'#111111',shades:true,shirt:'#e3a412',jacket:'#68745f',jacketRib:'#3d4536',fur:'#1c1a18',pants:'#151517',legs:'jeans',shoes:'#e8a21c',sole:'#121212',build:1.05,belly:.01,headS:1.04,mouth:'grin',paint:'#e8a21c',jeep:'#4f5a46',tag:'GarnettWork. Bomber, shades, gold kicks.'},
- {key:'ethan',name:'Ethan the Lion',nick:'The Hype',lion:true,bald:true,skin:'#d79a3c',cheek:'#d79a3c',beard:'#000000',beardType:'none',hair:'#b8742a',brow:'#5a3210',iris:'#e6a21a',eyes:'normal',mane:'#a9641f',mane2:'#e3a646',shirt:'#121214',longSleeve:true,suitTrim:'#d8b45a',cape:'#0e0e10',capeIn:'#c9a14a',pants:'#121214',legs:'jeans',shoes:'#121214',sole:'#d8b45a',build:1.18,belly:0,headS:1.15,mouth:'grin',paint:'#d8b45a',jeep:'#161618',tag:'Deal or Disaster. The hype, the heart.'}];
+ {key:'ethan',name:'Ethan the Lion',nick:'The Hype',lion:true,bald:true,skin:'#d79a3c',cheek:'#d79a3c',beard:'#000000',beardType:'none',hair:'#b8742a',brow:'#5a3210',iris:'#e6a21a',eyes:'normal',mane:'#a9641f',mane2:'#e3a646',shirt:'#121214',longSleeve:true,suitTrim:'#d8b45a',cape:'#0e0e10',capeIn:'#c9a14a',pants:'#121214',legs:'jeans',shoes:'#121214',sole:'#d8b45a',build:1.18,belly:0,headS:1.15,mouth:'grin',paint:'#d8b45a',jeep:'#161618',tag:'Deal or Disaster. The hype, the heart.'},
+ {key:'kingston',name:'Kingston',nick:'Ice Cream Boss',skin:'#b07a52',cheek:'#a86a48',beard:'#000000',beardType:'none',hair:'#1c1612',brow:'#1c1612',iris:'#2a1c12',eyes:'wide',noCap:true,shirt:'#efe6d2',jacket:'#4f6f9a',jacketRib:'#3b5578',fur:'#3b5578',pants:'#6b6b45',legs:'jeans',shoes:'#f2f2f0',sole:'#d9d9d9',build:.92,belly:0,headS:1.12,mouth:'grin',paint:'#f26d9a',jeep:'#f29bb6',tag:'Runs the ice cream stand. Denim jacket, cream hoodie.'}];
 /* who you can pick in the menu (Old Salt stays a local) */
-const PLAYABLE=[0,1,2,4,5,6,7];
+const PLAYABLE=[0,1,2,4,5,6,7,8];DRIVERS.forEach(d=>{d.base=d.name});
 /* ---------- painted faces: equirect textures that line up with a SphereGeometry ----------
    canvas 1024x512; the face centre (dx=0,dy=0) sits at (256,256); 1 radian = 163 px. dx>0 = viewer's right, dy>0 = down. */
 const FACE_K=1024/TAU;
@@ -3039,7 +3048,7 @@ function spentTick(dt){for(let i=DART.list.length-1;i>=0;i--){const d=DART.list[
  if(p.y<top+.025){p.y=top+.025;d.v.y=-d.v.y*.3;d.v.x*=.5;d.v.z*=.5;d.spin*=.5;if(Math.abs(d.v.y)<.6){d.rest=true;d.m.rotation.x=0;d.m.rotation.z=0}}}}
 // a dart that tags someone sticks to them until they're back in
 function stuckDart(parent,col,x,y,z){const m=new T.Mesh(DART.spent,DART.mat(col));m.position.set(x,y,z);m.rotation.set((Math.random()-.5)*.5,Math.PI+(Math.random()-.5)*.5,0);m.scale.setScalar(1.5);parent.add(m);return m}
-function fireBall(owner,o,dir,speed,col,remote,quiet,opt){if(opt===true)opt={fast:true};opt=opt||{};const dart=isDart(owner),fast=!!opt.fast;
+function fireBall(owner,o,dir,speed,col,remote,quiet,opt){if(opt===true)opt={fast:true};opt=opt||{};if(!remote&&COOP.state==='together'&&COOP.role==='host')coopFoeShot(owner,o,dir,speed,col);const dart=isDart(owner),fast=!!opt.fast;
  const m=dart?new T.Mesh(DART.fly,DART.mat(col)):new T.Mesh(BALL_GEO,mat(col));m.position.copy(o);if(dart){m.lookAt(o.x+dir.x,o.y+dir.y,o.z+dir.z);m.frustumCulled=false}scene.add(m);
  const big=!!(owner&&(owner===PL||owner.ally));if(big)m.scale.setScalar(1.6);
  BALLS.push({m,v:dir.clone().multiplyScalar(fast?speed*GUN.speedK:speed),g:opt.homing?0:fast?GUN.grav:11,owner,col,life:opt.life||(fast?GUN.life:2.2),remote,dart,tgt:opt.tgt||null,big});
@@ -3630,12 +3639,12 @@ function missionCount(E){const A=OPEN.active;if(!A||!E.mission||E.mission!==A.id
 function pirateDown(E,b){if(E.dead>0)return;const o=b.owner;if(o&&((o.n&&o.tgt)||o.prepAI||o.pirate))return;// rivals don't paint each other
  const heli=!!(o&&o.heli),mine=o===PL||o===PCAR||b.byCar||heli,ally=!!(o&&o.ally&&!heli);
  if(E.hp>1&&!(b.byCar&&!E.boss)){E.hp=Math.max(1,E.hp-(b.nade?2:1));if(!E.boss||E.hp%5===0)pedSplat(E,b.col||'#ff3b30');sfx('splat',.8);if(E.boss){bossHud(E);E.stag=.15}return}
- E.dead=E.down=E.ferry?3.2:7.5;E.hp=0;pedSplat(E,b.col||'#ff3b30');sfx('splat',1);const cash=E.boss?250:E.prep?40:E.sea?30:25,who=pirateName(E);
+ E.dead=E.down=E.ferry?3.2:7.5;E.hp=0;pedSplat(E,b.col||'#ff3b30');sfx('splat',1);const cash=E.boss?250:E.prep?40:E.sea?30:25,who=pirateName(E);if(o&&o.remote===true)coopKillBy(E,cash,who);
  if(E.boss){bossHud(null);showMissionCard('Captain Seaweed is splatted!','He dove overboard and his wild crew is jumping ship');sfx('win',1);earnSpecial('you beat Captain Seaweed',null,4600)}
  if(ally){feed(`<b>${esc(o.spec.name)}</b> splatted ${who}`,o.spec.paint);crewCheer(o);missionCount(E)}
  if(mine){OPEN.respect++;addCash(cash,null,true);feed(`${heli?'<b>Eagle Eye</b> splatted':'You splatted'} ${who}${b.byCar?' (bowled over)':''} · <b>+$${cash}</b>`,heli?'#2f6bff':DRIVERS[SEL].paint);missionCount(E)}
  if(!mine&&!ally)missionCount(E)}
-function pirateTick(dt){const me=ME();prepTick(dt);allyTick(dt);heliStrikeTick(dt);
+function pirateTick(dt){const me=ME();if(coopGuest())return;prepTick(dt);allyTick(dt);heliStrikeTick(dt);
  for(let k=OPEN.pirates.length-1;k>=0;k--){const E=OPEN.pirates[k];
   if(E.dead>0){E.dead-=dt;const up=E.down-E.dead;
    if(up<1.6||!me){poseNPC(E.n,0,0,CLOCK,'down');E.n.g.position.copy(E.p)}
@@ -3644,7 +3653,7 @@ function pirateTick(dt){const me=ME();prepTick(dt);allyTick(dt);heliStrikeTick(d
     const ax=E.p.x-me.p.x,az=E.p.z-me.p.z;E.yaw+=angWrap(Math.atan2(ax,az)+E.strafe*.35-E.yaw)*(1-Math.exp(-5*dt));const q={x:E.p.x+Math.sin(E.yaw)*5.8*dt,z:E.p.z+Math.cos(E.yaw)*5.8*dt};collide(q,.4,E.p.y+.5);
     if(!isWater(q.x,q.z,-.3)){E.p.x=q.x;E.p.z=q.z}else E.yaw+=3*dt;E.p.y=surfaceY(E.p.x,E.p.z,E.p.y);E.ph+=5.8*dt*2.1;E.n.g.position.copy(E.p);E.n.g.rotation.y=E.yaw;poseNPC(E.n,E.ph,1,CLOCK,'flee');if(Math.hypot(ax,az)>60)E.dead=0}
    if(E.dead<=0){drop(E.n.g);const i=TARGETS.indexOf(E.tgt);if(i>=0)TARGETS.splice(i,1);OPEN.pirates.splice(k,1)}continue}
-  if(!me)continue;const tp=me.p,dx=tp.x-E.p.x,dz=tp.z-E.p.z,d=Math.hypot(dx,dz);
+  if(!me)continue;const M=coopAim(E,me),tp=M.p,dx=tp.x-E.p.x,dz=tp.z-E.p.z,d=Math.hypot(dx,dz);
   if(d>420&&!E.mission){drop(E.n.g);const i=TARGETS.indexOf(E.tgt);if(i>=0)TARGETS.splice(i,1);OPEN.pirates.splice(k,1);continue}
   // bowled over by the player's car
   if(!E.ferry&&PCAR&&PCAR.kind==='car'&&Math.abs(PCAR.vf)>7&&Math.hypot(PCAR.p.x-E.p.x,PCAR.p.z-E.p.z)<2.2){pirateDown(E,{owner:PCAR,col:DRIVERS[SEL].paint,byCar:true});continue}
@@ -3655,7 +3664,7 @@ function pirateTick(dt){const me=ME();prepTick(dt);allyTick(dt);heliStrikeTick(d
   const q={x:E.p.x+wx/L*spd*dt,z:E.p.z+wz/L*spd*dt};collide(q,.4,E.p.y+.5);
   if(E.ferry){if(FERRY.aboard({x:q.x,z:q.z,y:E.p.y})){E.p.x=q.x;E.p.z=q.z}}else{pushFromVehicles(q,.45);if(!isWater(q.x,q.z,-.3)){E.p.x=q.x;E.p.z=q.z}}
   E.p.y=surfaceY(E.p.x,E.p.z,E.p.y);E.spd=spd;E.ph+=spd*dt*2.1;
-  E.cool-=dt;E.nadeCool-=dt;if(sees&&E.cool<=0&&d<60){E.cool=E.boss?.55+rnd()*.4:.85+rnd()*1.1;const o=E.p.clone().add(V3(0,E.boss?1.9:1.45,0)),t=tp.clone().add(V3(0,me===PL?1.1:.9,0)),sp=2.4+d*.03;t.x+=(me.vx||0)*d/58+(rnd()-.5)*sp;t.z+=(me.vz||0)*d/58+(rnd()-.5)*sp;t.y+=d*d*.0011+(rnd()-.5)*.8;const dir=t.sub(o).normalize();fireBall(E,o,dir,58,E.spec.paint);
+  E.cool-=dt;E.nadeCool-=dt;if(sees&&E.cool<=0&&d<60){E.cool=E.boss?.55+rnd()*.4:.85+rnd()*1.1;const o=E.p.clone().add(V3(0,E.boss?1.9:1.45,0)),t=tp.clone().add(V3(0,M===PL?1.1:.9,0)),sp=2.4+d*.03;t.x+=(M.vx||0)*d/58+(rnd()-.5)*sp;t.z+=(M.vz||0)*d/58+(rnd()-.5)*sp;t.y+=d*d*.0011+(rnd()-.5)*.8;const dir=t.sub(o).normalize();fireBall(E,o,dir,58,E.spec.paint);
    if(E.boss)for(const s2 of[-1,1]){const d2=dir.clone();d2.x+=s2*.07*Math.cos(E.yaw);d2.z-=s2*.07*Math.sin(E.yaw);fireBall(E,o,d2.normalize(),58,E.spec.paint,false,true)}}
   if(sees&&E.nades>0&&E.nadeCool<=0&&d>9&&d<24){E.nades--;E.nadeCool=E.boss?5:8;const dir=V3(dx,0,dz).normalize();dir.y=.32+d*.004;throwNade(E,E.p.clone().add(V3(0,1.6,0)),dir.normalize(),E.spec.paint)}
   E.n.g.position.copy(E.p);E.n.g.rotation.y=E.yaw;poseNPC(E.n,E.ph,1,CLOCK,sees&&d<60?'aim':null);if(sees&&d<60){E.n.lL.hp.rotation.x=Math.sin(E.ph)*.5;E.n.lR.hp.rotation.x=-Math.sin(E.ph)*.5}}
@@ -3689,7 +3698,7 @@ const rpick=a=>a[(rnd()*a.length)|0];
 function crewCheer(f){if(rnd()<.6)crewSay(f.spec.name,rpick(CREW_LINES.ko),f.spec.paint)}
 function allyFoes(){const L=[];for(const E of OPEN.pirates)if(E.dead<=0)L.push({p:E.p,y:E.boss?1.5:1.2});for(const P of OPEN.preps)L.push({p:P.car.p,y:1});for(const Z of ZED.list)if(Z.dead<=0&&!(Z.wait>0))L.push({p:Z.p,y:Z.boss?1.6:1.1});return L}
 function crewSpecs(){const n=VR.on?2:3,L=[],eth=DRIVERS.find(d=>d.key==='ethan');if(eth&&DRIVERS[SEL]!==eth)L.push(eth);L.push(Object.assign({},BAND[0],{paint:'#e8c35a'}));
- const pool=DRIVERS.filter((d,i)=>i!==SEL&&d.key!=='captain'&&d.key!=='ethan');while(L.length<n&&pool.length)L.push(pool.splice((rnd()*pool.length)|0,1)[0]);return L.slice(0,n)}
+ const pool=DRIVERS.filter((d,i)=>i!==SEL&&d.key!=='captain'&&d.key!=='ethan'&&d.key!=='kingston');while(L.length<n&&pool.length)L.push(pool.splice((rnd()*pool.length)|0,1)[0]);return L.slice(0,n)}
 function allyCall(force){if(MODE!=='open'||!PL||PCAR||PL.dead>0||PL.swim||OPEN.allies.length||(ALLY.cool>0&&!force))return;
  const onF=FERRY.aboard(PL.p),specs=crewSpecs(),guns=['minigun','shotgun','bazooka','smg'].sort(()=>rnd()-.5);
  specs.forEach((sp,k)=>{const side=k===0?-1:k===1?1:0;for(let t=0;t<16;t++){const a=PL.yaw+Math.PI+side*1.25+(rnd()-.5)*.6,r=onF?1.8+rnd()*1.4:4.5+rnd()*2,x=PL.p.x+Math.sin(a)*r,z=PL.p.z+Math.cos(a)*r;
@@ -3889,7 +3898,7 @@ function buildMarkers(){OPEN.markers.forEach(m=>drop(m.g));OPEN.markers=MISSIONS
   const beam=new T.Mesh(new T.CylinderGeometry(.8,.8,60,10,1,true),new T.MeshBasicMaterial({color:col,transparent:true,opacity:.12,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide}));beam.position.y=30;g.add(beam);
   const lbl=new T.Sprite(new T.SpriteMaterial({map:textTex([{t:M.name.toUpperCase(),f:'bold 54px Anton, Impact, sans-serif',y:48}],1024,96,{color:'#fff4d6'}),depthWrite:false,transparent:true}));lbl.scale.set(18,1.7,1);lbl.position.y=6.5;g.add(lbl);
   return{M,g,cyl,x:p[0],z:p[1]}})}
-function missionStart(M){const mk2=OPEN.markers.find(m=>m.M===M);OPEN.active={id:M.id,type:M.type,name:M.name,count:M.count||0,got:0,t:0,limit:M.limit||0};
+function missionStart(M){if(coopGuest()){toast('Your friend starts the missions while you play together');return}const mk2=OPEN.markers.find(m=>m.M===M);OPEN.active={id:M.id,type:M.type,name:M.name,count:M.count||0,got:0,t:0,limit:M.limit||0};
  if(M.type==='turf'){const p=[mk2.x,mk2.z];let n=0;for(let i=0;i<M.count*8&&n<M.count;i++){const a=i/M.count*TAU+rnd()*.4,r=M.prep?9+rnd()*14:22+rnd()*26;if(spawnPirate(p[0]+Math.cos(a)*r,p[1]+Math.sin(a)*r,{mission:M.id,nades:M.nades&&(!M.prep||n<2),prep:M.prep?['chad','brad','tucker','hunter'][n%4]:undefined}))n++}OPEN.active.count=n;if(M.prep){ALLY.cool=0;ALLY.wake=1}}
  const A_=OPEN.active;
  if(M.type==='hold'){A_.zx=mk2.x;A_.zz=mk2.z;A_.secs=M.secs;A_.held=0;A_.out=0;A_.spawnT=1.5;const rg=new T.Mesh(new T.RingGeometry(17.3,18,72),new T.MeshBasicMaterial({color:'#ffcf5a',transparent:true,opacity:.6,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(A_.zx,surfaceY(A_.zx,A_.zz)+.2,A_.zz);scene.add(rg);A_.ring=rg;ALLY.cool=0;ALLY.wake=1}
@@ -3959,7 +3968,7 @@ function startOpen(){clearWorld();resetParked();CBX.spawnStaff();MODE='open';OPE
  for(let i=0;i<2;i++)spawnOrca(HARBOR.center[0],HARBOR.center[1],800);spawnOrca(...LL(41.305,-70.13),900);
  buildMarkers();vehicleTargets();polStart();heliStart();skyStart();ferryStart();ZED.state='idle';ZED.cool=0;armsVan();buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('open');setSub('foot');missionHud();CAM=0;wmStartSpawn();
  toast(IS_TOUCH?'Walk to your jeep and tap ENTER':TPK()?'Slide on the trackpad to walk to your jeep · → gets in · ← shoots':'Walk to your jeep · E to get in · click to aim')}
-function playerHit(b){if(b.owner&&b.owner.crew)return;if(PCAR||PL.dead>0||OPEN.wasted>0)return;OPEN.hp--;OPEN.sinceHit=0;screenSplat(b.col||'#ff6a13');sfx('splat',1);if(b.remote&&typeof netHitBy==='function')netHitBy(b.owner);
+function playerHit(b){if(b.owner&&b.owner.crew)return;if(b.remote===true&&coopOn())return;if(PCAR||PL.dead>0||OPEN.wasted>0)return;OPEN.hp--;OPEN.sinceHit=0;screenSplat(b.col||'#ff6a13');sfx('splat',1);if(b.remote&&typeof netHitBy==='function')netHitBy(b.owner);
  if(OPEN.hp<=0){if(POL.wanted>0&&!POL.jail){OPEN.hp=1;bust();return}OPEN.wasted=3.2;PL.dead=3.2;$('wasted').hidden=false;if(OPEN.active&&OPEN.active.type!=='drive')missionFail('You got splatted.')}}
 function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  // health comes back if you stay out of the paint for a while
@@ -6309,13 +6318,13 @@ const NET={room:null,user:null,db:null,myId:null,myPeer:null,peers:[],remotes:ne
 const r2=v=>Math.round(v*100)/100,r3=v=>Math.round(v*1000)/1000;
 const pk=peer=>'p'+String(peer).replace(/[^A-Za-z0-9_]/g,'_').slice(0,40);
 const san=s=>String(s).replace(/[^A-Za-z0-9_.~:@+-]/g,'-').slice(0,120)||'anon';
-function myName(){return(DRIVERS[SEL].name||'Player').slice(0,18)}
+function myName(){const d=DRIVERS[SEL];return((typeof COOP_ROOM!=='undefined'&&NET.room===COOP_ROOM?d.base:d.name)||'Player').slice(0,18)}
 function netMode(){return MODE==='raceover'?'race':MODE==='battleover'?'over':MODE==='free'?'open':MODE}
 (async function(){if(!window.claude||typeof window.claude.use!=='function')return;
  try{const room=await window.claude.use('room');if(room){NET.room=room;room.onPeers(ch=>{NET.peers=ch.peers;const me=ch.peers.find(p=>p.isMe&&p.sameTab);if(me)NET.myPeer=me.peer;ch.left.forEach(p=>dropRemote(p.peer));renderOnline()},()=>{NET.room=null;renderOnline()});renderOnline()}}catch(e){}
  try{const u=await window.claude.use('user');if(u){NET.user=u;NET.myId=await u.id()}}catch(e){}
  try{const db=await window.claude.use('db');if(db){NET.db=db;db.collection('times').limit(300).onSnapshot(s=>{const rows=[];s.docs.forEach(d=>{const v=d.data()||{},b=v.best||{};Object.keys(b).forEach(r=>{if(typeof b[r]==='number')rows.push({route:r,t:b[r],name:v.name,col:v.col})})});LB.rows=rows;renderRecords()},()=>{})}}catch(e){}})();
-function netShot(o,dir,sp){NET.shotN++;NET.sh=[NET.shotN,r2(o.x),r2(o.y),r2(o.z),r3(dir.x),r3(dir.y),r3(dir.z),r2(sp)]}
+function netShot(o,dir,sp){NET.shotN++;NET.sh=[NET.shotN,r2(o.x),r2(o.y),r2(o.z),r3(dir.x),r3(dir.y),r3(dir.z),r2(sp)];const q=NET.shq||(NET.shq=[]);q.push(NET.sh);if(q.length>12)q.shift()}
 function netNade(o,dir){NET.nadeN++;NET.gr=[NET.nadeN,r2(o.x),r2(o.y),r2(o.z),r3(dir.x),r3(dir.y),r3(dir.z)]}
 function netHitBy(owner){if(!owner||!owner.peer)return;const k=pk(owner.peer);NET.hb[k]=(NET.hb[k]||0)+1}
 function netTick(dt){if(!NET.room)return;NET.acc+=dt;if(NET.acc<.075)return;NET.acc=0;const P={v:1,n:myName(),d:DRIVERS[SEL].key,m:netMode()};
@@ -6323,28 +6332,31 @@ function netTick(dt){if(!NET.room)return;NET.acc+=dt;if(NET.acc<.075)return;NET.
  else if(PCAR&&MODE==='open'){const c=PCAR;Object.assign(P,{k:c.kind,md:c.kind==='car'?c.model:null,cl:c.kind==='car'?(c.j.col||null):null,x:r2(c.p.x),y:r2(c.p.y),z:r2(c.p.z),h:r3(c.h),s:r2(c.vf),st:r2(c.st),pi:r2(c.pitch),rl:r2(c.roll),dd:null,dn:null})}
  else if(PL&&(FOOT()||MODE==='battleover')){Object.assign(P,{k:'foot',md:null,cl:null,x:r2(PL.p.x),y:r2(PL.p.y),z:r2(PL.p.z),h:r3(PL.yaw),pi:r2(PL.pitch),s:r2(PL.spd),dd:PL.dead>0?1:0,dn:null,sw:PL.swim?1:null})}
  else Object.assign(P,{x:null,y:null,z:null,dn:null});
- P.sh=NET.sh;P.gr=NET.gr;P.hb=NET.hb;P.lob=NET.lob;P.jn=NET.jn;
+ P.sh=NET.sh;P.sq=NET.shq&&NET.shq.length?NET.shq:null;NET.shq=[];P.gr=NET.gr;P.hb=NET.hb;P.lob=NET.lob;P.jn=NET.jn;
  NET.room.presence(P).catch(()=>{})}
 function remoteList(){return NET.peers.filter(p=>!p.isMe&&p.kind==='viewer'&&p.presence&&p.presence.v===1)}
 function onlinePeers(mode){return remoteList().filter(p=>p.presence.m===mode)}
 function dropRemote(peer){const R=NET.remotes.get(peer);if(!R)return;scene.remove(R.g);const i=TARGETS.indexOf(R.target);if(i>=0)TARGETS.splice(i,1);NET.remotes.delete(peer)}
-function specFor(p){const base=DRIVERS.find(d=>d.key===p.d)||DRIVERS[0];return Object.assign({},base,{name:String(p.n||'Friend').slice(0,18)})}
+function specFor(p){const base=DRIVERS.find(d=>d.key===p.d)||DRIVERS[0];return Object.assign({},base,{name:String((typeof COOP_ROOM!=='undefined'&&NET.room===COOP_ROOM?base.base:p.n)||'Friend').slice(0,18)})}
 function makeRemote(peer,p,kind){const spec=specFor(p),R={peer,kind,key:kind+(p.md||'')+(p.cl||''),spec,p:V3(p.x||0,p.y||0,p.z||0),h:p.h||0,vx:0,vz:0,remote:true,remoteT:true,splats:0,score:0,shotN:p.sh?p.sh[0]:0,nadeN:p.gr?p.gr[0]:0};
  if(kind==='car'||kind==='boat'){R.j=kind==='boat'?makeBoat(spec.paint):p.md&&p.md!=='jeep'?makeCarModel(p.md,p.cl||'#c9ccd1'):makeJeep(p.cl||spec.jeep);R.c=makeChar(spec);R.j.body.add(R.c.g);R.c.g.position.set(R.j.seat.x,kind==='boat'?R.j.seat.y-.4:(R.j.seatY||0),R.j.seat.z);R.g=R.j.g;const t=nameSprite(spec.name,spec.paint);t.position.y=3.3;R.g.add(t);
   R.target={owner:R,remoteT:true,r:2.3,pos:()=>R.p.clone().add(V3(0,.9,0)),hit:b=>{carSplatVisual(R,b.col)}}}
+ else if(kind==='heli'){R.j=makeHeliModel();R.g=R.j.g;R.c=makeChar(spec);R.j.body.add(R.c.g);R.c.g.position.copy(R.j.seat);const t=nameSprite(spec.name,spec.paint);t.position.y=4.2;R.g.add(t);
+  R.target={owner:R,remoteT:true,r:3,pos:()=>R.p.clone().add(V3(0,1.6,0)),hit:b=>{}}}
  else{R.c=makeChar(spec);R.g=R.c.g;const gun=makeMarker(spec.paint);R.c.aR.el.add(gun);gun.position.set(0,-.3,.06);gun.rotation.x=Math.PI/2;const t=nameSprite(spec.name,spec.paint);t.position.y=2.35;R.g.add(t);R.ph=0;
   R.target={owner:R,remoteT:true,r:.75,dead:()=>!!(R.pres&&R.pres.dd),pos:()=>R.p.clone().add(V3(0,1.15,0)),hit:b=>{}}}
  scene.add(R.g);NET.remotes.set(peer,R);return R}
 function updateRemotes(dt){if(!NET.room){return}const mine=(MODE==='race'||MODE==='free'||MODE==='raceover')?'drive':(MODE==='battle'||MODE==='battleover')?'foot':MODE==='open'?'open':null;const seen=new Set();let invite=null,footN=0;
- for(const peer of remoteList()){const p=peer.presence;if(p.lob&&p.lob.t>Date.now()&&p.lob.id!==NET.jn)invite={peer,lob:p.lob,name:String(p.n||'A friend').slice(0,18)};
-  const grp=(p.m==='race'||p.m==='free')?'drive':(p.m==='battle'||p.m==='over')?'foot':p.m==='open'?'open':null,kind=grp==='drive'?'car':grp==='foot'?'foot':grp==='open'?(p.k==='boat'?'boat':p.k==='car'?'car':'foot'):null;if(grp==='foot'&&p.m==='battle')footN++;
+ for(const peer of remoteList()){const p=peer.presence;if(p.lob&&p.lob.t>Date.now()&&p.lob.id!==NET.jn)invite={peer,lob:p.lob,name:specFor(p).name};
+  const grp=(p.m==='race'||p.m==='free')?'drive':(p.m==='battle'||p.m==='over')?'foot':p.m==='open'?'open':null,kind=grp==='drive'?'car':grp==='foot'?'foot':grp==='open'?(p.k==='boat'?'boat':p.k==='car'?'car':p.k==='heli'?'heli':'foot'):null;if(grp==='foot'&&p.m==='battle')footN++;
   if(!kind||grp!==mine||p.x==null)continue;seen.add(peer.peer);let R=NET.remotes.get(peer.peer);if(R&&(R.key!==kind+(p.md||'')+(p.cl||'')||R.spec.key!==p.d||R.spec.name!==p.n)){dropRemote(peer.peer);R=null}if(!R)R=makeRemote(peer.peer,p,kind);R.pres=p;
   if(!TARGETS.includes(R.target))TARGETS.push(R.target);
   const k=1-Math.exp(-14*dt),tp=V3(p.x,p.y,p.z);if(R.p.distanceTo(tp)>25)R.p.copy(tp);else R.p.lerp(tp,k);R.h=R.h+angWrap((p.h||0)-R.h)*k;R.vx=Math.sin(R.h)*(p.s||0);R.vz=Math.cos(R.h)*(p.s||0);R.cp=p.cp||0;
   if(kind==='car'||kind==='boat'){const g=R.g;g.position.copy(R.p);g.rotation.order='YXZ';g.rotation.set(-(p.pi||0),R.h,p.rl||0);R.j.wheels.forEach((w,i)=>{w.w.rotation.x+=(p.s||0)/.43*dt;if(i<2)w.piv.rotation.y=p.st||0});R.j.sw.rotation.z=-(p.st||0)*2.4;if(kind==='boat')poseHelm(R.c,p.st||0,CLOCK);else poseSeated(R.c,p.st||0,CLOCK);if(kind==='boat'&&Math.abs(p.s||0)>3&&rnd()<.6)puff(R.p.x-Math.sin(R.h)*3.3,.12,R.p.z-Math.cos(R.h)*3.3,'#ffffff',1.4,1.6,.08)}
+  else if(kind==='heli'){const g=R.g;g.position.copy(R.p);g.rotation.order='YXZ';g.rotation.set(-(p.pi||0),R.h,p.rl||0);if(R.j.rotor)R.j.rotor.rotation.y+=dt*28;if(R.j.tail)R.j.tail.rotation.x+=dt*40;poseSeated(R.c,0,CLOCK)}
   else{R.g.position.copy(R.p);R.g.rotation.y=R.h;if(p.dd)poseDown(R.c);else if(p.sw)poseSwim(R.c,CLOCK);else{const lp=R.lp||(R.lp=R.p.clone()),d=Math.max(dt,1e-3),vx=(R.p.x-lp.x)/d,vz=(R.p.z-lp.z)/d;R.vs=R.vs||{x:0,z:0,y:R.p.y};R.vs.x=lerp(R.vs.x,vx,.25);R.vs.z=lerp(R.vs.z,vz,.25);const gy=groundH(R.p.x,R.p.z);
    const sb=Math.sin(R.h),cb=Math.cos(R.h),sp=Math.min(9,Math.hypot(R.vs.x,R.vs.z));animChar(R.c,{spd:sp,fwd:R.vs.x*sb+R.vs.z*cb,side:R.vs.x*cb-R.vs.z*sb,ground:R.p.y<gy+.25,vy:(R.p.y-lp.y)/d,aim:1,pitch:p.pi||0,t:CLOCK},dt);lp.copy(R.p)}}
-  if(p.sh&&p.sh[0]!==R.shotN){R.shotN=p.sh[0];fireBall(R,V3(p.sh[1],p.sh[2],p.sh[3]),V3(p.sh[4],p.sh[5],p.sh[6]).normalize(),p.sh[7]||60,R.spec.paint,true)}
+  {const shots=p.sq||(p.sh?[p.sh]:[]);for(const q of shots){if(q[0]>R.shotN||(q[0]<R.shotN-1000)){R.shotN=q[0];fireBall(R,V3(q[1],q[2],q[3]),V3(q[4],q[5],q[6]).normalize(),q[7]||60,R.spec.paint,true)}}}
   if(p.gr&&p.gr[0]!==R.nadeN){R.nadeN=p.gr[0];throwNade(R,V3(p.gr[1],p.gr[2],p.gr[3]),V3(p.gr[4],p.gr[5],p.gr[6]).normalize(),R.spec.paint,true)}}
  for(const k of [...NET.remotes.keys()])if(!seen.has(k))dropRemote(k);
  // keep the local car out of friends' cars
@@ -6365,9 +6377,127 @@ function showInvite(inv){const el=$('invite');if(!el)return;if(!inv||NET.pending
  el.hidden=false;el.querySelector('span').textContent=`${inv.name} is starting ${rn} in ${s}s`;el._lob=inv.lob}
 function renderOnline(){const el=$('online');if(!el)return;if(!NET.room){el.hidden=true;return}el.hidden=false;const list=remoteList();
  const where={menu:'In the menu',race:'Racing',free:'Free driving',battle:'Blaster war',ctf:'Capture the flag',over:'Paintball war'};
- $('online-list').innerHTML=list.length?list.map(q=>{const p=q.presence;return`<li><i style="background:${specFor(p).paint}"></i>${esc(String(p.n||'Friend').slice(0,18))}<small>${where[p.m]||''}</small></li>`}).join(''):'<li class="empty">Nobody else is here yet. Share this page with your crew, and anyone who opens it shows up on your island.</li>';
+ $('online-list').innerHTML=list.length?list.map(q=>{const p=q.presence;return`<li><i style="background:${specFor(p).paint}"></i>${esc(specFor(p).name)}<small>${where[p.m]||''}</small></li>`}).join(''):(typeof COOP_ROOM!=='undefined'&&NET.room===COOP_ROOM?`<li class="empty">Waiting for your friend to type the code ${esc(COOP.code)}</li>`:'<li class="empty">Nobody else is here yet. Share this page with your crew, and anyone who opens it shows up on your island.</li>');
  $('online-count').textContent=list.length?`${list.length+1} on the island`:'Just you';
  const b=$('b-lobby');b.disabled=!!NET.pending;b.textContent=NET.pending?'Race starting…':`Race friends · ${ROUTES[SETTINGS.route].name}`}
+
+/* ---------- play together: a private room for you and one friend (Build 12) ----------
+   The room server only passes messages between the two players. Codes are 4 consonants so they can't spell words.
+   No chat, no typed names (everyone shows up as their driver), nothing stored. Whoever makes the room hosts:
+   their game runs the pirates, the preps and the missions, and the friend's game shows the same fight. */
+const COOP_URL='';
+const COOP_LETTERS='BCDFGHJKLMNPQRSTVWXZ';
+const COOP={state:'off',role:null,code:'',ws:null,tries:0,fp:null,fpT:0,nid:0,snapT:0,pup:new Map(),cars:new Map(),lastW:0,obS:null,ob:'',went:false,wasG:false,msg:'',warn:false,prevRoom:null,quit:false};
+const COOPUI={open:false,code:''};
+const coopOn=()=>COOP.state!=='off';
+const coopTogether=()=>COOP.state==='together';
+const coopBothOpen=()=>coopTogether()&&MODE==='open'&&!!COOP.fp&&COOP.fp.m==='open';
+const coopHost=()=>coopBothOpen()&&COOP.role==='host';
+const coopGuest=()=>coopBothOpen()&&COOP.role==='guest';
+function coopSend(o){const w=COOP.ws;if(w&&w.readyState===1){try{w.send(JSON.stringify(o))}catch(e){}}}
+const COOP_ROOM={presence(P){coopSend({t:'p',p:P});return Promise.resolve()},onPeers(){}};
+function coopPeers(){const L=[{peer:'me',isMe:true,sameTab:true,kind:'viewer',presence:null}];if(COOP.fp)L.push({peer:'friend',isMe:false,kind:'viewer',presence:COOP.fp});NET.peers=L;NET.myPeer='me'}
+function coopFriendName(){const d=COOP.fp&&DRIVERS.find(x=>x.key===COOP.fp.d);return d?d.base:'Your friend'}
+function coopNewCode(){const a=new Uint8Array(4);try{crypto.getRandomValues(a)}catch(e){for(let i=0;i<4;i++)a[i]=(Math.random()*256)|0}let c='';for(let i=0;i<4;i++)c+=COOP_LETTERS[a[i]%COOP_LETTERS.length];return c}
+function coopSay(t,warn){COOP.msg=t||'';COOP.warn=!!warn;coopUI()}
+function coopStatus(){const n=coopFriendName();
+ if(COOP.state==='off')return COOP.msg||'Make a room and give your friend the 4 letters. No chat, and nobody else can join.';
+ if(COOP.state==='connecting')return COOP.msg||'Connecting…';
+ if(COOP.state==='waiting')return `Room ${COOP.code} is open. Your friend picks Play together, enters ${COOP.code} and presses Join.`;
+ if(MODE==='open'&&COOP.fp&&COOP.fp.m==='open')return `${n} is on the island with you.${COOP.role==='guest'?' Your friend starts the missions.':''}`;
+ return COOP.fp?`${n} is here. Pick Open Island to play together.`:'Your friend is joining…'}
+function coopStart(role,code){if(!COOP_URL)return;if(code&&!/^[BCDFGHJKLMNPQRSTVWXZ]{4}$/.test(code)){coopSay('Enter the 4 letters from your friend’s screen',true);return}
+ coopLeave(true);COOP.quit=false;COOP.role=role;COOP.code=code||coopNewCode();COOP.state='connecting';COOP.tries=0;COOP.msg='';COOP.warn=false;COOPUI.code='';coopConnect(role);coopUI()}
+function coopConnect(as){let ws;try{ws=new WebSocket(COOP_URL.replace(/\/$/,'')+'/room/'+COOP.code+'?as='+as)}catch(e){coopFail('Couldn’t reach the room. Check the internet and try again.');return}
+ COOP.ws=ws;ws.onmessage=e=>{if(COOP.ws!==ws)return;let m;try{m=JSON.parse(e.data)}catch(_){return}if(m&&typeof m==='object')coopMsg(m,as)};
+ ws.onerror=()=>{};
+ ws.onclose=()=>{if(COOP.ws!==ws)return;COOP.ws=null;if(COOP.quit||COOP.state==='off')return;
+  if(COOP.state==='connecting'&&COOP.tries===0&&as!=='any'){coopFail('Couldn’t reach the room. Check the internet and try again.');return}
+  if(COOP.tries<5){COOP.tries++;coopDropFriend();COOP.state='connecting';coopSay('Reconnecting…');setTimeout(()=>{if(COOP.state==='connecting'&&!COOP.ws&&!COOP.quit)coopConnect('any')},800*COOP.tries)}
+  else coopFail('Lost the room. Make a new one to keep playing.')}}
+function coopFail(t){const q=COOP.ws;COOP.quit=true;COOP.ws=null;if(q)try{q.close()}catch(e){}coopDropFriend();coopRestore();COOP.state='off';COOP.code='';COOP.role=null;coopSay(t,true);toast(t)}
+function coopMsg(m,as){
+ if(m.t==='err'){if(m.why==='taken'&&as==='host'&&COOP.tries<3){COOP.tries++;const q=COOP.ws;COOP.ws=null;try{q.close()}catch(e){}COOP.code=coopNewCode();coopConnect('host');return}
+  if(m.why==='none'&&as==='any'){coopFail('Your friend left the room. Make a new one to keep playing.');return}
+  coopFail(m.why==='none'?'No room with that code. Check the letters with your friend.':m.why==='full'?'That room already has two players.':'That room is busy. Make a new one.');return}
+ if(m.t==='welcome'){COOP.role=m.role==='host'?'host':'guest';COOP.tries=0;COOP.msg='';COOP.warn=false;if(NET.room!==COOP_ROOM){COOP.prevRoom=NET.room;NET.room=COOP_ROOM}
+  COOP.state=(m.players|0)>1?'together':'waiting';coopPeers();renderOnline();if(COOP.state==='together')coopFriendIn();else toast(`Room ${COOP.code} is open`);coopUI();return}
+ if(m.t==='joined'){if((m.role==='host'?'host':'guest')===COOP.role)COOP.role=COOP.role==='host'?'guest':'host';COOP.state='together';coopFriendIn();coopUI();return}
+ if(m.t==='left'){coopDropFriend();if(COOP.state!=='off'){COOP.state='waiting';toast(`${coopFriendName()} left the room`)}coopUI();return}
+ if(m.t==='pong')return;
+ if(!coopTogether())return;
+ if(m.t==='p'&&m.p&&typeof m.p==='object'){const first=!COOP.fp;COOP.fp=m.p;COOP.fpT=performance.now();if(first){coopPeers();renderOnline();coopUI()}else NET.peers[1]&&(NET.peers[1].presence=m.p);return}
+ if(m.t==='w'&&COOP.role==='guest'){coopWorld(m);return}
+ if(m.t==='f'&&COOP.role==='guest'){coopFoeShotIn(m);return}
+ if(m.t==='k'&&COOP.role==='guest'){coopKillCredit(m);return}}
+function coopFriendIn(){sfx('beep',.8);toast('Your friend is in the room');coopUI()}
+function coopDropFriend(){COOP.fp=null;dropRemote('friend');coopClearPuppets();COOP.wasG=false;if(NET.room===COOP_ROOM){coopPeers();renderOnline()}coopUI()}
+function coopRestore(){if(NET.room===COOP_ROOM){NET.room=COOP.prevRoom||null;NET.peers=[];NET.myPeer=null;renderOnline()}COOP.prevRoom=null}
+function coopLeave(quiet){const w=COOP.ws;COOP.quit=true;COOP.ws=null;if(w)try{w.close(1000,'bye')}catch(e){}const was=COOP.state!=='off';coopDropFriend();coopRestore();COOP.state='off';COOP.code='';COOP.role=null;COOP.msg='';COOP.warn=false;if(was&&!quiet)toast('You left the room');coopUI()}
+/* --- host: share the fight --- */
+function coopTick(dt){if(COOP.state==='off')return;const g=coopGuest();
+ if(g&&!COOP.wasG){coopClearFoes();feed(`Playing together with <b>${esc(coopFriendName())}</b> · they run the missions`,'#ffd23f');COOP.went=false}
+ if(!g&&COOP.wasG)coopClearPuppets();COOP.wasG=g;
+ if(coopHost()){COOP.snapT-=dt;if(COOP.snapT<=0){COOP.snapT=.15;coopSendWorld()}}
+ if(g){coopPuppetTick(dt);if(performance.now()-COOP.lastW>3000&&(COOP.pup.size||COOP.cars.size))coopClearPuppets();if(!COOP.went&&PL&&!PCAR&&NET.remotes.get('friend')){COOP.went=true;coopGoTo(true)}}
+ if(MODE!=='open')COOP.went=false}
+function coopPupState(E){return E.dead>0?((E.down-E.dead)<1.6?1:2):0}
+function coopSendWorld(){const e=[],c=[];
+ for(const E of OPEN.pirates){if(!E.nid)E.nid=++COOP.nid;e.push([E.nid,E.boss?'boss':E.prep?E.prep:E.sea?'sea':'pir',r2(E.p.x),r2(E.p.y),r2(E.p.z),r2(E.yaw),coopPupState(E),r2(E.spd||0),E.hp|0,E.max|0]);if(e.length>=40)break}
+ for(const P of OPEN.preps){const k=P.car;if(!k.nid)k.nid=++COOP.nid;c.push([k.nid,k.model,k.spec.jeep||'#c9ccd1',r2(k.p.x),r2(k.p.y),r2(k.p.z),r3(k.h),r2(k.pitch||0),r2(k.roll||0)])}
+ const o=$('obj'),ob=o&&!o.hidden?(o.textContent||'').replace(/\s+/g,' ').trim().slice(0,90):'',m={t:'w',e,c};if(ob!==COOP.obS){COOP.obS=ob;m.ob=ob}coopSend(m)}
+function coopFoeShot(owner,o,dir,speed){if(!owner||!COOP.fp||COOP.fp.x==null)return;const id=owner.nid;if(!id||!(owner.tgt&&owner.n||owner.prepAI))return;
+ if(Math.hypot(o.x-COOP.fp.x,o.z-COOP.fp.z)>170)return;coopSend({t:'f',i:id,o:[r2(o.x),r2(o.y),r2(o.z)],d:[r3(dir.x),r3(dir.y),r3(dir.z)],s:r2(speed)})}
+function coopKillBy(E,cash,who){if(!coopTogether()||COOP.role!=='host')return;coopSend({t:'k',c:cash,w:E.spec.name});feed(`<b>${esc(coopFriendName())}</b> splatted ${who}`,(DRIVERS.find(d=>COOP.fp&&d.key===COOP.fp.d)||{}).paint||'#ffd23f')}
+// the host's pirates go after whichever of you is closer
+function coopAim(E,me){if(!coopHost())return me;const R=NET.remotes.get('friend');if(!R||R.kind==='heli'||(R.pres&&R.pres.dd))return me;
+ const dm=Math.hypot(me.p.x-E.p.x,me.p.z-E.p.z),dr=Math.hypot(R.p.x-E.p.x,R.p.z-E.p.z);E.aimF=E.aimF?dr<dm+8:dr<dm-8;return E.aimF?R:me}
+/* --- friend: show the host's fight --- */
+function coopPuppet(row){const id=row[0],kind=String(row[1]),pr=PREP_LOOK[kind]?kind:null,boss=kind==='boss',sw=kind==='sea'||boss,PK=pr?PREP_LOOK[pr]:null;
+ const n=pr?makeNPC({prep:true,look:pr,shirt:PK[1],pants:'#d9675a'}):sw?makeNPC({pirate:true,real:true,kelp:true,boss,look:boss?'seaweed':'seacrew',band:boss?'#1e3b2a':SEA_COL,shirt:boss?'#1f4a33':['#1f5a3a','#5a2a6a','#0f6b6b','#2b2b2f'][id%4],pants:boss?'#3a2a1c':'#4a5a6a'}):makeNPC({pirate:true,shirt:'#1b1b1f',pants:'#2c2c30'});
+ if(boss)n.g.scale.setScalar(1.35);scene.add(n.g);const col=pr?PREP_COL:sw?SEA_COL:'#ff6a13',gun=makeMarker(col);n.aR.sh.add(gun);gun.position.set(0,-.55,.08);gun.rotation.x=Math.PI/2;
+ if(boss){const tg=nameSprite('Captain Seaweed',SEA_COL);tg.position.set(0,2.05,0);tg.scale.multiplyScalar(.8);n.g.add(tg)}
+ const U={id,kind,n,p:V3(+row[2]||0,+row[3]||0,+row[4]||0),to:V3(+row[2]||0,+row[3]||0,+row[4]||0),yaw:+row[5]||0,toYaw:+row[5]||0,st:0,spd:0,ph:0,col,splats:0,coopPup:true,spec:{name:pr?PK[0]:boss?'Captain Seaweed':sw?'Seaweed crew':'Coatue Pirate',paint:col}};
+ U.tgt={owner:U,r:boss?1.05:.75,foe:true,dead:()=>U.st!==0,pos:()=>U.p.clone().add(V3(0,boss?1.5:1.1,0)),hit:b=>{if(U.splats++<4)pedSplat(U,b.col||'#ff3b30')}};TARGETS.push(U.tgt);COOP.pup.set(id,U);return U}
+function coopCar(row){const id=row[0],model=['defender','wagoneer'].includes(row[1])?row[1]:'defender',col=/^#[0-9a-fA-F]{6}$/.test(row[2])?row[2]:'#c9ccd1',j=makeCarModel(model,col);scene.add(j.g);
+ const n=makeNPC({prep:true,look:model==='defender'?'chad':'brad',shirt:'#f4f4f2',pants:'#d9675a'});j.body.add(n.g);n.g.position.set(j.seat.x,j.seatY||0,j.seat.z);
+ const C={id,j,n,p:V3(+row[3]||0,+row[4]||0,+row[5]||0),to:V3(+row[3]||0,+row[4]||0,+row[5]||0),h:+row[6]||0,toH:+row[6]||0,pi:0,rl:0,col:PREP_COL,coopPup:true,spec:{name:model==='defender'?'Chad’s Land Rover':'Brad’s Wagoneer',paint:PREP_COL}};
+ C.tgt={owner:C,r:2.3,foe:true,pos:()=>C.p.clone().add(V3(0,.9,0)),hit:b=>{if((C.spl=(C.spl||0)+1)<8)carSplatVisual(C,b.col||'#ff3b30')}};TARGETS.push(C.tgt);COOP.cars.set(id,C);return C}
+function coopDropPup(U,map){drop(U.n.g);if(U.j)drop(U.j.g);const i=TARGETS.indexOf(U.tgt);if(i>=0)TARGETS.splice(i,1);map.delete(U.id)}
+function coopClearPuppets(){[...COOP.pup.values()].forEach(U=>coopDropPup(U,COOP.pup));[...COOP.cars.values()].forEach(C=>coopDropPup(C,COOP.cars));bossHud(null)}
+function coopWorld(m){if(!coopGuest())return;COOP.lastW=performance.now();const seen=new Set(),seenC=new Set();let boss=null;
+ if(Array.isArray(m.e))for(const r of m.e.slice(0,40)){if(!Array.isArray(r)||typeof r[0]!=='number')continue;seen.add(r[0]);const U=COOP.pup.get(r[0])||coopPuppet(r);const was=U.st;
+  U.to.set(+r[2]||0,+r[3]||0,+r[4]||0);U.toYaw=+r[5]||0;U.st=r[6]|0;U.spd=+r[7]||0;if(U.st===1&&was===0){pedSplat(U,'#ff3b30');sfx('splat',.45)}if(U.kind==='boss'&&U.st===0)boss={dead:0,hp:Math.max(0,r[8]|0),max:Math.max(1,r[9]|0)}}
+ if(Array.isArray(m.c))for(const r of m.c.slice(0,6)){if(!Array.isArray(r)||typeof r[0]!=='number')continue;seenC.add(r[0]);const C=COOP.cars.get(r[0])||coopCar(r);C.to.set(+r[3]||0,+r[4]||0,+r[5]||0);C.toH=+r[6]||0;C.pi=+r[7]||0;C.rl=+r[8]||0}
+ [...COOP.pup.values()].forEach(U=>{if(!seen.has(U.id))coopDropPup(U,COOP.pup)});[...COOP.cars.values()].forEach(C=>{if(!seenC.has(C.id))coopDropPup(C,COOP.cars)});
+ bossHud(boss);
+ if(typeof m.ob==='string'&&m.ob!==COOP.ob){COOP.ob=m.ob;if(m.ob)feed(`<b>${esc(coopFriendName())}</b>’s mission: ${esc(m.ob.slice(0,90))}`,'#ffd23f')}}
+function coopPuppetTick(dt){const k=1-Math.exp(-10*dt),me=ME();
+ COOP.pup.forEach(U=>{if(U.p.distanceTo(U.to)>20)U.p.copy(U.to);else U.p.lerp(U.to,k);U.yaw+=angWrap(U.toYaw-U.yaw)*k;
+  const near=me&&Math.hypot(me.p.x-U.p.x,me.p.z-U.p.z)<60;U.ph+=(U.st===2?12:Math.min(14,U.spd*2.1))*dt;U.n.g.position.copy(U.p);U.n.g.rotation.y=U.yaw;
+  poseNPC(U.n,U.ph,U.st===1?0:1,CLOCK,U.st===1?'down':U.st===2?'flee':near?'aim':null)});
+ COOP.cars.forEach(C=>{if(C.p.distanceTo(C.to)>25)C.p.copy(C.to);else C.p.lerp(C.to,k);C.h+=angWrap(C.toH-C.h)*k;const g=C.j.g;g.position.copy(C.p);g.rotation.order='YXZ';g.rotation.set(-C.pi,C.h,C.rl)})}
+function coopFoeShotIn(m){if(!coopGuest()||!Array.isArray(m.o)||!Array.isArray(m.d))return;const U=COOP.pup.get(m.i)||COOP.cars.get(m.i);if(!U||U.st)return;
+ const d=V3(+m.d[0]||0,+m.d[1]||0,+m.d[2]||0);if(d.lengthSq()<1e-6)return;fireBall(U,V3(+m.o[0]||0,+m.o[1]||0,+m.o[2]||0),d.normalize(),Math.min(90,Math.max(20,+m.s||60)),U.col,'foe',true)}
+function coopKillCredit(m){if(MODE!=='open')return;const c=Math.max(0,Math.min(250,m.c|0));OPEN.respect++;addCash(c,null,true);feed(`You splatted <b>${esc(String(m.w||'a rival').slice(0,24))}</b> · <b>+$${c}</b>`,DRIVERS[SEL].paint)}
+function coopClearFoes(){for(let k=OPEN.pirates.length-1;k>=0;k--){const E=OPEN.pirates[k];drop(E.n.g);const i=TARGETS.indexOf(E.tgt);if(i>=0)TARGETS.splice(i,1)}OPEN.pirates.length=0;
+ for(let k=OPEN.preps.length-1;k>=0;k--)prepGone(OPEN.preps[k],k);if(typeof allyClear==='function')allyClear();if(OPEN.active)missionFail('Your friend runs the missions while you play together.');bossHud(null)}
+function coopGoTo(quiet){const R=NET.remotes.get('friend');if(MODE!=='open'||!PL){toast('Start Open Island first');return}if(!R){toast('Your friend isn’t on the island yet');return}
+ if(POL.jail||POL.arrest){toast('Not while you’re in police custody');return}const s=wmFindSpot(R.p.x+3,R.p.z+3);if(!s){toast('No dry land next to your friend');return}if(AA.man)aaLeave();if(PCAR)exitVehicle(true);
+ const g=groundH(s.x,s.z);PL.p.set(s.x,surfaceY(s.x,s.z,g+1.5),s.z);PL.vx=PL.vz=PL.vy=0;PL.yaw=Math.atan2(R.p.x-s.x,R.p.z-s.z);if(typeof tpReset==='function')tpReset();for(let i=0;i<8;i++)puff(s.x+(rnd()-.5)*2,g+.5+rnd(),s.z+(rnd()-.5)*2,'#ffffff',1.4,.8,.6);sfx('go',.6);toast(`You’re next to ${coopFriendName()}`)}
+/* --- screens --- */
+function coopOpen(){if(!COOP_URL)return;COOPUI.open=true;COOPUI.code='';coopUI()}
+function coopClose(){COOPUI.open=false;coopUI()}
+function coopUI(){if(VR.dirty)VR.dirty();const el=$('coop');if(!el)return;el.hidden=!COOP_URL;if(!COOP_URL)return;const on=coopOn();
+ $('coop-state').textContent=COOP.state==='together'?`Room ${COOP.code} · 2 players`:COOP.state==='waiting'?`Room ${COOP.code} · waiting`:COOP.state==='connecting'?'Connecting…':'Private room for 2';
+ const m=$('coop-msg');m.textContent=coopStatus();m.classList.toggle('warn',!!COOP.warn&&!on);
+ $('b-coop-make').hidden=on;$('coop-code').hidden=on;$('b-coop-join').hidden=on;$('b-coop-leave').hidden=!on;$('b-coop-go').hidden=!(coopTogether()&&MODE!=='open')}
+(function(){const el=$('coop');if(!el)return;
+ $('b-coop-make').addEventListener('click',()=>{try{audioStart()}catch(e){}coopStart('host')});
+ const inp=$('coop-code');inp.addEventListener('input',()=>{inp.value=inp.value.toUpperCase().replace(/[^BCDFGHJKLMNPQRSTVWXZ]/g,'').slice(0,4)});
+ const join=()=>{try{audioStart()}catch(e){}coopStart('guest',inp.value.toUpperCase())};$('b-coop-join').addEventListener('click',join);inp.addEventListener('keydown',e=>{if(e.key==='Enter')join()});
+ $('b-coop-go').addEventListener('click',()=>go('open'));$('b-coop-leave').addEventListener('click',()=>coopLeave());coopUI()})();
+setInterval(()=>{if(COOP.ws&&COOP.ws.readyState===1)try{COOP.ws.send('{"t":"ping"}')}catch(e){}},20000);
 
 /* ---------- records: shared board + personal bests ---------- */
 const LB={rows:[],local:{}};try{LB.local=JSON.parse(localStorage.getItem('ack-best')||'{}')}catch(e){}
@@ -6422,7 +6552,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  {const cp=camera.position;for(const c of PARKED){if(c===PCAR)continue;const far=Math.hypot(c.p.x-cp.x,c.p.z-cp.z)>420;if(far!==!!c._far){c._far=far;c.j.g.visible=!far}}}
  if(AU.ctx&&MUS.lp){const ct=AU.ctx.currentTime,d=CBX.dist,ins=CBX.inside;MUS.liveT=ins||d<55?1:0;if(MUS.liveT)songLoad();const close=clamp(1-(d-8)/50,0,1);MUS.lp.frequency.setTargetAtTime(MUS.live?(ins?9000:500+close*1500):5200,ct,.15);
   MUS.crowd.gain.setTargetAtTime(SETTINGS.music&&MUS.live?(ins?.055:.02*close)*(1+.8*Math.max(0,Math.sin(ct*.37)*Math.sin(ct*.23))):0,ct,.3);if(MUS.live)MUS.beat=MUS.songSrc&&ct>=MUS.songT0?(ct-MUS.songT0)*SONG_BPM/60:(ct-MUS.t0)*LIVE_BPM/60}
- updateRemotes(dt);netTick(dt);nightTick();
+ updateRemotes(dt);netTick(dt);coopTick(dt);nightTick();
  updateCamera(dt);if(MODE!=='menu'&&MODE!=='raceover'&&MODE!=='battleover'&&(PCAR||PL))updateHUD()}
 
 /* ================= VR mode (WebXR, Meta Quest) =================
@@ -6449,7 +6579,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  const oops=e=>{st.errN++;if(!st.err){st.err=String(e&&e.message||e).slice(0,110);try{console.error('[ACK VR]',e)}catch(_){}}};
  const menuOn=()=>PAUSED||MODE==='raceover'||MODE==='battleover';
  // which in-headset panel is up: map, shop, pause (or finished) menu, main menu, or none
- const uiMode=()=>WM.open?'map':ARMS.open?'shop':menuOn()?'pause':MODE==='menu'?'main':'';
+ const uiMode=()=>WM.open?'map':ARMS.open?'shop':COOPUI.open?'coop':menuOn()?'pause':MODE==='menu'?'main':'';
  function buzz(g,i,ms){try{const h=g&&g.hapticActuators&&g.hapticActuators[0];if(h&&h.pulse)h.pulse(i,ms)}catch(e){}}
  function note(k,msg){if(st.noted[k])return;st.noted[k]=1;toast(msg)}
  // resume from the pause screen; guarded so a trigger press and its select event can't toggle twice
@@ -6460,6 +6590,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  function menuItems(){
   if(PAUSED)return[{t:'Resume',go:resume},
    ...(MODE!=='menu'?[{t:'Island map',go:()=>{st.mute=true;if(PAUSED)togglePause();mapOpen()}}]:[]),
+   ...(COOP_URL?[{t:coopOn()?'Play together · room '+COOP.code:'Play together',go:coopOpen}]:[]),
    ...(PCAR?[{t:'Back on the road',go:()=>{resetInput=true;resume()}}]:[]),
    {t:'Music: '+(SETTINGS.music?'on':'off'),go:()=>{if(typeof toggleMusic==='function')toggleMusic()}},
    {t:'Turning: '+(snap?'snap':'smooth'),go:()=>{snap=!snap;try{localStorage.setItem('ack-vr-turn',snap?'snap':'smooth')}catch(e){}turnLbl()}},
@@ -6611,8 +6742,32 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   const gl=gfxPref();button(980,y,210,64,'Graphics: '+gl,'gfx',()=>{const nx=gl==='Low'?'medium':'low';try{localStorage.setItem('ack-gfx',nx)}catch(e){}toast('Graphics '+nx+' from the next time you start the game')},f24);
   button(1200,y,140,64,'Recenter','rec',recenter,f24);
   if(!STORE_APP)button(1350,y,150,64,'Leave VR','leave',exitVR,f24);
+  if(COOP_URL)button(40,694,BW-80,84,coopOn()?'PLAY TOGETHER · room '+COOP.code+(coopTogether()?' · '+coopFriendName()+' is here':''):'PLAY TOGETHER · a private room for you and one friend','coop',coopOpen,{font:'700 34px Barlow, Arial, sans-serif'});
   statusLine(BH-46)}
  function gfxPref(){let q=null;try{q=localStorage.getItem('ack-gfx')}catch(e){}const v=q||GFX.level;return v==='low'?'Low':v==='medium'?'Medium':v==='high'?'High':'Ultra'}
+ /* ---- play together (private room for two) ---- */
+ VR.dirty=()=>{bigDirty=true};
+ function drawCoop(){frame0('PLAY TOGETHER','A private room for you and one friend. No chat, and nobody else can join.');button(BW-220,34,180,70,'Done','close',coopClose);
+  const F=s=>({font:'700 '+s+'px Barlow, Arial, sans-serif'}),msg=coopStatus();bx.textBaseline='top';
+  if(!coopOn()){
+   button(40,160,560,120,'MAKE A ROOM','cmake',()=>{coopStart('host');bigDirty=true},{primary:true,font:'700 46px Anton, Impact, sans-serif'});
+   bx.fillStyle=COL.dim;bx.font='500 24px Barlow, Arial, sans-serif';bx.fillText('You get 4 letters to read out to your friend.',40,292);
+   bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('OR ENTER YOUR FRIEND’S CODE',660,160);
+   for(let i=0;i<4;i++){const x=660+i*100;bx.fillStyle=COL.card;rr(bx,x,196,86,96,16);bx.fill();bx.fillStyle='#ffd23f';bx.font='700 60px Anton, Impact, sans-serif';bx.textAlign='center';bx.textBaseline='middle';bx.fillText(COOPUI.code[i]||'',x+43,246);bx.textAlign='left';bx.textBaseline='top'}
+   button(1066,196,200,96,'Delete','cdel',()=>{COOPUI.code=COOPUI.code.slice(0,-1);bigDirty=true},F(30));
+   const ok=COOPUI.code.length===4;button(1276,196,220,96,'Join','cjoin',()=>{if(COOPUI.code.length===4)coopStart('guest',COOPUI.code);bigDirty=true},{primary:ok,off:!ok,font:'700 36px Barlow, Arial, sans-serif'});
+   const L=COOP_LETTERS,kw=(BW-80-9*12)/10;for(let i=0;i<L.length;i++){const r=(i/10)|0,c=i%10,x=40+c*(kw+12),y=340+r*122;button(x,y,kw,108,L[i],'ck'+L[i],()=>{if(COOPUI.code.length<4)COOPUI.code+=L[i];bigDirty=true},{font:'700 54px Anton, Impact, sans-serif'})}
+   bx.fillStyle=COOP.warn?'#ffb39f':COL.dim;bx.font='600 30px Barlow, Arial, sans-serif';wrapOn(bx,msg,40,610,BW-80,38,3)}
+  else{
+   bx.fillStyle=COL.dim;bx.font='600 24px Barlow, Arial, sans-serif';bx.fillText('ROOM CODE',40,150);
+   bx.fillStyle='#ffd23f';bx.font='700 150px Anton, Impact, sans-serif';bx.fillText(COOP.code.split('').join(' '),40,222);
+   bx.fillStyle='#fff';bx.font='600 34px Barlow, Arial, sans-serif';wrapOn(bx,msg,40,420,BW-80,44,3);
+   const y=560;let x=40;
+   if(coopTogether()&&MODE!=='open'){button(x,y,520,110,'START OPEN ISLAND','cgo',()=>{coopClose();if(PAUSED)togglePause();st.mute=true;go('open')},{primary:true,font:'700 40px Anton, Impact, sans-serif'});x+=540}
+   if(coopTogether()&&MODE==='open'&&COOP.fp&&COOP.fp.m==='open'){button(x,y,420,110,'Go to my friend','cfind',()=>{coopClose();if(PAUSED)togglePause();coopGoTo()},{primary:true,font:'700 36px Barlow, Arial, sans-serif'});x+=440}
+   button(x,y,300,110,'Leave room','cleave',()=>{coopLeave();bigDirty=true},F(34))}
+  statusLine(BH-60)}
+
  /* ---- gun shop ---- */
  function drawShop(){frame0('ACK ARMS','Gunny’s blaster surplus · you have '+money(CASH));button(BW-220,34,180,70,'Done','close',shopClose);
   const top=150,rh=(BH-top-80)/SHOP_ITEMS.length;
@@ -6684,7 +6839,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
     button(X+Wc-64,cy+12,48,48,'×','unsel',()=>{WM.sel=null},{font:'700 30px Barlow, Arial, sans-serif'})}}
   const t=statusLine(BH-34);if(t){}
   btex.needsUpdate=true}
- function drawBig(mode){SURF.big.hits=[];if(mode==='map')drawMap();else{if(mode==='shop')drawShop();else drawMain();btex.needsUpdate=true}}
+ function drawBig(mode){SURF.big.hits=[];if(mode==='map')drawMap();else{if(mode==='shop')drawShop();else if(mode==='coop')drawCoop();else drawMain();btex.needsUpdate=true}}
  // put the big panel (and the pause menu) in front of wherever you're looking
  function uiPlace(){const a=st.headYaw,d=1.15;st.uiYaw=a;st.uiY=st.headY;big.position.set(-Math.sin(a)*d,st.headY-.12,-Math.cos(a)*d);big.rotation.set(-.06,a,0,'YXZ')}
  /* ---- the pointer: cast each hand's ray at whichever panel is up ---- */
@@ -6736,6 +6891,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
      const z=dz(ry);if(z){WM.fly=null;wmZoomAt(Math.exp(-z*1.6*dt),MW/2,MW/2);bigDirty=true}}
     if(E.B||E.X||E.Y){if(VMK.kb)VMK.kb=false;else mapClose();bigDirty=true}}
    else if(mode==='shop'){if(E.B||E.X||E.Y)shopClose()}
+   else if(mode==='coop'){if(E.B||E.X)coopClose()}
    else if(mode==='main'){}
    return}
   A[0]=ax(L,2);A[1]=ax(L,3);
