@@ -435,7 +435,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 18</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 19</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 18</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 19</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1431,7 +1431,7 @@ const DCULL=(function(){const S={list:[],i:0,t:0,on:true,vr:false,boost:1},bs=ne
    for(let k=0;k<j;k++){const i=e.keep[k];A.set(e.mats.subarray(i*16,i*16+16),k*16);if(C&&e.cols)C.set(e.cols.subarray(i*3,i*3+3),k*3)}
    m.count=j;m.instanceMatrix.needsUpdate=true;if(C)m.instanceColor.needsUpdate=true}}
  return{S,tick,build,IM,get boost(){return S.boost||1},set boost(v){S.boost=v},count(){let h=0,t=0;for(const o of S.list){if(o.userData._dc)h++;if(o.userData._ts)t++}return{meshes:S.list.length,hidden:h,noShadow:t}}}})();
-function renderFrame(){try{npcLOD()}catch(e){}realSync();VRG.tick();try{DCULL.tick()}catch(e){}const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
+function renderFrame(){try{npcLOD()}catch(e){}realSync();VRG.tick();try{VREAL.tick()}catch(e){}try{DCULL.tick()}catch(e){}const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
  if(GRASS)GRASS.update(cp,SKY_U.time.value);treeLOD(cp);scene.updateMatrixWorld();WHEELS.update();if(typeof FX!=='undefined')FX.update();if(VR.on)VR.render();else if(POST)POST.render();else renderer.render(scene,camera)}
 
 /* ================= vehicle kit: rounded panels, merged per material, instanced wheels ================= */
@@ -1607,6 +1607,44 @@ let _glow=null;function glowTex(){if(_glow)return _glow;const c=document.createE
 /* amber turn-signal lens, shared by every vehicle */
 function VAMB(){return VMAT.amber||(VMAT.amber=VSTD({color:'#ff9a1f',emissive:new T.Color('#ff7a00'),emissiveIntensity:.35,roughness:.25}))}
 /* ---------- Jeep (faces +z) ---------- */
+/* ---------- sharper vehicles (Higgsfield 3D, Nov 18, 45 credits Damian okayed): up close the built vehicle swaps for a detailed textured model.
+   Far away, past the per-headset count, and from the driver's seat, the built one stays. Real wheels and rotors keep spinning on the built parts we keep. ---------- */
+const VREAL_URL={defender:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/d4dba77c-ae25-4273-98c7-ae64ce5f9e22.json',wagoneer:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/4937eb4d-30ae-4a66-b360-0533b659ca5c.json',cop:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/11391c12-da26-4f41-ac8f-6423bb187a8a.json',
+ jeep:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/307dcd1d-590a-4fa5-b811-08762128aa3b.json',boat:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/4e7e8969-0162-4a1f-8df2-d63f04f6e4a4.json',heli:'https://d2ol7oe51mr4n9.cloudfront.net/user_3IEerNJ8jDDMYt4PvLX71kF3qdq/1de08a26-3977-4573-a841-3829173e49bc.json'};
+// ry turns each model's nose to +z like the built ones; len is the long side in metres; y0 is where its lowest point sits in the body; paint is the model's own body colour (for repainting)
+const VREAL_FIT={defender:{ry:Math.PI/2,len:4.6,y0:-.5},wagoneer:{ry:-Math.PI/2,len:5.0,y0:-.5},cop:{ry:-Math.PI/2,len:4.85,y0:-.5},
+ jeep:{ry:-Math.PI/2,len:4.4,y0:-.55,paint:[200,184,152]},boat:{ry:0,len:6.4,y0:-.72},heli:{ry:-Math.PI/2,len:9.8,y0:0,dz:-1.5,hub:[.089,.14,0]}};
+const VREAL={on:true,list:[],src:{},wait:{},fail:{},t:0,near:GFX.q2?38:GFX.q3?60:GFX.L>=2?110:80,max:GFX.q2?4:GFX.q3?8:GFX.L>=2?14:10,tex:GFX.q2?1024:2048,shMat:null};
+const _vrc=new T.Vector3(),_vrp=new T.Vector3();
+function vrealGet(key,cb){const S=VREAL.src[key];if(S)return cb(S);const url=VREAL_URL[key];if(!url||(VREAL.fail[key]||0)>=2)return;const W=VREAL.wait[key];if(W){W.push(cb);return}VREAL.wait[key]=[cb];
+ fetch(url).then(r=>{if(!r.ok)throw new Error('model '+r.status);return r.json()}).then(D=>{const S=VREAL.src[key]=realBuild(D);S.key=key;S.mats={};S.geo.computeBoundingBox();const L=VREAL.wait[key];delete VREAL.wait[key];L.forEach(f=>{try{f(S)}catch(e){console.warn(e)}})})
+  .catch(e=>{console.warn('3D vehicle unavailable',key,e);delete VREAL.wait[key];VREAL.fail[key]=(VREAL.fail[key]||0)+1})}
+// one material per paint colour: the model's own paint is recoloured, everything else (glass, tyres, chrome, wood) stays
+function vrealMat(S,hex){const id=hex||'-';if(S.mats[id])return S.mats[id];const F=VREAL_FIT[S.key],m=S.mat.clone();m.roughness=.48;m.metalness=.12;m.side=T.FrontSide;S.mats[id]=m;
+ const make=()=>{const img=S.mat.map.image;if(!img)return false;const n=VREAL.tex,c=document.createElement('canvas');c.width=c.height=n;const x=c.getContext('2d');x.drawImage(img,0,0,n,n);
+  if(hex&&F.paint){const d=x.getImageData(0,0,n,n),q=d.data,B=F.paint,bl=(B[0]+B[1]+B[2])/3,bc=B.map(v=>v/bl),h=hex.replace('#',''),to=[0,2,4].map(i=>parseInt(h.substr(i,2),16));
+   for(let i=0;i<q.length;i+=4){const r=q[i],g=q[i+1],b=q[i+2],l=(r+g+b)/3;if(l<18)continue;const k=l/bl;if(k<.3||k>1.6)continue;const a=r/l-bc[0],e=g/l-bc[1],f=b/l-bc[2],dd=Math.sqrt(a*a+e*e+f*f);if(dd>.13)continue;
+    const w=Math.min(1,(.13-dd)/.05);q[i]=r+(Math.min(255,to[0]*k)-r)*w;q[i+1]=g+(Math.min(255,to[1]*k)-g)*w;q[i+2]=b+(Math.min(255,to[2]*k)-b)*w}x.putImageData(d,0,0)}
+  const t=new T.CanvasTexture(c);t.flipY=false;t.encoding=T.sRGBEncoding;t.anisotropy=GFX.aniso||4;m.map=t;m.needsUpdate=true;return true};
+ if(!make()){const iv=setInterval(()=>{if(make())clearInterval(iv)},250);setTimeout(()=>clearInterval(iv),30000)}return m}
+// register a built vehicle; keep lists parts that stay visible over the model (rotors, beacons, the driver)
+function vrealReg(j,key,paint,keep){if(!VREAL_URL[key]||!j||!j.body)return;keep=keep||[];
+ j.vr={key,paint:VREAL_FIT[key].paint?paint:null,proc:j.body.children.filter(o=>!o.isSprite&&!keep.includes(o)&&!o.userData.vrKeep),on:false,me:null,seen:0,out:0,d:1e9,len:j.len||VREAL_FIT[key].len};VREAL.list.push(j)}
+function vrealOn(j){const v=j.vr;if(v.on)return;const S=VREAL.src[v.key];if(!S){vrealGet(v.key,()=>{});return}
+ if(!v.me){const F=VREAL_FIT[v.key],bb=S.geo.boundingBox,sz=bb.getSize(new T.Vector3()),s=F.len/Math.max(sz.x,sz.z),me=new T.Mesh(S.geo,vrealMat(S,v.paint));
+  me.scale.setScalar(s);me.rotation.y=F.ry;me.position.set(0,F.y0-s*bb.min.y,F.dz||0);me.castShadow=!GFX.q2;me.receiveShadow=true;me.userData.vreal=1;v.me=me;v.s=s;v.bb=bb;j.body.add(me);
+  if(GFX.q2){// a cheap invisible box casts the shadow on Quest 2
+   const m=VREAL.shMat||(VREAL.shMat=new T.MeshBasicMaterial({colorWrite:false,depthWrite:false})),w=(F.ry?sz.z:sz.x)*s*.9,l=(F.ry?sz.x:sz.z)*s*.92,h=sz.y*s*.75,bx=new T.Mesh(new T.BoxGeometry(w,h,l),m);
+   bx.position.set(0,F.y0+h/2,F.dz||0);bx.castShadow=true;bx.receiveShadow=false;bx.userData.noCull=1;v.sh=bx;j.body.add(bx)}}
+ v.me.visible=true;if(v.sh)v.sh.visible=true;v.proc.forEach(o=>{o.userData._vrv=o.visible;o.visible=false});(j.wheels||[]).forEach(w=>{w.piv.userData._vrv=w.piv.visible;w.piv.visible=false});
+ if(j.vrSwap)try{j.vrSwap(true,v)}catch(e){}v.on=true}
+function vrealOff(j){const v=j.vr;if(!v.on)return;v.me.visible=false;if(v.sh)v.sh.visible=false;v.proc.forEach(o=>{o.visible=o.userData._vrv!==false});(j.wheels||[]).forEach(w=>{w.piv.visible=w.piv.userData._vrv!==false});
+ if(j.vrSwap)try{j.vrSwap(false,v)}catch(e){}v.on=false}
+VREAL.tick=function(){if(++this.t%8)return;camera.getWorldPosition(_vrc);const L=this.list,want=[];
+ for(let i=L.length-1;i>=0;i--){const j=L[i],v=j.vr;if(!inScene(j.g)){if(++v.out>(v.seen?300:900)){vrealOff(j);L.splice(i,1)}continue}v.seen=1;v.out=0;
+  j.g.getWorldPosition(_vrp);const d=_vrp.distanceTo(_vrc);v.d=d;if(this.on&&d<this.near&&d>v.len*.6)want.push(j);else vrealOff(j)}
+ want.sort((a,b)=>a.vr.d-b.vr.d);want.forEach((j,k)=>{if(k<this.max)vrealOn(j);else vrealOff(j)})};
+VREAL.count=function(){return this.list.filter(j=>j.vr.on).length};
 function makeJeep(color,trim){const g=new T.Group(),body=new T.Group();g.add(body);body.position.y=.55;const K=VKit(),y0=-.55,V=(x,y,z)=>new T.Vector3(x,y+y0,z);
  // open-top off-roader: tub, long hood, flat flared fenders, bar grille, round lamps, roll cage
  K.add('paint',rbox(1.82,.66,2.5,.12),0,1.0+y0,-.35);K.add('paint',rbox(1.66,.5,1.36,.14),0,1.06+y0,1.45);K.add('paint',rbox(1.62,.06,1.3,.03),0,1.32+y0,1.47,-.04);
@@ -1656,7 +1694,7 @@ function makeJeep(color,trim){const g=new T.Group(),body=new T.Group();g.add(bod
  const sw=new T.Group();sw.position.set(.42,1.02,.52);sw.rotation.x=-1.05;body.add(sw);mk(new T.TorusGeometry(.19,.025,8,24),'#161616',0,0,0,sw,false);mk(new T.BoxGeometry(.36,.04,.03),'#161616',0,0,0,sw,false);
  const spare=new T.Group();spare.position.set(0,.74,-1.88);spare.rotation.y=Math.PI/2;body.add(spare);WHEELS.reg(spare,.42,.26,'#2b2c2f');
  const wheels=wheelSet(g,[[.93,1.3],[-.93,1.3],[.93,-1.25],[-.93,-1.25]],.43,.34,'#2b2c2f');
- return{g,body,wheels,sw,ws:[out.glass],tail:tl,seat:new T.Vector3(.42,.62,-.05),len:4.4,col:color}}
+ const R={g,body,wheels,sw,ws:[out.glass],tail:tl,seat:new T.Vector3(.42,.62,-.05),len:4.4,col:color};vrealReg(R,'jeep',color);return R}
 
 /* our own rooster (used on The Box's sign, shirts, caps and the stage banner): upright, angular, big sickle tail */
 function drawChicken(gx,cx,cy,k=1,cols={}){const B=cols.body||'#d9a23a',Cm=cols.comb||'#d7312a',Bk=cols.beak||'#f0c25a',Tl=cols.tail||'#1f4d3f',Hk=cols.hackle||'#c8572a',Wg=cols.wing||'#9c4a22';gx.save();gx.translate(cx,cy);gx.scale(k,k);gx.lineCap='round';gx.lineJoin='round';
@@ -2286,7 +2324,7 @@ function makeCarModel(kind,color){const g=new T.Group(),body=new T.Group();g.add
  const out=K.build(body,{paint:paintMat(color),glass:VMAT.glass,chrome:VMAT.chrome,trim:VMAT.trim,dark:VMAT.dark,lamp:VMAT.lamp,tail:tl,plate:VMAT.plate,seat:VMAT.seat,amber:VAMB(),wood:paintMat('#7a4a28'),roofw:paintMat('#f1efe8')},['glass','lamp','seat','amber']);
  const sw=new T.Group();sw.position.set(.38,top+.22-.5,cz+cl*.28);sw.rotation.x=-1.1;body.add(sw);mk(new T.TorusGeometry(.17,.022,6,18),'#161616',0,0,0,sw,false);
  const wz=L/2-.86,wheels=wheelSet(g,[[W/2-.1,wz],[-(W/2-.1),wz],[W/2-.1,-wz],[-(W/2-.1),-wz]],wr,kind==='defender'?.3:.26,kind==='pickup'||kind==='defender'?'#3a3b3e':'#cfd0d2');
- return{g,body,wheels,sw,ws:[out.glass],tail:tl,seat:new T.Vector3(.38,top-.96,cz+cl*.05),seatY:{sedan:-.45,suv:-.28,pickup:-.3,van:-.2,defender:-.22,wagoneer:-.32}[kind]||-.4,len:L,col:color}}
+ const R={g,body,wheels,sw,ws:[out.glass],tail:tl,seat:new T.Vector3(.38,top-.96,cz+cl*.05),seatY:{sedan:-.45,suv:-.28,pickup:-.3,van:-.2,defender:-.22,wagoneer:-.32}[kind]||-.4,len:L,col:color};if(kind==='defender'||kind==='wagoneer')vrealReg(R,kind,color);return R}
 
 /* ---------- center-console skiff ---------- */
 function makeBoat(color,style){const g=new T.Group(),body=new T.Group();g.add(body);const K=VKit();
@@ -2306,7 +2344,7 @@ function makeBoat(color,style){const g=new T.Group(),body=new T.Group();g.add(bo
   K.add('lamp',rbox(.06,.06,.04,.02),s*.4,.6,3.05)});
  const out=K.build(body,{hull:VSTD({color:'#ffffff',roughness:.3,vertexColors:true,envMapIntensity:.9}),stripe:paintMat(color),deck:VMAT.deck,white:VMAT.white,glass:VMAT.glass,dark:VMAT.dark,seat:VMAT.seat,rubber:paintMat('#1b1c1f'),chrome:VMAT.chrome,lamp:VMAT.lamp},['glass','lamp','deck']);
  const sw=new T.Group();sw.position.set(0,1.35,-.02);sw.rotation.x=-.9;body.add(sw);mk(new T.TorusGeometry(.17,.022,6,18),'#161616',0,0,0,sw,false);
- return{g,body,wheels:[],sw,ws:[out.glass],seat:new T.Vector3(0,.55,-.55),stand:true,len:6.3}}
+ const R={g,body,wheels:[],sw,ws:[out.glass],seat:new T.Vector3(0,.55,-.55),stand:true,len:6.3};vrealReg(R,'boat',color);return R}
 
 /* ---------- killer whale (a generic orca) ---------- */
 function makeOrca(){const g=new T.Group(),body=new T.Group();g.add(body);
@@ -4625,7 +4663,11 @@ function makeHeliModel(V){V=V||{};const g=new T.Group(),body=new T.Group();g.add
  /* the low-poly Higgsfield helicopter looked worse than the built one, so it stays off */ if(HELI_HFM)hfWhen(()=>{const m=HFM.info.heli;if(!m||!HFM.geo.heli)return;const s=8.4/m.sz[2],zmax=m.mn[2]+m.sz[2],geo=V.red&&V.red!=='#c62828'?hfTinted('heli',V.red):HFM.geo.heli;
   const me=new T.Mesh(geo,hfMat());me.scale.setScalar(s);me.position.set(-s*(m.mn[0]+m.sz[0]/2),-s*m.mn[1],3.0-s*zmax);me.castShadow=true;me.receiveShadow=true;body.add(me);
   proc.forEach(o=>o.visible=false);const top=s*(m.ymax-m.mn[1]),mzz=me.position.z+s*m.ztop;rotor.position.set(0,top+.05,mzz);blur.position.set(0,top+.07,mzz);beacon.position.set(0,top-.35,mzz-1.1)});
- return{g,body,rotor,tail,blur,beacon,ws:[out.glass],seat:new T.Vector3(.45,.62,1.2),len:11}}
+ const R={g,body,rotor,tail,blur,beacon,ws:[out.glass],seat:new T.Vector3(.45,.62,1.2),len:11};vrealReg(R,'heli',null,[blur,rotor]);
+ // with the 3D model on: the spinning rotor moves onto its mast, the built tail rotor hides (the model has its own)
+ const r0=rotor.position.clone(),b0=blur.position.clone(),e0=beacon.position.clone();R.vrSwap=(on,v)=>{if(!on){rotor.position.copy(r0);rotor.scale.setScalar(1);blur.position.copy(b0);blur.scale.setScalar(1);beacon.position.copy(e0);tail.visible=true;return}
+  const F=VREAL_FIT.heli,H=F.hub,s=v.s,y=F.y0+s*(H[1]-v.bb.min.y),z=(F.dz||0)+s*H[0],k=s*.46/5.2;rotor.position.set(0,y+.04,z);rotor.scale.setScalar(k);blur.position.set(0,y+.06,z);blur.scale.setScalar(k);beacon.position.set(0,y-.4,z-1.6);tail.visible=false};
+ return R}
 class Heli{constructor(home,V){this.kind='heli';this.spec=(V&&V.spec)||{name:'ACK MedFlight',paint:'#ff3b30',jeep:'#f4f4f2',key:'heli'};this.j=makeHeliModel(V);scene.add(this.j.g);this.c=null;this.player=false;this.home=home;
   this.p=V3();this.vx=this.vz=this.vy=0;this.h=0;this.tAlt=0;this.nd=0;this.roll=0;this.rotor=0;this.spin=0;this.max=14;this.hp=14;this.ammo=90;this.reload=0;this.cool=0;this.rk=8;this.rkCool=0;this.rkReload=0;
   this.dead=0;this.landed=true;this.surface='air';this.boostT=0;this.immune=0;this.air=false;this.st=0;this.capsized=0;this.fixT=0}
@@ -5272,8 +5314,16 @@ function copDeco(car){const b=car.j.body,y0=-.5,W=1.92,top=1.2,ch=.6,cz=-.3,L=4.
 function setLights(C,on,dt){const lb=C.car.lb;if(!lb)return;if(!on){if(C._lit){C._lit=false;lb.mR.color.set('#4a0808');lb.mB.color.set('#08154a');lb.gR.material.opacity=0;lb.gB.material.opacity=0}return}
  C._lit=true;C.flash=(C.flash||0)+dt;const ph=Math.floor(C.flash*7)%4,red=ph<2,str=ph%2===0,k=POST?3.2:1.4,go=NIGHT_ON?1:.55;
  lb.mR.color.setRGB(red?k:.3,red?.1*k:0,red?.06*k:0);lb.mB.color.setRGB(!red?.12*k:0,!red?.3*k:0,!red?k:.3);lb.gR.material.opacity=red?(str?1:.55)*go:0;lb.gB.material.opacity=!red?(str?1:.55)*go:0}
+// the 3D cruiser's own door lettering came out garbled, so our POLICE door panels cover it while it's showing
+let _copPanel=null;function copPanelMat(){if(_copPanel)return _copPanel;const[c,x]=mkCanvas(512,128);x.clearRect(0,0,512,128);x.fillStyle='#f6f7f8';x.beginPath();x.roundRect?x.roundRect(4,4,504,120,26):x.rect(4,4,504,120);x.fill();
+ x.fillStyle='#1d2b4a';x.font='900 84px Anton, Impact, sans-serif';x.textAlign='center';x.fillText('POLICE',300,96);x.fillStyle='#d6b45a';x.beginPath();for(let i=0;i<10;i++){const a=i/10*TAU-Math.PI/2,r=i%2?16:38;x.lineTo(68+Math.cos(a)*r,64+Math.sin(a)*r)}x.fill();
+ return _copPanel=new T.MeshLambertMaterial({map:cTex(c),transparent:true,alphaTest:.5})}
+function copSwap(car){const lb=car.lb;if(!lb)return;const y0=lb.gR.position.y;let pans=null;
+ car.j.vrSwap=(on,v)=>{const y=on?-.5+v.s*(v.bb.max.y-v.bb.min.y)-.02:y0;lb.gR.position.y=y;lb.gB.position.y=y;
+  if(on&&!pans){pans=[-1,1].map(sd=>{const m=new T.Mesh(new T.PlaneGeometry(1.0,.25),copPanelMat());m.position.set(sd*(.18*v.s+.012),-.5+v.s*(.0-v.bb.min.y),.11*v.s);m.rotation.y=sd*Math.PI/2;m.userData.noCull=1;car.j.body.add(m);return m})}
+  if(pans)pans.forEach(m=>m.visible=on)}}
 function makeCop(x,z,h,mode){const car=new Car({name:'Nantucket Police',paint:'#2f6bff',jeep:'#f4f4f2'},false,{model:'suv',driver:false});
- const n=makeNPC({cop:true});n.npc=true;car.seat(n);car.cop=true;copDeco(car);car.place(x,z,h);
+ const n=makeNPC({cop:true});n.npc=true;car.seat(n);car.cop=true;copDeco(car);vrealReg(car.j,'cop',null,[n.g]);copSwap(car);car.place(x,z,h);
  const C={car,mode,r:-1,i:0,dir:1,stuck:0,scared:0,honk:0,rev:0,stuckT:0,side:rnd()<.5?1:-1,home:null,search:null,searchT:0};car.copE=C;POL.cops.push(C);vehicleTargets();return C}
 function removeCop(C){if(POL.tstop&&POL.tstop.C===C)POL.tstop=null;if(POL.arrest&&POL.arrest.C===C)return;freeBates(C);drop(C.car.j.g);const i=TARGETS.indexOf(C.car.tgt);if(i>=0)TARGETS.splice(i,1);const k=POL.cops.indexOf(C);if(k>=0)POL.cops.splice(k,1);if(POL.stopper===C)POL.stopper=null}
 function attachRoad(C){const c=C.car,nr=nearestRoad(c.p.x,c.p.z);if(nr.r<0||nr.d>14||ROADS[nr.r].type==='sand')return false;const R_=ROADS[nr.r],n=R_.pts.length;let bi=0,bd=1e9;
