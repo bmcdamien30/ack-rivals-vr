@@ -4663,7 +4663,7 @@ function makeHeliModel(V){V=V||{};const g=new T.Group(),body=new T.Group();g.add
  /* the low-poly Higgsfield helicopter looked worse than the built one, so it stays off */ if(HELI_HFM)hfWhen(()=>{const m=HFM.info.heli;if(!m||!HFM.geo.heli)return;const s=8.4/m.sz[2],zmax=m.mn[2]+m.sz[2],geo=V.red&&V.red!=='#c62828'?hfTinted('heli',V.red):HFM.geo.heli;
   const me=new T.Mesh(geo,hfMat());me.scale.setScalar(s);me.position.set(-s*(m.mn[0]+m.sz[0]/2),-s*m.mn[1],3.0-s*zmax);me.castShadow=true;me.receiveShadow=true;body.add(me);
   proc.forEach(o=>o.visible=false);const top=s*(m.ymax-m.mn[1]),mzz=me.position.z+s*m.ztop;rotor.position.set(0,top+.05,mzz);blur.position.set(0,top+.07,mzz);beacon.position.set(0,top-.35,mzz-1.1)});
- const R={g,body,rotor,tail,blur,beacon,ws:[out.glass],seat:new T.Vector3(.45,.62,1.2),len:11};vrealReg(R,'heli',null,[blur]);
+ const R={g,body,rotor,tail,blur,beacon,ws:[out.glass],seat:new T.Vector3(.45,.62,1.2),len:11};vrealReg(R,'heli',null,[blur,rotor]);
  // with the 3D model on: the spinning rotor moves onto its mast, the built tail rotor hides (the model has its own)
  const r0=rotor.position.clone(),b0=blur.position.clone(),e0=beacon.position.clone();R.vrSwap=(on,v)=>{if(!on){rotor.position.copy(r0);rotor.scale.setScalar(1);blur.position.copy(b0);blur.scale.setScalar(1);beacon.position.copy(e0);tail.visible=true;return}
   const F=VREAL_FIT.heli,H=F.hub,s=v.s,y=F.y0+s*(H[1]-v.bb.min.y),z=(F.dz||0)+s*H[0],k=s*.46/5.2;rotor.position.set(0,y+.04,z);rotor.scale.setScalar(k);blur.position.set(0,y+.06,z);blur.scale.setScalar(k);beacon.position.set(0,y-.4,z-1.6);tail.visible=false};
@@ -5314,7 +5314,14 @@ function copDeco(car){const b=car.j.body,y0=-.5,W=1.92,top=1.2,ch=.6,cz=-.3,L=4.
 function setLights(C,on,dt){const lb=C.car.lb;if(!lb)return;if(!on){if(C._lit){C._lit=false;lb.mR.color.set('#4a0808');lb.mB.color.set('#08154a');lb.gR.material.opacity=0;lb.gB.material.opacity=0}return}
  C._lit=true;C.flash=(C.flash||0)+dt;const ph=Math.floor(C.flash*7)%4,red=ph<2,str=ph%2===0,k=POST?3.2:1.4,go=NIGHT_ON?1:.55;
  lb.mR.color.setRGB(red?k:.3,red?.1*k:0,red?.06*k:0);lb.mB.color.setRGB(!red?.12*k:0,!red?.3*k:0,!red?k:.3);lb.gR.material.opacity=red?(str?1:.55)*go:0;lb.gB.material.opacity=!red?(str?1:.55)*go:0}
-function copSwap(car){const lb=car.lb;if(!lb)return;const y0=lb.gR.position.y;car.j.vrSwap=(on,v)=>{const y=on?-.5+v.s*(v.bb.max.y-v.bb.min.y)-.02:y0;lb.gR.position.y=y;lb.gB.position.y=y}}
+// the 3D cruiser's own door lettering came out garbled, so our POLICE door panels cover it while it's showing
+let _copPanel=null;function copPanelMat(){if(_copPanel)return _copPanel;const[c,x]=mkCanvas(512,128);x.clearRect(0,0,512,128);x.fillStyle='#f6f7f8';x.beginPath();x.roundRect?x.roundRect(4,4,504,120,26):x.rect(4,4,504,120);x.fill();
+ x.fillStyle='#1d2b4a';x.font='900 84px Anton, Impact, sans-serif';x.textAlign='center';x.fillText('POLICE',300,96);x.fillStyle='#d6b45a';x.beginPath();for(let i=0;i<10;i++){const a=i/10*TAU-Math.PI/2,r=i%2?16:38;x.lineTo(68+Math.cos(a)*r,64+Math.sin(a)*r)}x.fill();
+ return _copPanel=new T.MeshLambertMaterial({map:cTex(c),transparent:true,alphaTest:.5})}
+function copSwap(car){const lb=car.lb;if(!lb)return;const y0=lb.gR.position.y;let pans=null;
+ car.j.vrSwap=(on,v)=>{const y=on?-.5+v.s*(v.bb.max.y-v.bb.min.y)-.02:y0;lb.gR.position.y=y;lb.gB.position.y=y;
+  if(on&&!pans){pans=[-1,1].map(sd=>{const m=new T.Mesh(new T.PlaneGeometry(1.0,.25),copPanelMat());m.position.set(sd*(.18*v.s+.012),-.5+v.s*(.0-v.bb.min.y),.11*v.s);m.rotation.y=sd*Math.PI/2;m.userData.noCull=1;car.j.body.add(m);return m})}
+  if(pans)pans.forEach(m=>m.visible=on)}}
 function makeCop(x,z,h,mode){const car=new Car({name:'Nantucket Police',paint:'#2f6bff',jeep:'#f4f4f2'},false,{model:'suv',driver:false});
  const n=makeNPC({cop:true});n.npc=true;car.seat(n);car.cop=true;copDeco(car);vrealReg(car.j,'cop',null,[n.g]);copSwap(car);car.place(x,z,h);
  const C={car,mode,r:-1,i:0,dir:1,stuck:0,scared:0,honk:0,rev:0,stuckT:0,side:rnd()<.5?1:-1,home:null,search:null,searchT:0};car.copE=C;POL.cops.push(C);vehicleTargets();return C}
