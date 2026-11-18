@@ -435,7 +435,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 17</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 18</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 17</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 18</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -800,7 +800,15 @@ const GFX=(function(){let q=null;try{q=localStorage.getItem('ack-gfx')}catch(e){
  const L={low:0,medium:1,high:2,ultra:3}[level];
  const R0={level,auto:!q,L,mobile,ios,stepped,pbr:L>=1,post:L>=1,msaa:L>=2,grass:[0,4200,11000,18000][L],grassR:[0,45,70,95][L],shadow:[1024,1536,2048,4096][L],shadowR:[60,70,90,120][L],pr:[1,mobile?1.35:1.5,2,2.5][L],scale:1,quest:questUA},G=R0;
  // Quest headsets: full detail (photo textures, lit houses, fuller trees) with a lighter grass and shadow budget so it holds 72 fps
- if(questUA&&L===1)Object.assign(G,{grass:2200,grassR:38,shadow:1024,shadowR:60,pr:1,msaa:false});return G})();
+ if(questUA&&L===1)Object.assign(G,{grass:2200,grassR:38,shadow:1024,shadowR:48,pr:1,msaa:false});
+ // which headset: Quest 3, 3S and Pro have a much stronger chip, so they get the top headset setting; Quest 2 keeps the lighter one
+ let q3=/Quest ?3|Quest ?Pro|Quest ?4/i.test(navigator.userAgent);
+ if(questUA&&!q3&&!/Quest ?2/i.test(navigator.userAgent)){try{const c=document.createElement('canvas').getContext('webgl'),e=c&&c.getExtension('WEBGL_debug_renderer_info'),r=e?String(c.getParameter(e.UNMASKED_RENDERER_WEBGL)):'';q3=/Adreno \(TM\) (7[3-9]\d|[89]\d\d)/.test(r);try{c.getExtension('WEBGL_lose_context').loseContext()}catch(_){}}catch(e){}}
+ G.q3=questUA&&q3;G.q2=questUA&&!q3;
+ if(G.q3&&L===1)Object.assign(G,{grass:6500,grassR:58,shadow:2048,shadowR:72,pr:1.25});
+ // far detail: a thing smaller than this share of its distance is skipped (it would be only a few pixels across)
+ G.cullK=[.003,.003,.002,.0012][L];G.vrK=G.q3?.0042:.0065;G.aniso=G.q2?4:G.q3?8:L>=2?16:8;return G})();
+THREE.Texture.DEFAULT_ANISOTROPY=GFX.aniso;
 if(GFX.pbr){const Std=THREE.MeshStandardMaterial;
  // every Lambert/Phong material in the game becomes a physically based one, lit by the sky
  T.MeshLambertMaterial=function(p){return new Std(Object.assign({roughness:.9,metalness:0,envMapIntensity:.55},p||{}))};
@@ -1389,8 +1397,41 @@ const GRASS=(function(){if(!GFX.grass)return null;
 /* one call per frame: keeps sky, sea, grass and shadows centred on the camera, then draws through the post chain */
 /* headset frame guard: if the headset keeps missing frames, drop the grass, and start on Low next time */
 const VRG={t:0,ema:14,warm:0,stage:0,tick(){const n=performance.now(),d=this.t?n-this.t:14;this.t=n;if(!VR.on){this.warm=0;return}if(d>100)return;this.warm+=d;if(this.warm<5000)return;this.ema=lerp(this.ema,d,.02);
- if(this.ema>16.5&&this.warm>8000){this.warm=5000;this.ema=14;this.stage++;if(this.stage===1&&GRASS)GRASS.mesh.visible=false;if(this.stage===2){try{localStorage.setItem('ack-gfx','low')}catch(e){}}}}};
-function renderFrame(){try{npcLOD()}catch(e){}realSync();VRG.tick();const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
+ if(this.ema>16.5&&this.warm>8000){this.warm=5000;this.ema=14;this.stage++;if(this.stage===1){if(GRASS)GRASS.mesh.visible=false;DCULL.boost=1.6}if(this.stage===2){try{localStorage.setItem('ack-gfx','low')}catch(e){}}}}};
+/* ---------- far detail: anything that would be only a few pixels across is skipped, and in a Quest small things far off stop casting
+   shadows, so the headset spends its time on what you can actually see. Checks a sixth of the meshes each frame. ---------- */
+const DCULL=(function(){const S={list:[],i:0,t:0,on:true,vr:false,boost:1},bs=new T.Sphere(),cp=new T.Vector3(),ctr=new T.Vector3();
+ function under(o,a){while(o){if(o===a)return true;o=o.parent}return false}
+ function reset(o){if(o.userData._dc){o.layers.mask=1;o.userData._dc=0}if(o.userData._ts){o.castShadow=true;o.userData._ts=0}}
+ function build(){const nl=[],ns=new Set();scene.traverse(o=>{if(o.isInstancedMesh&&o.userData.icull&&!o.userData.icReg&&o.count>8){o.userData.icReg=1;try{regInst(o)}catch(e){}}if(!o.isMesh||o.isInstancedMesh||o.frustumCulled===false||!o.geometry||o.userData.noCull)return; // markers and labels (sprites) always show
+   if(o.layers.mask!==1&&!o.userData._dc)return;if(under(o,camera))return;nl.push(o);ns.add(o)});
+  for(const o of S.list)if(!ns.has(o))reset(o);S.list=nl;S.i=0}
+ function tick(){if(!S.list.length||++S.t>=120){S.t=0;build()}
+  if(S.vr!==VR.on){S.vr=VR.on;for(const o of S.list)if(o.userData._ts){o.castShadow=true;o.userData._ts=0}}
+  camera.getWorldPosition(cp);if(!S.on){for(const o of S.list)reset(o);try{instTick(1)}catch(e){}return}
+ let K=VR.on?GFX.vrK:GFX.cullK*Math.min(1,(camera.fov||60)/60);
+  try{if(PL&&WPNS[PL.wpn||'marker']&&WPNS[PL.wpn||'marker'].zoom&&(VR.on||ZOOM))K*=.1}catch(e){}
+  // a jump (respawn, fast travel, a cut) checks everything at once so nothing is missing when you land
+  const jump=!S.lp||S.lp.distanceToSquared(cp)>900;S.lp=(S.lp||new T.Vector3()).copy(cp);
+  K*=S.boost;const trim=GFX.quest,n=S.list.length,per=jump?n:Math.ceil(n/6);
+  for(let c=0;c<per;c++){const o=S.list[S.i];S.i=(S.i+1)%n;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const b=g.boundingSphere;if(!b||!(b.radius>0))continue;
+   ctr.copy(b.center).applyMatrix4(o.matrixWorld);const r=b.radius*o.matrixWorld.getMaxScaleOnAxis(),d=ctr.distanceTo(cp),hid=o.userData._dc?r<d*K*1.15:r<d*K;
+   if(hid!==!!o.userData._dc){o.layers.mask=hid?0:1;o.userData._dc=hid?1:0}
+   const ts=trim&&!hid&&(r<.35&&d>12||r<1.2&&d>28);if(ts&&o.castShadow){o.castShadow=false;o.userData._ts=1}else if(!ts&&o.userData._ts){o.castShadow=true;o.userData._ts=0}}
+  instTick(K*.8)}
+ /* scenery drawn as one instanced batch for the whole island (lamps, fences, posts...) keeps only the copies close enough to see */
+ const IM=[],_im=new T.Matrix4(),_iv=new T.Vector3();let imI=0;
+ function regInst(m){const n=m.count,g=m.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const gr=g.boundingSphere.radius,gc=g.boundingSphere.center,ms=m.matrixWorld.getMaxScaleOnAxis();
+  const mats=m.instanceMatrix.array.slice(0,n*16),cols=m.instanceColor?m.instanceColor.array.slice(0,n*3):null,pos=new Float32Array(n*3),rad=new Float32Array(n);
+  for(let i=0;i<n;i++){_im.fromArray(mats,i*16);_iv.copy(gc).applyMatrix4(_im).applyMatrix4(m.matrixWorld);pos[i*3]=_iv.x;pos[i*3+1]=_iv.y;pos[i*3+2]=_iv.z;rad[i]=gr*_im.getMaxScaleOnAxis()*ms}
+  IM.push({m,n,mats,cols,pos,rad,keep:new Int32Array(n),kn:-1,sig:-1})}
+ function instTick(K){  const n=IM.length;if(!n)return;const steps=Math.max(1,Math.ceil(n/20));for(let s=0;s<steps;s++){const e=IM[imI=(imI+1)%n],m=e.m;let j=0,sig=0;
+   for(let i=0;i<e.n;i++){const dx=e.pos[i*3]-cp.x,dy=e.pos[i*3+1]-cp.y,dz=e.pos[i*3+2]-cp.z,d=Math.sqrt(dx*dx+dy*dy+dz*dz);if(!S.on||d*K<e.rad[i]||d<e.rad[i]+30){e.keep[j++]=i;sig=(sig*31+i)|0}}
+   if(j===e.kn&&sig===e.sig)continue;e.kn=j;e.sig=sig;const A=m.instanceMatrix.array,C=m.instanceColor?m.instanceColor.array:null;
+   for(let k=0;k<j;k++){const i=e.keep[k];A.set(e.mats.subarray(i*16,i*16+16),k*16);if(C&&e.cols)C.set(e.cols.subarray(i*3,i*3+3),k*3)}
+   m.count=j;m.instanceMatrix.needsUpdate=true;if(C)m.instanceColor.needsUpdate=true}}
+ return{S,tick,build,IM,get boost(){return S.boost||1},set boost(v){S.boost=v},count(){let h=0,t=0;for(const o of S.list){if(o.userData._dc)h++;if(o.userData._ts)t++}return{meshes:S.list.length,hidden:h,noShadow:t}}}})();
+function renderFrame(){try{npcLOD()}catch(e){}realSync();VRG.tick();try{DCULL.tick()}catch(e){}const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
  if(GRASS)GRASS.update(cp,SKY_U.time.value);treeLOD(cp);scene.updateMatrixWorld();WHEELS.update();if(typeof FX!=='undefined')FX.update();if(VR.on)VR.render();else if(POST)POST.render();else renderer.render(scene,camera)}
 
 /* ================= vehicle kit: rounded panels, merged per material, instanced wheels ================= */
@@ -1412,7 +1453,7 @@ const VSTD=(o)=>GFX.L>=1?new THREE.MeshStandardMaterial(o):new THREE.MeshLambert
 const VMAT={dark:VSTD({color:'#16171a',roughness:.55,metalness:.15}),trim:VSTD({color:'#232427',roughness:.8}),chrome:VSTD({color:'#e0e0e0',roughness:.16,metalness:1,envMapIntensity:1.3}),
  glass:VSTD({color:'#0b1118',roughness:.03,metalness:.2,envMapIntensity:1.7}),lamp:VSTD({color:'#fffaf0',emissive:new T.Color('#fff1d0'),emissiveIntensity:.4,roughness:.08,envMapIntensity:1.4}),
  vc:VSTD({color:'#ffffff',roughness:.65,metalness:.1,vertexColors:true}),seat:VSTD({color:'#2a2622',roughness:.85}),plate:VSTD({color:'#f1efe6',roughness:.5}),deck:VSTD({color:'#b98a58',roughness:.7}),white:VSTD({color:'#f3f1ea',roughness:.3,envMapIntensity:.9}),rubber:VSTD({color:'#101010',roughness:.9})};
-const PAINT={};function paintMat(c){if(PAINT[c])return PAINT[c];let m;if(GFX.L>=2)m=new THREE.MeshPhysicalMaterial({color:c,roughness:.38,metalness:.28,clearcoat:1,clearcoatRoughness:.07,envMapIntensity:1.15});
+const PAINT={};function paintMat(c){if(PAINT[c])return PAINT[c];let m;if(GFX.L>=2||GFX.q3)m=new THREE.MeshPhysicalMaterial({color:c,roughness:.38,metalness:.28,clearcoat:1,clearcoatRoughness:.07,envMapIntensity:1.15});
  else if(GFX.L>=1)m=new THREE.MeshStandardMaterial({color:c,roughness:.32,metalness:.3,envMapIntensity:1.1});else m=new THREE.MeshLambertMaterial({color:c});return PAINT[c]=m}
 function tailMat(){return VSTD({color:'#5a0a0a',emissive:new T.Color('#ff1a10'),emissiveIntensity:.5,roughness:.15})}
 /* every wheel on the island is drawn by two instanced meshes; vehicles just keep an empty group per wheel */
@@ -1699,8 +1740,10 @@ function realKing(k){if(!REAL_URL.king)return;const hid=realParts(k.g);realGet('
 function realShow(R,on){const X=R.real;if(!X)return;X.shown=on;X.root.visible=on;X.hid.forEach(o=>o.visible=!on);X.fit.forEach(([o,orig,fitp])=>o.position.copy(on?fitp:orig))}
 function realToggle(on){RXR.on=on;try{localStorage.setItem('ack-realrex',on?'1':'0')}catch(e){}RXR.list.forEach(R=>realShow(R,on));RXR.kings.forEach(k=>realShow(k,on))}
 const _rq=new T.Quaternion(),_rI=new T.Quaternion();
-function realSync(){const L=RXR.list;if(!L.length)return;
- for(let n=L.length-1;n>=0;n--){const R=L[n],X=R.real,S=X.S;if(!R.g.parent){X.idle=(X.idle||0)+1;if(X.idle>900)L.splice(n,1);continue}X.idle=0;
+function realSync(){const L=RXR.list;RXR.t=(RXR.t||0)+1;try{PARK.tick()}catch(e){}if(!L.length)return;
+ for(let n=L.length-1;n>=0;n--){const R=L[n],X=R.real,S=X.S;if(!R.g.parent){X.idle=(X.idle||0)+1;if(X.idle>900)L.splice(n,1);continue}
+  // a person whose whole area was taken out of the scene is let go too, so their model's memory comes back
+  if((n+RXR.t)%30===0){if(inScene(R.g))X.idle=0;else{X.idle=(X.idle||0)+30;if(X.idle>900){L.splice(n,1);PARK.add(L,R);continue}}}
   // the driver's-eye camera (and VR) hides the head: keep the realistic body and fold its head away so the view isn't blocked
   const want=RXR.on&&!R.lodOff;if(X.shown!==want)realShow(R,want);if(!want||!R.g.visible)continue;
   const Q=X.Q,q=k=>Q[k]||(Q[k]=new T.Quaternion());
@@ -2362,7 +2405,7 @@ const inTown=(x,z)=>TOWNS.some(t=>Math.hypot(x-t.x,z-t.z)<t.r);
 /* ---------- instancing helper ---------- */
 function instanced(geo,material,list,cast=true){if(!list.length)return null;const m=new T.InstancedMesh(geo,material,list.length),m4=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),cc=new T.Color();
  list.forEach((o,i)=>{e.set(o.rx||0,o.a||0,o.rz||0);q.setFromEuler(e);m4.compose(new T.Vector3(o.x,o.y,o.z),q,new T.Vector3(o.sx||1,o.sy||1,o.sz||1));m.setMatrixAt(i,m4);if(o.c)m.setColorAt(i,cc.set(o.c))});
- m.castShadow=cast;m.receiveShadow=true;scene.add(m);return m}
+ m.castShadow=cast;m.receiveShadow=true;m.userData.icull=1;scene.add(m);return m}
 function roadSamples(filter,step){const out=[];ROADS.forEach((r,ri)=>{if(!filter(r))return;let acc=step*rnd();for(let i=1;i<r.pts.length;i++){const a=r.pts[i-1],b=r.pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);acc+=L;while(acc>=step){acc-=step;const t=1-acc/L,x=lerp(a[0],b[0],t),z=lerp(a[1],b[1],t);out.push({r,ri,x,z,dx:(b[0]-a[0])/L,dz:(b[1]-a[1])/L})}}});return out}
 
 /* ---------- street furniture: lamps, trees, poles, hydrants, stop signs ---------- */
@@ -2449,11 +2492,15 @@ const HARBOR=(function(){// walk east from Straight Wharf until we reach water
  return{shore,dock,slips,walk,center:hc||[shore[0]+300,shore[1]-200],ferry:fg,buoys:buoyM}})();
 function onDock(x,z){const w=HARBOR.walk;if(x>w.x0&&x<w.x1&&Math.abs(z-w.z)<w.w)return true;for(const o of[8,16,24])if(Math.abs(x-(HARBOR.shore[0]+o))<.7&&Math.abs(Math.abs(z-HARBOR.shore[1])-7)<5)return true;return false}
 /* ---------- street people go realistic only near the player (max 8, 6 in the headset); the rest keep the light model ---------- */
+function inScene(o){while(o){if(o===scene)return true;o=o.parent}return false}
+/* people whose whole area left the scene are parked by a weak reference: if the area comes back they rejoin, otherwise their memory is freed */
+const PARK={L:[],add(list,x){if(typeof WeakRef==='function')this.L.push([list,new WeakRef(x)])},t:0,tick(){if(++this.t%600)return;const keep=[];
+ for(const e of this.L){const x=e[1].deref();if(!x)continue;if(inScene(x.g)){x.gone=0;if(x.real)x.real.idle=0;if(!e[0].includes(x))e[0].push(x)}else keep.push(e)}this.L=keep}};
 function npcLive(n){let o=n.g;while(o){if(!o.visible)return false;if(o===scene)return true;o=o.parent}return false}
-function npcLOD(){if((++NPCR.t)%24)return;const L=NPCR.list,me=ME(),cp=me&&me.p?me.p:camera.position,max=VR.on?6:8,C=[];
- for(let i=L.length-1;i>=0;i--){const n=L[i];if(!npcLive(n)){if(!n.g.parent&&(n.gone=(n.gone||0)+1)>10){L.splice(i,1);continue}n.lodOff=true;continue}n.gone=0;
-  n.g.getWorldPosition(_nv);const d=Math.hypot(_nv.x-cp.x,_nv.z-cp.z);if(d<40&&RXR.on&&REAL_URL[n.look]&&(RXR.fail[n.look]||0)<2)C.push([d,n]);else n.lodOff=true}
- C.sort((a,b)=>a[0]-b[0]);C.forEach(([d,n],i)=>{if(i>=max){n.lodOff=true;return}n.lodOff=false;if(!n.real&&!n.binding){n.binding=1;n.sp={key:n.look,build:1};realGet(n.look,S=>{n.binding=0;realBind(n,S,[n.mesh].concat(n.hidX||[]));if(n.real&&VR.on)n.real.mesh.castShadow=false})}});
+function npcLOD(){if((++NPCR.t)%24)return;const L=NPCR.list,me=ME(),cp=me&&me.p?me.p:camera.position,max=VR.on?(GFX.q3?10:6):GFX.L>=2?12:8,near=VR.on?(GFX.q3?55:40):GFX.L>=2?60:40,C=[];
+ for(let i=L.length-1;i>=0;i--){const n=L[i];if(!npcLive(n)){if(!inScene(n.g)&&(n.gone=(n.gone||0)+1)>10){L.splice(i,1);if(n.g.parent)PARK.add(L,n);continue}n.lodOff=true;continue}n.gone=0;
+  n.g.getWorldPosition(_nv);const d=Math.hypot(_nv.x-cp.x,_nv.z-cp.z);if(d<near&&RXR.on&&REAL_URL[n.look]&&(RXR.fail[n.look]||0)<2)C.push([d,n]);else n.lodOff=true}
+ C.sort((a,b)=>a[0]-b[0]);C.forEach(([d,n],i)=>{if(i>=max){n.lodOff=true;return}n.lodOff=false;if(!n.real&&!n.binding){n.binding=1;n.sp={key:n.look,build:1};realGet(n.look,S=>{n.binding=0;realBind(n,S,[n.mesh].concat(n.hidX||[]));if(n.real&&VR.on&&!GFX.q3)n.real.mesh.castShadow=false})}});
  if(ICE&&ICE.kid&&FOOT()&&MODE!=='battleover'){const d=Math.hypot(ICE.x-cp.x,ICE.z-cp.z);if(d<4.5&&!ICE.near){ICE.near=1;toast('Kingston: "Want some ice cream?"')}else if(d>9)ICE.near=0}}
 /* Kingston's ice cream stand by the harbor: off the road, nobody chases or hits him */
 const ICE=(function(){const sh=HARBOR.shore;let at=null;
@@ -3477,13 +3524,23 @@ document.addEventListener('pointerlockchange',()=>{if(!VR.on&&!document.pointerL
 addEventListener('mousemove',e=>{if(document.pointerLockElement===canvas){if(tpMove(e.movementX,e.movementY))return;look.dx+=e.movementX;look.dy+=e.movementY}});
 addEventListener('wheel',e=>{const lk=document.pointerLockElement===canvas;if(lk&&e.cancelable)e.preventDefault();if(FOOT()&&OPENISH()&&PL&&PL.inv&&PL.inv.length>1&&!ARMS.open&&lk){let dn=e.deltaY>0;if(TP.on&&!IS_TOUCH){const now=performance.now();if(now-TP.wt>250)TP.wacc=0;TP.wt=now;TP.wacc+=e.deltaY;if(Math.abs(TP.wacc)<90||now-TP.wlast<420)return;dn=TP.wacc>0;TP.wacc=0;TP.wlast=now}const i=PL.inv.indexOf(PL.wpn||'marker');wpnInput=(i+(dn?1:PL.inv.length-1))%PL.inv.length}},{passive:false});
 let mouseDown=false,ZOOM=false;addEventListener('mousedown',e=>{if(e.button===0&&e.target===canvas)mouseDown=true;if(e.button===2&&e.target===canvas)ZOOM=true});addEventListener('mouseup',e=>{if(e.button===2)ZOOM=false});addEventListener('contextmenu',e=>{if(e.target===canvas)e.preventDefault()});addEventListener('mouseup',e=>{if(e.button===0)mouseDown=false});
-/* gamepad: left stick steers / moves, triggers drive, right stick looks */
+/* gamepad, laid out like most open-world shooters (Xbox names, PlayStation in brackets). The Quest controllers feed this same layout.
+   On foot: left stick move (click: sprint) · right stick look (click: camera) · RT [R2] shoot · LT [L2] aim down the sights
+   · A [✕] jump · Y [△] or B [○] get in a vehicle / use · LB [L1] grenade · RB [R1] or d-pad right next weapon · d-pad left previous weapon
+   · d-pad down call the helicopter · d-pad up or View/Back map · Menu/Start pause.
+   In a vehicle: RT gas · LT brake/reverse · A handbrake · RB or X shoot · Y or B get out · right stick click change camera. */
 const GP={on:false,run:false,ps:false,id:'',y:'Y',rb:'RB',rt:'RT',lx:0,ly:0,rx:0,ry:0,gas:0,brake:0,hand:0,fire:0,jump:0,sprint:0};let gpPrev=[];
 function pollPad(){const pads=navigator.getGamepads?navigator.getGamepads():[];let p=null;for(const q of pads||[])if(q&&q.connected){p=q;break}if(!p){GP.on=false;return}GP.on=true;if(GP.id!==p.id){GP.id=p.id;GP.ps=/054c|dualsense|dualshock|playstation|wireless controller/i.test(p.id||'');GP.y=GP.ps?'△':'Y';GP.rb=GP.ps?'R1':'RB';GP.rt=GP.ps?'R2':'RT'}
  const dz=v=>Math.abs(v)<.15?0:(v-Math.sign(v)*.15)/.85,bv=i=>p.buttons[i]?p.buttons[i].value:0,bp=i=>!!(p.buttons[i]&&p.buttons[i].pressed),now=p.buttons.map(x=>x.pressed),edge=i=>now[i]&&!gpPrev[i];
- GP.lx=dz(p.axes[0]||0);GP.ly=dz(p.axes[1]||0);GP.rx=dz(p.axes[2]||0);GP.ry=dz(p.axes[3]||0);GP.gas=bv(7);GP.brake=bv(6);GP.hand=bp(0)?1:0;GP.jump=bp(0)?1:0;GP.fire=bp(5)||bp(2)?1:0;GP.sprint=bp(10)?1:0;if(edge(10))GP.run=!GP.run;if(Math.hypot(GP.lx,GP.ly)<.2)GP.run=false;
- if(edge(3)||edge(1))enterInput=true;if(edge(4))nadeInput=true;if(edge(15))wpnInput='next';if(edge(16))heliCallInput=true;if(edge(8)||edge(11))camInput=true;if(edge(9)&&MODE!=='menu')togglePause();if(edge(12)){$('bigmap').hidden=!$('bigmap').hidden;drawBigMap()}
- look.dx+=GP.rx*16;look.dy+=GP.ry*11;gpPrev=now}
+ GP.lx=dz(p.axes[0]||0);GP.ly=dz(p.axes[1]||0);GP.rx=dz(p.axes[2]||0);GP.ry=dz(p.axes[3]||0);const foot=FOOT();GP.gas=bv(7);GP.brake=bv(6);GP.hand=bp(0)?1:0;GP.jump=bp(0)?1:0;GP.fire=(foot?bv(7)>.3||bp(2):bp(5)||bp(2))?1:0;GP.sprint=bp(10)?1:0;
+ if(foot&&!VR.on&&bv(6)>.4){ZOOM=true;GP.ads=true}else if(GP.ads){ZOOM=false;GP.ads=false}
+if(edge(10))GP.run=!GP.run;if(Math.hypot(GP.lx,GP.ly)<.2)GP.run=false;
+ if(edge(3)||edge(1))enterInput=true;if(edge(4))nadeInput=true;if(edge(15)||foot&&edge(5))wpnInput='next';
+ if(edge(14)&&PL&&PL.inv&&PL.inv.length>1){const i=Math.max(0,PL.inv.indexOf(PL.wpn||'marker'));wpnInput=(i+PL.inv.length-1)%PL.inv.length}
+ if(edge(16)||edge(13))heliCallInput=true;if(edge(11))camInput=true;if(edge(9)&&MODE!=='menu')togglePause();if((edge(12)||edge(8))&&!VR.on){$('bigmap').hidden=!$('bigmap').hidden;drawBigMap()}
+ // right stick: a curve for fine aiming, a little extra speed when held all the way over, slower while aiming down the sights
+ if(VR.on){look.dx+=GP.rx*16;look.dy+=GP.ry*11}else{const cv=v=>Math.sign(v)*Math.pow(Math.abs(v),1.6),full=Math.hypot(GP.rx,GP.ry)>.94;GP.hold=full?Math.min(1,(GP.hold||0)+1/36):0;const k=(ZOOM?.5:1)*(1+.55*GP.hold);
+  look.dx+=cv(GP.rx)*19*k;look.dy+=cv(GP.ry)*13*k}gpPrev=now}
 function driveInput(){const k=keys,ak=TPK(),hl=!!PCAR&&PCAR.kind==='heli',tv=tpVeh(),kSteer=((k.KeyA||!ak&&k.ArrowLeft)?1:0)-((k.KeyD||!ak&&k.ArrowRight)?1:0);let an=null;if(GP.on&&GP.lx)an=-GP.lx;else if(TOUCH.steerA!==null)an=TOUCH.steerA;else if(tv&&!kSteer&&TP.vyaw!==null)an=tpSteer();if(tv&&(kSteer||GP.on&&GP.lx))TP.vyaw=null;
  return{gas:Math.max((k.KeyW||k.ArrowUp&&!(ak&&hl))?1:0,TOUCH.gas,GP.gas,tv?tpGas():0),brake:Math.max((k.KeyS||k.ArrowDown&&!(ak&&hl))?1:0,TOUCH.brake,GP.brake,tv?tpBrake():0),steer:an!==null?an:clamp(kSteer+TOUCH.steer,-1,1),analog:an!==null,hand:(k.Space||ak&&hl&&k.ArrowUp||TOUCH.hand||GP.hand)?1:0,
   fire:(k.KeyJ||k.ControlLeft||(k.KeyF&&!OPENISH())||mouseDown||ak&&k.ArrowLeft||TOUCH.fire||GP.fire)?1:0,tp:tv}}
@@ -7427,7 +7484,8 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  /* ---- Quest controllers become one standard gamepad, so the game's own controller code does the rest ----
     Quest layout: left stick move/steer · right stick turn · right trigger shoot (gas in a car) · left trigger brake
     · right grip shoot from a car · left grip grenade · A jump/handbrake · B get in/out (Y too in a vehicle) · X menu
-    · Y or right stick click next blaster on foot (hold Y: call the helicopter) · left stick click sprint */
+    · Y or right stick click next blaster on foot (hold Y: call the helicopter) · left stick click sprint (stays on until you stop)
+    These feed the same standard gamepad layout as an Xbox or PlayStation controller (see the gamepad notes by pollPad). */
  function readControllers(dt){const B=pad.buttons,A=pad.axes;B.forEach(b=>{b.pressed=false;b.value=0});A[0]=A[1]=A[2]=A[3]=0;
   let L=null,R=null,Ls=null,Rs=null,other=null,os=null;const ss=(renderer.xr.getSession&&renderer.xr.getSession())||session;
   if(ss&&ss.inputSources)for(const s of ss.inputSources){if(!s||!s.gamepad)continue;if(s.handedness==='left'){L=s.gamepad;Ls=s}else if(s.handedness==='right'){R=s.gamepad;Rs=s}else{other=s.gamepad;os=s}}
@@ -7465,7 +7523,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   // right stick: on foot it turns you (snap by default); in a vehicle your head does the looking
   const rx=ax(R,2);if(foot){if(snap){if(Math.abs(rx)>.7&&st.snapArmed){st.snapArmed=false;look.dx+=Math.sign(rx)*(Math.PI/6)/(IS_TOUCH?.0035:.0024)}else if(Math.abs(rx)<.3)st.snapArmed=true}else A[2]=rx}
   else if(PCAR&&PCAR.kind==='heli')A[3]=ax(R,3);                 // helicopter: right stick up climbs, down lands
-  if(foot)set(5,tR>.2||tL>.2||p(R,1));                        // on foot: either trigger (or right grip) shoots
+  if(foot)set(7,tR>.2||tL>.2||p(R,1),Math.max(tR,tL,p(R,1)?1:0)); // on foot: either trigger (or right grip) shoots
   else{set(7,tR>.05,tR);set(6,tL>.05,tL);set(5,p(R,1))}       // vehicle: triggers gas / brake, right grip shoots
   set(4,p(L,1));set(0,bA);set(1,bB||(!foot&&bY));set(10,p(L,3));
   // on foot: tap Y for the next blaster, hold Y to call in the helicopter
@@ -7535,7 +7593,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  try{const _rs=wmResize;wmResize=function(){if(WM.cv===mvc)return;return _rs.apply(this,arguments)}}catch(e){}
  /* ---- entering and leaving ---- */
  async function enter(){if(session||!xr)return;try{audioStart()}catch(e){}let s;try{s=await xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor','layers']})}catch(e){failStart(e);return}
-  session=s;renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');try{renderer.xr.setFoveation(1)}catch(e){}
+  session=s;renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');try{renderer.xr.setFoveation(GFX.q3?.6:1)}catch(e){}
   try{await renderer.xr.setSession(s)}catch(e){session=null;renderer.xr.enabled=false;failStart(e);try{s.end()}catch(_){}return}
   VR.on=true;PERF.on=false;if(POST&&POST.G2){st.saveRefl=POST.G2.Q.refl;POST.G2.Q.refl=false;try{POST.G2.reflect(4,4)}catch(e){}}
   st.saveShadow=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
