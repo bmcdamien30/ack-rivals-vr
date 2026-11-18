@@ -435,7 +435,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
 
 <section id="menu" aria-label="Main menu">
  <div class="menu-in">
-  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 15</p>
+  <p class="eyebrow">Nantucket · Sparks Avenue · The Box lot · Build 16</p>
   <h1>ACK <span>Rivals</span></h1>
   <p class="lede">Everything starts in The Box lot. Race the crew around the island, fight a paint war across the Shop and Stop parking lot, or just cruise.</p>
   <h2 class="lab">Pick your driver <small>Tap a name to rename</small></h2>
@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 15</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 16</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -2854,14 +2854,364 @@ const FERRY=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
   get heli(){return FHELI},guns:GUNS,rifles:RIFLES,raid,cafe,diners:DINERS,FL,WL,toL,toW,onDeck,aboard:onDeck,where,inRoom,inside,ceilFor,paved,hullDist,climb,start,clear,tick,cafeAction,moveTo,
   jump(st2,u){if(st2==='sail'){st='sail';s=CL*(u||0);v=VMAX;const p=CURVE.getPointAt(u||0),t=CURVE.getTangentAt(u||0);moveTo(p.x,p.z,Math.atan2(t.x,t.z))}else if(st2==='dock'){st='dock';timer=u||DOCK_T;moveTo(B.x,B.z,B.h)}}};
  return API})();
-function ferryTick(dt){FERRY.tick(dt)}
-function ferryStart(){FERRY.start()}
-function ferryClear(){FERRY.clear()}
+function ferryTick(dt){FERRY.tick(dt);ESSEX.tick(dt)}
+function ferryStart(){FERRY.start();ESSEX.start()}
+function ferryClear(){FERRY.clear();ESSEX.clear()}
 function ferryAction(){if(!PL||PCAR||PL.dead>0||MODE!=='open')return null;
  if(PL.swim&&FERRY.hullDist(PL.p)<6)return{t:'Climb the Eagle’s boarding ladder',act:()=>FERRY.climb()};
  if(!FERRY.aboard(PL.p))return null;return FERRY.cafeAction()}
 function ferryRaidTarget(b){const me=ME();if(me&&FERRY.aboard(me.p))return me;const p=FERRY.p;return{p:new T.Vector3(p.x,1,p.z),vx:0,vz:0}}
 function ferryStreet(p){if(FERRY.aboard(p))return null;const F=FERRY;if(Math.hypot(p.x-F.WX0,p.z-F.WZ)<70||F.paved(p.x,p.z)){if(F.state==='dock')return`Steamboat Wharf · the Eagle sails in ${Math.floor(F.timer/60)}:${String(Math.max(0,Math.floor(F.timer%60))).padStart(2,'0')}`;return'Steamboat Wharf · the Eagle is out'}return null}
+/* ================= the Essex: a luxury yacht tied up at the end of the town dock ================= */
+/* Three decks: the main deck (aft deck, salon, foredeck, a swim platform and a plank out over the water), the middle deck (a party room with glass
+   walls all round, a DJ up on an elevated booth, lasers, a disco ball and a dance floor that lights up to the beat; the bridge forward of it, where
+   Captain Pedro lets you take the wheel), and the sun deck on top. After a while aboard, the Seaweed crew climb on and hijack her: fight them off
+   with your crew, or they make you walk the plank. */
+// Songs for the DJ booth. Empty for now, so the booth plays its own built-in beat. To play real tracks later, add entries like
+// {url:'https://…/track.mp3',bpm:124,name:'Track name'} (only music you have the rights to).
+const ESSEX_TRACKS=[];
+const PARTY_BPM=124;
+const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
+ const YS=.85,Y1=2.1,Y2=5.0,Y3=8.3,BOW=24,STERN=-24;
+ const dk=HARBOR.dock;const HOME={x:dk.x1+25.0,z:dk.z,h:Math.PI/2};
+ const PN=(n,hex,o)=>{const m=PHOTO.mat(n,'#ffffff',[1,1],o);if(PHOTO_ON&&PHOTO.LM[n]){const h=k=>Math.pow(parseInt(hex.slice(k,k+2),16)/255,2.2),L=PHOTO.LM[n];m.color.setRGB(h(1)/L[0],h(3)/L[1],h(5)/L[2])}else m.color.set(hex);return m};
+ const cvT=(w,h,f)=>{const[c,x]=mkCanvas(w,h);f(x,w,h);return cTex(c)};
+ const ADD=(c,o)=>new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false});
+ const M={hull:VSTD({color:'#f7f7f3',roughness:.2,metalness:.08,envMapIntensity:1.25}),navy:VSTD({color:'#0f1b33',roughness:.22,metalness:.2,envMapIntensity:1.2}),
+  teak:PN('deck','#b98652',{roughness:.7}),glass:VSTD({color:'#0a141c',roughness:.03,metalness:.4,envMapIntensity:1.8,transparent:true,opacity:.42,depthWrite:false,side:T.DoubleSide}),
+  chrome:VSTD({color:'#e6e8ea',roughness:.12,metalness:1,envMapIntensity:1.5}),brass:VSTD({color:'#c9a34a',roughness:.3,metalness:1,envMapIntensity:1.3}),
+  sofa:VSTD({color:'#f1ece2',roughness:.85}),cush:VSTD({color:'#1d3557',roughness:.9}),wood:VSTD({color:'#3b2418',roughness:.45,envMapIntensity:.8}),
+  iwall:VSTD({color:'#f2ede4',roughness:.8,emissive:new T.Color('#2a2620')}),ceil:VSTD({color:'#16161c',roughness:.7,emissive:new T.Color('#0c0c12')}),
+  pfloor:VSTD({color:'#0d0d12',roughness:.35,metalness:.3,envMapIntensity:1}),carpet:VSTD({color:'#d9cdb6',roughness:.95,emissive:new T.Color('#1a1712')}),
+  ebon:VSTD({color:'#101014',roughness:.4,metalness:.2}),grey:VSTD({color:'#7a7f86',roughness:.5,metalness:.4}),
+  water:VSTD({color:'#3fd0ff',emissive:new T.Color('#0e6a8a'),roughness:.05,metalness:.1,transparent:true,opacity:.85}),
+  lamp:VSTD({color:'#fffaf0',emissive:new T.Color('#fff1d0'),emissiveIntensity:1.2})};
+ NIGHT.mats.push({m:M.glass,col:'#3a2a10'});
+ const LED=new T.MeshBasicMaterial({color:'#ff2d95',fog:false});
+ function bx(K,key,x0,x1,y0,y1,z0,z1,tile){const w=Math.abs(x1-x0),h=Math.abs(y1-y0),d=Math.abs(z1-z0);if(w<1e-3||h<1e-3||d<1e-3)return;const g=new T.BoxGeometry(w,h,d);
+  if(tile){const uv=g.attributes.uv,D=[[d,h],[d,h],[w,d],[w,d],[w,h],[w,h]];for(let f=0;f<6;f++)for(let k=0;k<4;k++){const i=f*4+k;uv.setXY(i,uv.getX(i)*D[f][0]/tile,uv.getY(i)*D[f][1]/tile)}}
+  K.add(key,g,(x0+x1)/2,(y0+y1)/2,(z0+z1)/2)}
+ const span=(s,a,b)=>s>0?[a,b]:[-b,-a];
+ /* ---------- what you stand on (FL) and walk into (WL), in the yacht's own frame: +z is the bow ---------- */
+ const FL=[],WL=[];
+ const floor=(x0,x1,z0,z1,y,lvl=true)=>FL.push({x0,x1,z0,z1,y,lvl});
+ const wall=(x0,x1,z0,z1,y0,y1)=>{const w={x0,x1,z0,z1,y0,y1};w.o={type:'b',x:0,z:0,c:1,s:0,hw:(x1-x0)/2,hd:(z1-z0)/2,top:y1,bot:y0,w};WL.push(w);return w};
+ const hwAt=(z,w=5)=>z<=4?w:w*Math.sqrt(Math.max(0,1-((z-4)/(BOW+.8-4))**2));
+ const G=new T.Group();G.position.set(HOME.x,0,HOME.z);G.rotation.y=HOME.h;scene.add(G);const GI=new T.Group();G.add(GI);
+ const K=VKit(),KI=VKit(),KL=VKit();
+ /* ---------- the hull: navy below the boot stripe, white topsides, a raked bow ---------- */
+ {const zs=[];for(let z=STERN;z<4;z+=2)zs.push(z);for(let z=4;z<=BOW;z+=.6)zs.push(z);zs.push(BOW+.3);
+  const ring=[[-1.5,.62],[.35,.98],[.6,1],[Y1+.15,1]];
+  const loft=(r0,r1,key)=>{for(const s of[-1,1]){const P=[],U=[],I=[];zs.forEach((z,i)=>{const ya=ring[r0][0],yb=ring[r1][0],rake=Math.max(0,z-16)*.12;const wa=hwAt(z+(r0===0?rake:0))*ring[r0][1],wb=hwAt(z)*ring[r1][1];
+     P.push(s*wa,ya,Math.min(z,BOW+.3),s*wb,yb,Math.min(z,BOW+.3));U.push(z/6,ya/6,z/6,yb/6);if(i){const a=(i-1)*2,b=i*2;if(s>0)I.push(a,a+1,b,b,a+1,b+1);else I.push(a,b,a+1,b,b+1,a+1)}});
+    const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('uv',new T.Float32BufferAttribute(U,2));g.setIndex(I);g.computeVertexNormals();K.add(key,g)}};
+  loft(0,1,'navy');loft(1,2,'brass');loft(2,3,'hull');
+  // the transom, open in the middle where the steps come up from the swim platform
+  {const sh=new T.Shape(),w0=hwAt(STERN)*ring[0][1],w1=hwAt(STERN);sh.moveTo(-w0,-1.5);sh.lineTo(w0,-1.5);sh.lineTo(w1,.35);sh.lineTo(-w1,.35);sh.closePath();const g=new T.ShapeGeometry(sh);g.rotateY(Math.PI);K.add('navy',g,0,0,STERN)}
+  bx(K,'hull',-5,5,.35,YS,STERN-.02,STERN+.12);for(const s of[-1,1]){const[a,b]=span(s,1.6,5);bx(K,'hull',a,b,YS,Y1+.15,STERN-.02,STERN+.12)}
+  // the name across the stern and on both bows
+  const nt=cvT(1024,200,(x,w,h)=>{x.clearRect(0,0,w,h);x.fillStyle='#0f1b33';x.font='italic 700 120px Georgia, "Times New Roman", serif';x.textAlign='center';x.textBaseline='middle';x.fillText('Essex',w/2,h/2-12);x.font='600 40px Georgia, serif';x.fillText('NANTUCKET',w/2,h/2+70)});
+  {const m=new T.Mesh(new T.PlaneGeometry(3,.6),new T.MeshStandardMaterial({map:nt,transparent:true,roughness:.4,polygonOffset:true,polygonOffsetFactor:-3}));m.position.set(-3.3,1.45,STERN-.04);m.rotation.y=Math.PI;G.add(m);
+   const m2=m.clone();m2.position.x=3.3;G.add(m2)}
+  for(const s of[-1,1]){const z=16,m=new T.Mesh(new T.PlaneGeometry(3.2,.64),new T.MeshStandardMaterial({map:nt,transparent:true,roughness:.4,polygonOffset:true,polygonOffsetFactor:-3}));
+   m.position.set(s*(hwAt(z)+.04),1.35,z);m.rotation.y=s*Math.PI/2-s*Math.atan2(hwAt(z+.5)-hwAt(z-.5),1);G.add(m)}
+  // a row of portholes for the cabins below
+  const ph=new T.CircleGeometry(.2,14);for(const s of[-1,1])for(let z=-18;z<=12;z+=3.4){const g=ph.clone();g.rotateY(s*Math.PI/2);K.add('ebon',g,s*(hwAt(z)+.02),1.05,z)}}
+ /* ---------- the swim platform, the steps up, and a short gangway onto the dock ---------- */
+ floor(-4.4,4.4,STERN-1.4,STERN+.4,YS,false);floor(-2.2,2.2,STERN-2.2,STERN-1.4,YS,false);bx(K,'teak',-4.4,4.4,YS-.2,YS,STERN-1.4,STERN,2);
+ for(let i=1;i<=4;i++){const z0=STERN+.1+(i-1)*.4,top=YS+i*.3125;floor(-1.55,1.55,z0,z0+.4,top);bx(K,'teak',-1.55,1.55,top-.3125,top,z0,z0+.4,2)}
+ for(const s of[-1,1]){const[a,b]=span(s,1.55,5.1);wall(a,b,STERN-.1,STERN+.25,0,Y1+1)}wall(-4.6,4.6,STERN-1.6,STERN-1.4,-2,YS-.1);
+ K.tube('chrome',v3(-1.6,YS+1,STERN-.2),v3(-1.6,Y1+1,STERN+1.6),.03,6);K.tube('chrome',v3(1.6,YS+1,STERN-.2),v3(1.6,Y1+1,STERN+1.6),.03,6);
+ // the swim ladder down into the water
+ for(let i=0;i<4;i++)bx(K,'chrome',-.35,.35,YS-.35-i*.3,YS-.32-i*.3,STERN-1.45,STERN-1.38);
+ /* ---------- the main deck ---------- */
+ floor(-4.85,4.85,STERN+1.7,4,Y1);for(let z=4;z<BOW;z+=1.5){const w=Math.min(hwAt(z),hwAt(z+1.5))-.2;floor(-w,w,z,z+1.5,Y1)}
+ bx(K,'teak',-4.9,4.9,Y1-.15,Y1,STERN+.12,4,3);
+ {const sh=new T.Shape();sh.moveTo(-hwAt(4),4);for(let z=4;z<=BOW;z+=.5)sh.lineTo(-hwAt(z)+.05,z);for(let z=BOW;z>=4;z-=.5)sh.lineTo(hwAt(z)-.05,z);sh.closePath();
+  const g=new T.ExtrudeGeometry(sh,{depth:.15,bevelEnabled:false});g.rotateX(Math.PI/2);g.translate(0,Y1,0);const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/3,uv.getY(i)/3);K.add('teak',g)}
+ // glass bulwarks with a chrome rail, and a gap on the starboard side for the plank
+ const PLZ=-16.6;
+ for(const s of[-1,1]){const runs=s>0?[[STERN+.2,PLZ-.45],[PLZ+.45,BOW-.6]]:[[STERN+.2,BOW-.6]];
+  for(const[z0,z1]of runs){for(let z=z0;z<z1-.01;z+=1){const za=z,zb=Math.min(z1,z+1),wa=hwAt(za)-.08,wb=hwAt(zb)-.08;
+    const g=new T.BufferGeometry(),y0=Y1,y1=Y1+1;g.setAttribute('position',new T.Float32BufferAttribute([s*wa,y0,za,s*wa,y1,za,s*wb,y0,zb,s*wb,y1,zb],3));g.setAttribute('uv',new T.Float32BufferAttribute([0,0,0,1,1,0,1,1],2));g.setIndex([0,2,1,1,2,3]);g.computeVertexNormals();K.add('glass',g);
+    K.tube('chrome',v3(s*wa,y1,za),v3(s*wb,y1,zb),.035,6);K.tube('chrome',v3(s*wa,y0,za),v3(s*wa,y1,za),.025,5);
+    const[a,b]=span(s,Math.min(wa,wb)-.05,Math.max(wa,wb)+.12);wall(a,b,za,zb,Y1-.1,Y1+1.05)}}}
+ K.tube('chrome',v3(0,Y1+1,BOW-.3),v3(-hwAt(BOW-1.2),Y1+1,BOW-1.2),.035,6);K.tube('chrome',v3(0,Y1+1,BOW-.3),v3(hwAt(BOW-1.2),Y1+1,BOW-1.2),.035,6);
+ // the plank: a teak board sticking out over the water on the starboard side
+ floor(4.6,8.4,PLZ-.33,PLZ+.33,Y1+.06);bx(K,'teak',4.6,8.4,Y1-.02,Y1+.06,PLZ-.3,PLZ+.3,1);bx(K,'wood',4.9,5.1,Y1-.5,Y1-.02,PLZ-.3,PLZ+.3);
+ /* ---------- the aft deck: a stern sofa and the stairs up ---------- */
+ bx(KI,'sofa',-4.4,-1.8,Y1,Y1+.45,STERN+1.9,STERN+2.7);bx(KI,'sofa',1.8,4.4,Y1,Y1+.45,STERN+1.9,STERN+2.7);bx(KI,'cush',-4.4,-1.8,Y1+.45,Y1+.95,STERN+1.9,STERN+2.15);bx(KI,'cush',1.8,4.4,Y1+.45,Y1+.95,STERN+1.9,STERN+2.15);
+ wall(-4.4,-1.8,STERN+1.9,STERN+2.7,Y1,Y1+.9);wall(1.8,4.4,STERN+1.9,STERN+2.7,Y1,Y1+.9);
+ for(let i=1;i<=11;i++){const z0=-20.6+(i-1)*.4,top=Y1+i*.2636;floor(-1.05,1.05,z0,z0+.4,top);bx(K,'teak',-1.05,1.05,top-.08,top,z0,z0+.4,2)}
+ for(const x of[-1.1,1.1]){K.tube('chrome',v3(x,Y1+1,-20.6),v3(x,Y2+1,-16.2),.03,6);wall(x-.05,x+.05,-20.6,-16.2,Y1,Y2+1.1)}
+ /* ---------- glass walls: posts, a sill, a header and tinted panes; doors are gaps ---------- */
+ function glassRun(ax,c,a0,a1,y0,y1,doors,inner){const D=(doors||[]).slice().sort((p,q)=>p[0]-q[0]);const segs=[];let u=a0;for(const d of D){if(d[0]>u)segs.push([u,d[0]]);u=d[1]}if(u<a1)segs.push([u,a1]);
+  const put=(K_,key,u0,u1,ya,yb,n0,n1)=>{if(ax==='z')bx(K_,key,n0,n1,ya,yb,u0,u1);else bx(K_,key,u0,u1,ya,yb,n0,n1)};
+  for(const[s0,s1]of segs){put(K,'glass',s0,s1,y0+.12,y1-.18,c-.02,c+.02);put(K,'hull',s0,s1,y0,y0+.12,c-.08,c+.08);put(K,'hull',s0,s1,y1-.18,y1,c-.08,c+.08);
+   const n=Math.max(1,Math.round((s1-s0)/2.2));for(let i=0;i<=n;i++){const p=lerp(s0,s1,i/n);put(K,'chrome',p-.04,p+.04,y0,y1,c-.05,c+.05)}
+   if(ax==='z')wall(c-.1,c+.1,s0,s1,y0,y1);else wall(s0,s1,c-.1,c+.1,y0,y1)}
+  for(const d of D)put(K,'hull',d[0],d[1],y1-.35,y1,c-.08,c+.08)}
+ /* ---------- the main salon: glass all round, white sofas, a bar and a chart of Nantucket ---------- */
+ const SAL={x:4.0,z0:-12,z1:6};
+ for(const s of[-1,1])glassRun('z',s*SAL.x,SAL.z0,SAL.z1,Y1,Y2-.12,[]);
+ glassRun('x',SAL.z0,-SAL.x,SAL.x,Y1,Y2-.12,[[-1.1,1.1]]);
+ bx(KI,'iwall',-SAL.x,SAL.x,Y1,Y2-.12,SAL.z1-.12,SAL.z1+.05);wall(-SAL.x,-.8,SAL.z1-.12,SAL.z1+.1,Y1,Y2);wall(.8,SAL.x,SAL.z1-.12,SAL.z1+.1,Y1,Y2);bx(KI,'wood',-.8,.8,Y1,Y2-.6,SAL.z1-.1,SAL.z1+.02);
+ bx(KI,'carpet',-SAL.x+.1,SAL.x-.1,Y1,Y1+.02,SAL.z0+.1,SAL.z1-.1);bx(KI,'ceil',-SAL.x,SAL.x,Y2-.14,Y2-.04,SAL.z0,SAL.z1);
+ for(let z=SAL.z0+1.5;z<SAL.z1;z+=3)for(const x of[-2,2])bx(KI,'lamp',x-.25,x+.25,Y2-.16,Y2-.14,z-.25,z+.25);
+ [[-3.1,-7.5],[3.1,-7.5]].forEach(([x,z])=>{bx(KI,'sofa',x-.45,x+.45,Y1,Y1+.45,z-1.6,z+1.6);bx(KI,'sofa',x+(x<0?-.45:.25),x+(x<0?-.25:.45),Y1+.45,Y1+.95,z-1.6,z+1.6);wall(x-.45,x+.45,z-1.6,z+1.6,Y1,Y1+.9)});
+ bx(KI,'wood',-1.1,1.1,Y1+.35,Y1+.45,-8.6,-6.4);bx(KI,'chrome',-.1,.1,Y1,Y1+.35,-7.6,-7.4);wall(-1.1,1.1,-8.6,-6.4,Y1,Y1+.5);
+ bx(KI,'wood',-3.6,-2.8,Y1,Y1+1.1,0,4.6);bx(KI,'ebon',-3.65,-2.75,Y1+1.1,Y1+1.16,-.05,4.65);wall(-3.7,-2.7,0,4.6,Y1,Y1+1.15);
+ // the chart of Nantucket on the salon's forward wall (drawn here, no outside art)
+ {const t=cvT(768,512,(x,w,h)=>{x.fillStyle='#e9dcc0';x.fillRect(0,0,w,h);x.fillStyle='#bcd3d8';x.fillRect(24,24,w-48,h-48);x.fillStyle='#e3cf9e';x.strokeStyle='#6b5a3a';x.lineWidth=3;x.beginPath();
+   const P=[[150,250],[230,205],[330,195],[420,170],[520,185],[600,220],[640,265],[600,300],[520,310],[430,330],[330,320],[250,310],[180,300]];x.moveTo(P[0][0],P[0][1]);P.forEach(p=>x.lineTo(p[0],p[1]));x.closePath();x.fill();x.stroke();
+   x.strokeStyle='rgba(60,80,90,.35)';x.lineWidth=1;for(let i=0;i<9;i++){x.beginPath();x.moveTo(24,60+i*50);x.lineTo(w-24,60+i*50);x.stroke()}
+   x.save();x.translate(640,410);x.strokeStyle='#6b5a3a';x.lineWidth=2;for(let i=0;i<8;i++){x.rotate(Math.PI/4);x.beginPath();x.moveTo(0,0);x.lineTo(0,i%2?-26:-46);x.stroke()}x.restore();
+   x.fillStyle='#3d2f1c';x.font='italic 700 44px Georgia, serif';x.textAlign='center';x.fillText('Island of Nantucket',w/2,96);x.font='22px Georgia, serif';x.fillText('A chart for the Essex · drawn aboard',w/2,460);
+   x.strokeStyle='#5a4128';x.lineWidth=14;x.strokeRect(7,7,w-14,h-14)});
+  const m=new T.Mesh(new T.PlaneGeometry(2.4,1.6),new T.MeshStandardMaterial({map:t,roughness:.8}));m.position.set(2.2,Y1+1.75,SAL.z1-.14);m.rotation.y=Math.PI;GI.add(m)}
+ /* ---------- the middle deck: balcony, side walkways, the party room and the bridge ---------- */
+ const PR={x:3.7,z0:-14,z1:4},BR={z0:4,z1:12};
+ floor(-4.6,4.6,-16,12,Y2);bx(K,'hull',-4.65,4.65,Y2-.35,Y2,-16.05,12.05);bx(K,'teak',-4.6,4.6,Y2,Y2+.01,-16,-14,2);
+ for(const s of[-1,1]){const[a,b]=span(s,PR.x,4.6);bx(K,'teak',a,b,Y2,Y2+.01,-14,12,2)}
+ // outer rails on the walkways and balcony (the starboard rail runs beside the stairs to the sun deck)
+ for(const s of[-1,1]){const[a,b]=span(s,4.55,4.68);wall(a,b,-16,12,Y2,Y2+1.1);K.tube('chrome',v3(s*4.6,Y2+1.05,-16),v3(s*4.6,Y2+1.05,12),.035,6);for(let z=-16;z<=12;z+=1.4)K.tube('chrome',v3(s*4.6,Y2,z),v3(s*4.6,Y2+1.05,z),.022,5)}
+ for(const[a,b]of[[-4.6,-1.15],[1.15,4.6]]){wall(a,b,-16.15,-16,Y2,Y2+1.1);K.tube('chrome',v3(a,Y2+1.05,-16.05),v3(b,Y2+1.05,-16.05),.035,6)}
+ wall(-4.6,4.6,12,12.15,Y2,Y2+1.1);K.tube('chrome',v3(-4.6,Y2+1.05,12.1),v3(4.6,Y2+1.05,12.1),.035,6);
+ // the party room: glass on three sides, a solid wall forward behind the DJ
+ for(const s of[-1,1])glassRun('z',s*PR.x,PR.z0,PR.z1,Y2,Y3-.15,[]);
+ glassRun('x',PR.z0,-PR.x,PR.x,Y2,Y3-.15,[[-1.15,1.15]]);
+ bx(K,'hull',-PR.x,PR.x,Y2,Y3-.15,PR.z1-.05,PR.z1+.1);bx(KI,'ebon',-PR.x+.05,PR.x-.05,Y2,Y3-.15,PR.z1-.12,PR.z1-.05);wall(-PR.x,PR.x,PR.z1-.12,PR.z1+.1,Y2,Y3);
+ bx(KI,'pfloor',-PR.x+.1,PR.x-.1,Y2,Y2+.015,PR.z0+.1,PR.z1-.1);bx(KI,'ceil',-PR.x,PR.x,Y3-.18,Y3-.1,PR.z0,PR.z1);
+ // the bridge
+ for(const s of[-1,1])glassRun('z',s*PR.x,BR.z0,BR.z1-1.2,Y2,Y3-.15,[[4.6,5.9]]);
+ for(const s of[-1,1]){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([s*PR.x,Y2+.9,BR.z1-1.2,s*PR.x,Y3-.15,BR.z1-1.2,s*2.4,Y2+.9,BR.z1,s*2.4,Y3-.6,BR.z1-.4],3));g.setAttribute('uv',new T.Float32BufferAttribute([0,0,0,1,1,0,1,1],2));g.setIndex(s>0?[0,1,2,2,1,3]:[0,2,1,1,2,3]);g.computeVertexNormals();K.add('glass',g);const[a,b]=span(s,2.3,PR.x);wall(a,b,BR.z1-1.3,BR.z1,Y2,Y3)}
+ bx(K,'glass',-2.4,2.4,Y2+.9,Y3-.6,BR.z1-.42,BR.z1-.38);bx(K,'hull',-2.4,2.4,Y2,Y2+.9,BR.z1-.5,BR.z1);wall(-2.4,2.4,BR.z1-.5,BR.z1,Y2,Y3);
+ bx(K,'navy',-PR.x-.05,PR.x+.05,Y3-.6,Y3-.15,BR.z1-1.25,BR.z1-.35);
+ bx(KI,'carpet',-PR.x+.1,PR.x-.1,Y2,Y2+.015,BR.z0+.1,BR.z1-.3);bx(KI,'ceil',-PR.x,PR.x,Y3-.18,Y3-.1,BR.z0,BR.z1-.3);
+ // the helm: a console under the windscreen, a wooden wheel and two captain's chairs
+ bx(KI,'ebon',-2.2,2.2,Y2,Y2+1.05,10.3,11.4);bx(KI,'grey',-2.1,2.1,Y2+1.05,Y2+1.08,10.3,11.3);wall(-2.2,2.2,10.3,11.4,Y2,Y2+1.1);
+ for(const x of[-1.2,1.2]){const t=new T.Mesh(new T.PlaneGeometry(.7,.42),new T.MeshBasicMaterial({color:x<0?'#2bd1ff':'#3dff9a'}));t.position.set(x,Y2+1.25,10.62);t.rotation.x=-.5;GI.add(t)}
+ const WHEEL=new T.Group();WHEEL.position.set(0,Y2+1.2,10.15);WHEEL.rotation.x=-.45;GI.add(WHEEL);
+ {const r=new T.Mesh(new T.TorusGeometry(.32,.03,8,24),M.wood);WHEEL.add(r);for(let i=0;i<8;i++){const sp=new T.Mesh(new T.CylinderGeometry(.015,.015,.82,5),M.wood);sp.rotation.z=i*Math.PI/8;WHEEL.add(sp)}const hub=new T.Mesh(new T.CylinderGeometry(.06,.06,.06,10),M.brass);hub.rotation.x=Math.PI/2;WHEEL.add(hub)}
+ for(const x of[-1.6,1.6]){bx(KI,'sofa',x-.3,x+.3,Y2+.45,Y2+.6,8.7,9.3);bx(KI,'sofa',x-.3,x+.3,Y2+.6,Y2+1.3,8.6,8.75);KI.tube('chrome',v3(x,Y2,9),v3(x,Y2+.45,9),.05,8)}
+ /* ---------- stairs to the sun deck, up the starboard walkway ---------- */
+ for(let i=1;i<=12;i++){const z0=-13.2+(i-1)*.6,top=Y2+i*.275;floor(3.78,4.55,z0,z0+.6,top);bx(K,'teak',3.78,4.55,top-.08,top,z0,z0+.6,2)}
+ /* ---------- the sun deck: loungers, a hot tub and the radar arch ---------- */
+ floor(-3.9,3.9,-14.5,10.5,Y3);floor(3.9,4.6,-6.1,-3.4,Y3);bx(K,'hull',-3.95,3.95,Y3-.18,Y3,-14.55,10.55);bx(K,'teak',-3.9,3.9,Y3,Y3+.01,-14.5,10.5,2);bx(K,'teak',3.9,4.6,Y3-.12,Y3+.01,-6.1,-3.4,2);
+ for(const s of[-1,1]){const[a,b]=span(s,3.85,3.98);const runs=s>0?[[-14.5,-6.1],[-3.4,10.5]]:[[-14.5,10.5]];for(const[z0,z1]of runs){wall(a,b,z0,z1,Y3,Y3+1.1);K.tube('chrome',v3(s*3.92,Y3+1.05,z0),v3(s*3.92,Y3+1.05,z1),.035,6)}}
+ wall(3.9,4.65,-3.4,-3.3,Y3,Y3+1.1);wall(4.55,4.68,-6.1,-3.3,Y3,Y3+1.1);
+ for(const z of[-14.5,10.5]){wall(-3.95,3.95,z-.08,z+.08,Y3,Y3+1.1);K.tube('chrome',v3(-3.92,Y3+1.05,z),v3(3.92,Y3+1.05,z),.035,6)}
+ for(let i=0;i<4;i++){const x=-2.7+i*1.8;bx(K,'sofa',x-.38,x+.38,Y3,Y3+.32,-13.6,-11.6);bx(K,'cush',x-.38,x+.38,Y3+.32,Y3+.7,-13.6,-13.3);wall(x-.38,x+.38,-13.6,-11.6,Y3,Y3+.4)}
+ {const tub=new T.Mesh(new T.CylinderGeometry(1.5,1.5,.5,24),M.hull);tub.position.set(0,Y3+.25,-7);G.add(tub);const wtr=new T.Mesh(new T.CylinderGeometry(1.35,1.35,.05,24),M.water);wtr.position.set(0,Y3+.48,-7);G.add(wtr);wall(-1.5,1.5,-8.5,-5.5,Y3,Y3+.5)}
+ // the radar arch
+ for(const s of[-1,1])K.tube('hull',v3(s*3.4,Y3,3.8),v3(s*2.4,Y3+2.6,4.6),.16,8);K.tube('hull',v3(-2.4,Y3+2.6,4.6),v3(2.4,Y3+2.6,4.6),.18,8);
+ const RADAR=new T.Mesh(new T.BoxGeometry(2.0,.12,.24),M.ebon);RADAR.position.set(0,Y3+2.95,4.6);G.add(RADAR);K.tube('ebon',v3(0,Y3+2.7,4.6),v3(0,Y3+2.9,4.6),.06,6);
+ for(const s of[-1,1])wall(s>0?3.2:-3.6,s>0?3.6:-3.2,3.6,4.0,Y3,Y3+2.5);
+ // navigation lights and deck lamps
+ [['#ff3322',-4.7],['#33ff66',4.7]].forEach(([c,x])=>{const sp=glowSprite(c,1.2);sp.position.set(x,Y2+1.2,11);G.add(sp);NIGHT.sprites.push({s:sp,o:1})});
+ {const sp=glowSprite('#ffffff',1.1);sp.position.set(0,Y3+3.2,4.6);G.add(sp);NIGHT.sprites.push({s:sp,o:1})}
+ for(let z=-20;z<=20;z+=5)for(const s of[-1,1]){const sp=glowSprite('#bfe8ff',1.0);sp.position.set(s*(hwAt(z)+.05),.5,z);G.add(sp);NIGHT.sprites.push({s:sp,o:.6})}
+ /* ---------- the party room's fittings ---------- */
+ // the DJ booth, raised half a metre, with two turntables and a mixer; speaker stacks either side
+ floor(-2.1,2.1,.6,PR.z1-.15,Y2+.5);bx(KI,'ebon',-2.1,2.1,Y2,Y2+.5,.6,PR.z1-.15);bx(KL,'led',-2.1,2.1,Y2+.42,Y2+.47,.56,.6);
+ bx(KI,'ebon',-1.6,1.6,Y2+.5,Y2+1.55,1.1,1.6);bx(KI,'grey',-1.6,1.6,Y2+1.55,Y2+1.6,1.1,1.75);wall(-1.6,1.6,1.1,1.6,Y2,Y2+1.6);bx(KL,'led',-1.6,1.6,Y2+.55,Y2+.6,1.06,1.1);
+ const DECKS=[];for(const x of[-.95,.95]){const p=new T.Mesh(new T.CylinderGeometry(.26,.26,.03,24),new T.MeshStandardMaterial({color:'#0b0b0d',roughness:.3}));p.position.set(x,Y2+1.62,1.42);GI.add(p);
+  const lb=new T.Mesh(new T.CylinderGeometry(.07,.07,.032,12),new T.MeshBasicMaterial({color:x<0?'#ff2d95':'#00e5ff'}));lb.position.set(x,Y2+1.625,1.42);GI.add(lb);DECKS.push(p,lb)}
+ bx(KI,'grey',-.35,.35,Y2+1.6,Y2+1.66,1.2,1.65);
+ const SPK=[];for(const s of[-1,1]){const x=s*3.0;bx(KI,'ebon',x-.45,x+.45,Y2,Y2+2.4,.3,1.2);wall(x-.45,x+.45,.3,1.2,Y2,Y2+2.4);
+  for(const y of[.55,1.35,2.0]){const cone=new T.Mesh(new T.CircleGeometry(y>1.8?.12:.3,20),new T.MeshStandardMaterial({color:'#222226',roughness:.6,metalness:.3}));cone.position.set(x,Y2+y,.28);cone.rotation.y=Math.PI;GI.add(cone);SPK.push(cone)}}
+ // the bar on the port side, aft
+ bx(KI,'wood',-3.6,-2.75,Y2,Y2+1.1,-13.4,-9.4);bx(KI,'ebon',-3.65,-2.7,Y2+1.1,Y2+1.16,-13.45,-9.35);wall(-3.7,-2.7,-13.4,-9.4,Y2,Y2+1.15);bx(KL,'led',-2.76,-2.72,Y2+.1,Y2+.14,-13.4,-9.4);
+ const BOTTLES=new T.Group();GI.add(BOTTLES);['#2bd1ff','#ff2d95','#ffd600','#3dff9a','#ff6d00','#b388ff'].forEach((c,i)=>{const b=new T.Mesh(new T.CylinderGeometry(.04,.05,.28,8),new T.MeshBasicMaterial({color:c,transparent:true,opacity:.8}));b.position.set(-3.45,Y2+1.3,-13.1+i*.6);BOTTLES.add(b)});
+ // a lounge corner opposite the bar
+ bx(KI,'sofa',2.85,3.6,Y2,Y2+.45,-13.4,-10);bx(KI,'sofa',3.35,3.6,Y2+.45,Y2+1.0,-13.4,-10);bx(KI,'cush',2.95,3.2,Y2+.45,Y2+.8,-13.0,-10.4);wall(2.85,3.6,-13.4,-10,Y2,Y2+1);
+ bx(KL,'led',-PR.x+.1,PR.x-.1,Y2+.02,Y2+.06,PR.z0+.12,PR.z0+.18);for(const s of[-1,1]){const[a,b]=span(s,PR.x-.18,PR.x-.12);bx(KL,'led',a,b,Y2+.02,Y2+.06,PR.z0,PR.z1)}
+ for(const s of[-1,1]){const[a,b]=span(s,PR.x-.4,PR.x-.3);bx(KL,'led',a,b,Y3-.2,Y3-.17,PR.z0,PR.z1)}
+ // the dance floor: 60 tiles that light up to the beat
+ const DF={x0:-2.4,z0:-9.4,nx:6,nz:10,s:.8};
+ const TILES=new T.InstancedMesh(new T.BoxGeometry(.76,.03,.76),new T.MeshBasicMaterial({color:'#ffffff',fog:false}),DF.nx*DF.nz);
+ {const m4=new T.Matrix4();let k=0;for(let j=0;j<DF.nz;j++)for(let i=0;i<DF.nx;i++){m4.makeTranslation(DF.x0+(i+.5)*DF.s,Y2+.03,DF.z0+(j+.5)*DF.s);TILES.setMatrixAt(k,m4);TILES.setColorAt(k,new T.Color('#222'));k++}TILES.instanceMatrix.needsUpdate=true;GI.add(TILES)}
+ // the disco ball and its spots of light
+ const BALL=new T.Mesh(new T.IcosahedronGeometry(.36,2),new T.MeshStandardMaterial({color:'#d8dde3',metalness:1,roughness:.12,flatShading:true,envMapIntensity:2.2,emissive:new T.Color('#30343a')}));
+ BALL.position.set(0,Y3-.75,-5);GI.add(BALL);KI.tube('chrome',v3(0,Y3-.15,-5),v3(0,Y3-.4,-5),.01,4);
+ const SPOTS=new T.Group();SPOTS.position.set(0,0,-5);GI.add(SPOTS);
+ for(let i=0;i<28;i++){const a=i/28*TAU*3.7,r=2.2+(i%4)*.35,sp=glowSprite(['#ffffff','#ffd6f0','#d6f6ff'][i%3],.32);sp.position.set(Math.cos(a)*r,Y2+.6+((i*37)%25)/25*2.4,Math.sin(a)*Math.min(r,3.4));SPOTS.add(sp)}
+ // lasers fanning out from the top of the DJ wall, and four beam lights from the ceiling
+ const LZR=new T.Group();LZR.position.set(0,Y2+2.75,PR.z1-.25);GI.add(LZR);const LASERS=[];
+ for(let i=0;i<8;i++){const g=new T.BoxGeometry(.018,.018,16);g.translate(0,0,-8);const m=new T.Mesh(g,ADD(['#00ff6a','#ff1744','#00e5ff','#d500f9'][i%4],.8));LZR.add(m);LASERS.push(m)}
+ const LZDOT=glowSprite('#ff1744',.5);LZR.add(LZDOT);
+ const BEAMS=[];[[-1.6,-7.5],[1.6,-7.5],[-1.6,-2.5],[1.6,-2.5]].forEach(([x,z],i)=>{const g=new T.ConeGeometry(.9,2.9,18,1,true);g.translate(0,-1.45,0);const m=new T.Mesh(g,ADD('#ff2d95',.13));m.position.set(x,Y3-.2,z);GI.add(m);
+  const can=new T.Mesh(new T.CylinderGeometry(.12,.15,.25,10),M.ebon);can.position.set(x,Y3-.28,z);GI.add(can);BEAMS.push(m)});
+ /* ---------- things on the walls: all drawn here, made up for the Essex ---------- */
+ function frame(w,h,x,y,z,ry,draw,par){const t=cvT(Math.round(w*256),Math.round(h*256),draw);const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshStandardMaterial({map:t,roughness:.6,emissive:new T.Color('#ffffff'),emissiveIntensity:.18,emissiveMap:t}));m.position.set(x,y,z);m.rotation.y=ry;(par||GI).add(m);return m}
+ // a sketch of the old whaleship Essex
+ frame(1.5,1.1,-2.6,Y2+2.1,PR.z1-.14,Math.PI,(x,w,h)=>{x.fillStyle='#efe2c4';x.fillRect(0,0,w,h);x.strokeStyle='#3b2a18';x.lineWidth=3;
+  x.beginPath();x.moveTo(w*.14,h*.66);x.quadraticCurveTo(w*.5,h*.8,w*.86,h*.62);x.lineTo(w*.8,h*.58);x.lineTo(w*.18,h*.6);x.closePath();x.stroke();
+  for(const[mx,mh]of[[.32,.46],[.5,.52],[.68,.42]]){x.beginPath();x.moveTo(w*mx,h*.6);x.lineTo(w*mx,h*(.6-mh));x.stroke();for(let k=0;k<3;k++){const y0=h*(.6-mh)+k*h*mh/3+6,sw=w*(.1-k*.012);x.strokeRect(w*mx-sw,y0,sw*2,h*mh/3-10)}}
+  x.beginPath();for(let i=0;i<8;i++){x.moveTo(w*.08+i*w*.11,h*.74);x.quadraticCurveTo(w*.13+i*w*.11,h*.71,w*.19+i*w*.11,h*.74)}x.stroke();
+  x.fillStyle='#3b2a18';x.font='italic 700 34px Georgia, serif';x.textAlign='center';x.fillText('Essex · Nantucket · 1819',w/2,h*.9);x.strokeStyle='#6b4a2a';x.lineWidth=16;x.strokeRect(8,8,w-16,h-16)});
+ // two gold records for made-up island bands
+ const gold=(band,song)=>(x,w,h)=>{x.fillStyle='#111';x.fillRect(0,0,w,h);x.fillStyle='#f4f1ea';x.fillRect(14,14,w-28,h-28);const g=x.createRadialGradient(w/2,h*.42,6,w/2,h*.42,h*.32);g.addColorStop(0,'#fff3b0');g.addColorStop(.5,'#d4a73a');g.addColorStop(1,'#8a6416');
+  x.fillStyle=g;x.beginPath();x.arc(w/2,h*.42,h*.3,0,TAU);x.fill();x.strokeStyle='rgba(90,60,10,.35)';for(let r=h*.1;r<h*.3;r+=5){x.beginPath();x.arc(w/2,h*.42,r,0,TAU);x.stroke()}x.fillStyle='#b3261e';x.beginPath();x.arc(w/2,h*.42,h*.08,0,TAU);x.fill();
+  x.fillStyle='#1d1d1f';x.textAlign='center';x.font='bold 26px Georgia, serif';x.fillText(band,w/2,h*.84);x.font='italic 22px Georgia, serif';x.fillText('“'+song+'” · Gold',w/2,h*.92)};
+ frame(.9,1.15,1.95,Y2+2.35,PR.z1-.14,Math.PI,gold('The Brant Point Beacons','Harbor Lights'));
+ frame(.9,1.15,3.05,Y2+2.35,PR.z1-.14,Math.PI,gold('Sconset Sound System','Fog Rolls In'));
+ // a retro poster on the balcony side of the bar
+ frame(1.0,1.4,-3.62,Y2+2.1,-11.3,Math.PI/2,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#ff7a59');g.addColorStop(.55,'#ffb347');g.addColorStop(1,'#2d1b4e');x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.fillStyle='#ffe28a';x.beginPath();x.arc(w/2,h*.48,w*.26,Math.PI,0);x.fill();x.fillStyle='#2d1b4e';for(let i=0;i<5;i++)x.fillRect(0,h*.48+i*12,w,5);
+  x.fillStyle='#fff';x.textAlign='center';x.font='900 46px Anton, Impact, sans-serif';x.fillText('ACK SUMMER',w/2,h*.16);x.fillText('JAM ’79',w/2,h*.26);x.font='bold 24px Barlow Condensed, Arial Narrow, sans-serif';x.fillText('LIVE ON THE HARBOR · ALL NIGHT',w/2,h*.9)});
+ // a pink neon ESSEX over the DJ
+ const NEON=frame(2.6,.7,0,Y2+2.95,PR.z1-.14,Math.PI,(x,w,h)=>{x.clearRect(0,0,w,h);x.shadowColor='#ff2d95';x.shadowBlur=30;x.strokeStyle='#ffd6ef';x.lineWidth=7;x.font='italic 700 128px Georgia, serif';x.textAlign='center';x.textBaseline='middle';x.strokeText('Essex',w/2,h/2+6);x.strokeText('Essex',w/2,h/2+6)});
+ NEON.material=new T.MeshBasicMaterial({map:NEON.material.map,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false});
+ /* ---------- build the meshes ---------- */
+ const mats={hull:M.hull,navy:M.navy,teak:M.teak,glass:M.glass,chrome:M.chrome,brass:M.brass,sofa:M.sofa,cush:M.cush,wood:M.wood,iwall:M.iwall,ceil:M.ceil,pfloor:M.pfloor,carpet:M.carpet,ebon:M.ebon,grey:M.grey,lamp:M.lamp,led:LED};
+ const OUT=K.build(G,mats,['glass','lamp']);KI.build(GI,mats,['glass','lamp','carpet','pfloor','ceil']);KL.build(GI,mats,['led']);if(OUT.glass)OUT.glass.renderOrder=2;
+ G.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.userData.keep=true});
+ /* ---------- Captain Pedro: dressed like a Nantucket whaling officer of the 1820s (dark coat, brass buttons, high white collar, side-whiskers) ---------- */
+ const PART=(geo,c,b,x,y,z,rx,rz)=>{const m=new T.Mesh(geo,new T.MeshStandardMaterial({color:c,roughness:.75,metalness:c==='#c9a34a'?.8:0}));m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;b.add(m);return m};
+ const CAP=makeNPC({look:'pedro',skin:'#c8956b',shirt:'#16203a',pants:'#2b2723'});
+ {const n=CAP;PART(new T.BoxGeometry(.2,.3,.02),'#d8c9a3',n.torso,0,.35,.125);PART(new T.CylinderGeometry(.07,.085,.09,12),'#f4f1ea',n.torso,0,.64,0);PART(new T.SphereGeometry(.05,8,6),'#f4f1ea',n.torso,0,.56,.1);
+  for(const s of[-1,1]){PART(new T.BoxGeometry(.08,.3,.02),'#101830',n.torso,s*.1,.4,.13,0,s*.25);for(const y of[.28,.4,.52])PART(new T.SphereGeometry(.013,6,4),'#c9a34a',n.torso,s*.08,y,.14)}
+  PART(new T.BoxGeometry(.32,.52,.03),'#16203a',n.hips,0,-.24,-.13,.08);
+  PART(new T.SphereGeometry(.128,12,8,0,TAU,0,Math.PI*.55).scale(1,1.02,1.06),'#3a2516',n.head,0,.015,-.01);for(const s of[-1,1])PART(new T.BoxGeometry(.03,.11,.06),'#3a2516',n.head,s*.112,-.035,.02);
+  PART(new T.CylinderGeometry(.115,.125,.15,16),'#111114',n.head,0,.16,0);PART(new T.CylinderGeometry(.2,.2,.015,18),'#111114',n.head,0,.09,0);PART(new T.CylinderGeometry(.118,.127,.025,16),'#3a2a1c',n.head,0,.1,0);
+  for(const l of[n.lL,n.lR])PART(new T.BoxGeometry(.105,.22,.13),'#141416',l.kn,0,-.32,.01);
+  const tg=nameSprite('Captain Pedro','#c9a34a');tg.position.set(0,2.05,0);tg.scale.multiplyScalar(.7);n.g.add(tg);GI.add(n.g)}
+ const capHome=()=>{CAP.g.position.set(HELM.capByWheel?0:-1.5,Y2,9.5);CAP.g.rotation.y=HELM.capByWheel?0:Math.PI*.15};
+ /* ---------- the DJ, the bartender and the dancers ---------- */
+ const DJ=makeNPC({look:'party',shirt:'#111114',pants:'#26262b'});DJ.g.position.set(0,Y2+.5,2.3);DJ.g.rotation.y=Math.PI;GI.add(DJ.g);
+ {const hp=new T.Mesh(new T.TorusGeometry(.13,.018,6,16,Math.PI),new T.MeshStandardMaterial({color:'#ff2d95',roughness:.4}));hp.position.set(0,.03,0);DJ.head.add(hp);for(const s of[-1,1]){const e=new T.Mesh(new T.CylinderGeometry(.055,.055,.04,10),new T.MeshStandardMaterial({color:'#111'}));e.rotation.z=Math.PI/2;e.position.set(s*.13,0,0);DJ.head.add(e)}
+  const tg=nameSprite('DJ Sandbar','#ff2d95');tg.position.set(0,2.05,0);tg.scale.multiplyScalar(.6);DJ.g.add(tg)}
+ const BART=makeNPC({look:'party',shirt:'#f4f1ea',pants:'#111114'});BART.g.position.set(-3.25,Y2,-11.4);BART.g.rotation.y=Math.PI/2;GI.add(BART.g);
+ const DANCERS=[];[[-1.6,-8.4],[0,-8.8],[1.5,-8.1],[-2,-6.4],[-.6,-6.9],[.9,-6.2],[2.0,-5.9],[-1.3,-4.6],[.3,-4.2],[1.7,-3.8],[-.4,-2.7],[1.1,-2.4]].forEach(([x,z],i)=>{
+  const n=makeNPC({look:'party'});n.g.position.set(x,Y2+.03,z);n.g.rotation.y=Math.atan2(-x,2.2-z)+(rnd()-.5)*.8;GI.add(n.g);DANCERS.push({n,x,z,k:i%4,off:rnd()*TAU,ry:n.g.rotation.y});wall(x-.25,x+.25,z-.25,z+.25,Y2,Y2+1.8)});
+ const dWalls=WL.slice(-DANCERS.length);
+ function dance(D,b,t){const n=D.n,ph=b*Math.PI,s=Math.sin(ph+D.off),p=Math.abs(Math.sin(ph));n.hips.position.y=.9-.06*p;n.hips.rotation.set(0,Math.sin(ph*.5+D.off)*.25,0);n.torso.rotation.set(.08+.05*p,0,Math.sin(ph+D.off)*.08);n.head.rotation.set(-.1+.18*p,0,0);
+  n.lL.hp.rotation.set(-.12*p,0,0);n.lR.hp.rotation.set(-.12*(1-p),0,0);if(n.lL.kn){n.lL.kn.rotation.x=.25*p;n.lR.kn.rotation.x=.25*(1-p)}
+  if(D.k===0){n.aL.sh.rotation.set(-2.7+.3*s,0,.3);n.aR.sh.rotation.set(-2.7-.3*s,0,-.3)}
+  else if(D.k===1){n.aL.sh.rotation.set(-.6-.5*p,0,.5);n.aR.sh.rotation.set(-.6-.5*(1-p),0,-.5)}
+  else if(D.k===2){n.aR.sh.rotation.set(-2.9+.4*p,0,-.15);n.aL.sh.rotation.set(-.3,0,.2+.3*p)}
+  else{n.aL.sh.rotation.set(-1.2*p,0,.9);n.aR.sh.rotation.set(-1.2*(1-p),0,-.9)}
+  if(n.aL.el){n.aL.el.rotation.x=-.6;n.aR.el.rotation.x=-.6};n.g.rotation.y=D.ry+Math.sin(t*.4+D.off)*.6}
+ function cower(n,t){poseNPC(n,0,0,t,null);n.hips.position.y=.62;n.torso.rotation.x=.5;n.lL.hp.rotation.x=-1.2;n.lR.hp.rotation.x=-1.2;if(n.lL.kn){n.lL.kn.rotation.x=1.6;n.lR.kn.rotation.x=1.6}n.aL.sh.rotation.set(-2.6,0,.4);n.aR.sh.rotation.set(-2.6,0,-.4)}
+ /* ---------- where she is, and what rides along ---------- */
+ const S={x:HOME.x,z:HOME.z,h:HOME.h};let C=Math.cos(S.h),Sn=Math.sin(S.h);
+ const toL=(x,z)=>{const dx=x-S.x,dz=z-S.z;return[dx*C-dz*Sn,dx*Sn+dz*C]};
+ const toW=(lx,lz)=>[S.x+lx*C+lz*Sn,S.z-lx*Sn+lz*C];
+ function pose(){G.position.set(S.x,0,S.z);G.rotation.y=S.h;C=Math.cos(S.h);Sn=Math.sin(S.h);
+  for(const w of WL){const cx=(w.x0+w.x1)/2,cz=(w.z0+w.z1)/2,o=w.o;o.x=S.x+cx*C+cz*Sn;o.z=S.z-cx*Sn+cz*C;o.c=C;o.s=-Sn}DYN2.x=S.x;DYN2.z=S.z}
+ DYN2.list.push(...WL.map(w=>w.o));DYN2.r=32;DYN2.on=true;pose();
+ PLATS.push({fn:(x,z,y)=>{const dx=x-S.x,dz=z-S.z;if(dx*dx+dz*dz>900)return -1e9;const lx=dx*C-dz*Sn,lz=dx*Sn+dz*C;let h=-1e9;
+  for(const f of FL){if(f.lvl&&y!==undefined&&f.y>y+.65)continue;if(lx>f.x0&&lx<f.x1&&lz>f.z0&&lz<f.z1&&f.y>h)h=f.y}return h}});
+ const onDeck=p=>{const[lx,lz]=toL(p.x,p.z);if(lz<STERN-2.3||lz>BOW+.4||p.y<YS-.5||p.y>Y3+4)return false;if(Math.abs(lx)<hwAt(Math.max(lz,STERN))+.2)return true;return lx>4.4&&lx<8.5&&Math.abs(lz-PLZ)<.45&&p.y>Y1-.6};
+ const home=()=>Math.hypot(S.x-HOME.x,S.z-HOME.z)<1&&Math.abs(angWrap(S.h-HOME.h))<.02;
+ function moveTo(nx,nz,nh){const dh=angWrap(nh-S.h);if(Math.abs(nx-S.x)<1e-6&&Math.abs(nz-S.z)<1e-6&&Math.abs(dh)<1e-7)return;const R=[];
+  const add=(o,rot)=>{if(o&&o.p&&onDeck(o.p))R.push({o,l:toL(o.p.x,o.p.z),rot})};
+  if(PL&&!PCAR)add(PL,d=>{PL.yaw+=d;PL.bodyYaw+=d});
+  if(MODE==='open'){for(const E of OPEN.pirates)if(E.ship===API)add(E,d=>{E.yaw+=d});for(const f of OPEN.allies)add(f,d=>{f.yaw+=d;f.bodyYaw+=d})}
+  S.x=nx;S.z=nz;S.h=nh;pose();for(const r of R){const w=toW(r.l[0],r.l[1]);r.o.p.x=w[0];r.o.p.z=w[1];r.rot(dh)}}
+ /* ---------- driving her: Captain Pedro hands you the wheel ---------- */
+ const HELM={on:false,v:0,yr:0,capByWheel:true,bump:0,auto:0,told:false};
+ const PROBE=[[0,BOW+.4],[-3.5,STERN],[3.5,STERN],[-5,-8],[5,-8],[-5,6],[5,6],[-3,16],[3,16]];
+ function clearAt(x,z,h){const c=Math.cos(h),s=Math.sin(h);for(const[lx,lz]of PROBE){const wx=x+lx*c+lz*s,wz=z-lx*s+lz*c;if(!isWater(wx,wz,-1.3))return false;if(FERRY.hullDist({x:wx,z:wz})<1.5)return false}return true}
+ function helmTake(){if(coopGuest()){toast('Only the room maker can drive the Essex');return}HELM.on=true;HELM.capByWheel=false;capHome();HELM.v=0;
+  if(!HELM.told){HELM.told=true;showMissionCard('You have the wheel',`${IS_TOUCH?'Stick':GP.on?'Left stick':'W and S'} for the throttle, ${IS_TOUCH?'left and right':GP.on?'left and right':'A and D'} to steer. ${keyE()} hands her back to Captain Pedro.`)}
+  else toast('Captain Pedro: She’s all yours. Easy on the throttle near the docks.')}
+ function helmGive(){HELM.on=false;HELM.capByWheel=true;capHome();toast(home()?'Captain Pedro has the wheel':'Captain Pedro has the wheel · ask him to take her back to the dock')}
+ function helmInput(dt){const k=keys;let st=((k.KeyD?1:0)-(k.KeyA?1:0))+TOUCH.mx+(GP.on?GP.lx:0),th=((k.KeyW?1:0)-(k.KeyS?1:0))-TOUCH.my-(GP.on?GP.ly:0)+(GP.on?(GP.gas||0)-(GP.brake||0):0);st=clamp(st,-1,1);th=clamp(th,-1,1);
+  const sens=IS_TOUCH?.0035:.0024;PL.pitch=clamp(PL.pitch-look.dy*sens,-1.1,1.1);look.dx=look.dy=0;drive(dt,th,st);
+  const w=toW(0,9.55);PL.p.set(w[0],Y2,w[1]);PL.vx=PL.vz=0;PL.vy=0;PL.yaw=S.h;PL.bodyYaw=S.h}
+ function drive(dt,th,st){const vt=th>=0?th*13:th*3.5,acc=Math.abs(vt)>Math.abs(HELM.v)?2.2:3.2;HELM.v+=clamp(vt-HELM.v,-acc*dt,acc*dt);
+  const turn=.32*clamp(Math.abs(HELM.v)/4,.2,1)*Math.sign(HELM.v||1);HELM.yr=lerp(HELM.yr,st*turn,1-Math.exp(-2*dt));
+  const nh=S.h-HELM.yr*dt,nx=S.x+Math.sin(nh)*HELM.v*dt,nz=S.z+Math.cos(nh)*HELM.v*dt;HELM.bump-=dt;
+  if(clearAt(nx,nz,nh))moveTo(nx,nz,nh);else{if(Math.abs(HELM.v)>2&&HELM.bump<=0){HELM.bump=1.5;sfx('crash',.5);toast('Careful: too shallow that way')}HELM.v*=-.15;HELM.yr=0}
+  WHEEL.rotation.z=lerp(WHEEL.rotation.z,-st*1.6,1-Math.exp(-6*dt))}
+ function goHome(msg){HELM.on=false;HELM.capByWheel=true;HELM.v=0;HELM.yr=0;moveTo(HOME.x,HOME.z,HOME.h);capHome();if(msg)toast(msg)}
+ /* ---------- the hijack: the Seaweed crew climb aboard ---------- */
+ const SPOTS_IN=[[0,STERN-.8,YS],[-3,-19,Y1],[3,-19,Y1],[-4.4,-4,Y1],[4.4,2,Y1],[0,14,Y1],[-2.5,-15,Y2],[2.5,-15,Y2],[-4.15,-2,Y2],[4.15,8,Y2],[0,-10,Y3],[-2,2,Y3]];
+ const HJ={on:false,wave:0,list:[],aboardT:0,cool:60,dir:0,plank:0,plankDone:false,drift:0};
+ function spawnWave(n,nades){const pick=SPOTS_IN.slice().sort(()=>rnd()-.5);let k=0;for(const[lx,lz,y]of pick){if(k>=n)break;const w=toW(lx,lz);const E=spawnPirate(0,0,{at:{x:w[0],y:y+.02,z:w[1]},sea:true,nades:nades});if(!E)continue;E.ferry=true;E.ship=API;HJ.list.push(E);k++}return k}
+ function bestHeading(){let best=S.h,bd=-1;for(let i=0;i<16;i++){const h=i/16*TAU;let d=0;for(let r=20;r<=300;r+=20){if(!isWater(S.x+Math.sin(h)*r,S.z+Math.cos(h)*r,-2)){break}d=r}if(d>bd){bd=d;best=h}}return best}
+ function hijackStart(){HJ.on=true;HJ.wave=1;HJ.list=[];HJ.plank=0;HJ.plankDone=false;HJ.drift=0;HJ.dir=bestHeading();if(HELM.on){HELM.on=false;toast('The Seaweed crew pulled you off the wheel!')}HELM.capByWheel=false;HELM.v=0;
+  const n=spawnWave(6,0);sfx('beep',.8);showMissionCard('The Seaweed crew are boarding!',`They climbed up from a skiff and they’re taking the Essex. Splat all ${n} of them before they sail off with her, or they’ll make you walk the plank.`);
+  ALLY.cool=0;ALLY.wake=1;crewSay('Captain Pedro','Pirates! They’ve got the helm. Fight them off!','#c9a34a',true)}
+ function hijackWin(){HJ.on=false;HJ.cool=240;HJ.aboardT=0;addCash(200,'saving the Essex');sfx('win',1);showMissionCard('You saved the Essex!','Captain Pedro has the wheel back and the party’s on again · +$200');crewSay('Captain Pedro','The Essex is ours again. Drinks are on me tonight!','#c9a34a',true);HELM.capByWheel=true;capHome();OPEN.respect+=2}
+ function hijackEnd(){HJ.on=false;HJ.cool=240;HJ.aboardT=0;for(const E of HJ.list)if(E.dead<=0){E.dead=E.down=.01;E.hp=0}HJ.list=[];HELM.capByWheel=true;capHome()}
+ // losing: the crew line you up on the plank and you walk off it into the harbor
+ function plankStart(){HJ.plank=4.5;OPEN.hp=1;const w=toW(4.9,PLZ);PL.p.set(w[0],Y1+.1,w[1]);PL.vx=PL.vz=PL.vy=0;PL.yaw=S.h+Math.PI/2;PL.bodyYaw=PL.yaw;
+  showMissionCard('Walk the plank!','The Seaweed crew got the better of you. Over the side you go!');sfx('beep',1);
+  let k=0;for(const E of HJ.list){if(E.dead>0||k>=3)continue;const w2=toW(3.2,PLZ-1.4+k*1.4);E.p.set(w2[0],Y1+.02,w2[1]);k++}}
+ function plankTick(dt){HJ.plank-=dt;look.dx=look.dy=0;if(!PL.swim)PL.move(dt,0,HJ.plank<3.6?.55:0,false,false);else if(!HJ.plankDone){HJ.plankDone=true;FX.splash(PL.p.x,.2,PL.p.z,10,3);sfx('splat',.8);
+   OPEN.hp=4;hijackEnd();showMissionCard('Splash!','You walked the plank. The Seaweed crew took off in their skiff, and Captain Pedro is bringing the Essex back to the town dock. Swim to her ladder to climb back aboard.');HJ.goHome=6}
+  if(HJ.plank<=-6&&!PL.swim){HJ.plank=0;OPEN.hp=4;if(HJ.on)hijackEnd()}if(PL.swim&&HJ.plankDone)HJ.plank=0}
+ function hijackTick(dt){HJ.list=HJ.list.filter(E=>OPEN.pirates.includes(E));const alive=HJ.list.filter(E=>E.dead<=0).length;
+  if(alive===0){if(HJ.wave===1){HJ.wave=2;const n=spawnWave(5,2);showMissionCard('More of them!',`Another ${n} of the Seaweed crew are climbing over the rail. These ones have paint grenades.`);ALLY.cool=0;ALLY.wake=1;return}hijackWin();return}
+  // the pirates motor her slowly out toward open water
+  if(HJ.drift<260){const sp=2.4,nh=S.h+angWrap(HJ.dir-S.h)*Math.min(1,dt*.25),nx=S.x+Math.sin(nh)*sp*dt,nz=S.z+Math.cos(nh)*sp*dt;if(clearAt(nx,nz,nh)){moveTo(nx,nz,nh);HJ.drift+=sp*dt}else HJ.dir=bestHeading()}
+  const me=ME();if(me&&!onDeck(me.p)&&Math.hypot(me.p.x-S.x,me.p.z-S.z)>220){hijackEnd();toast('The Seaweed crew sailed off · Captain Pedro will bring the Essex back');HJ.goHome=8}}
+ /* ---------- the party: lights to the beat, music when you're close ---------- */
+ const PAL0=['#ff2d95','#00e5ff','#7c4dff','#ffd600','#00ff85','#ff6d00'].map(c=>new T.Color(c)),PAL={length:6},_c=new T.Color();for(let i=0;i<6;i++)PAL[i]=PAL0[i];const pal=k=>PAL0[((k%6)+6)%6];
+ let beat=0,lastB=-1;
+ function partyAudible(){const cp=camera.position,dd=Math.hypot(cp.x-S.x,cp.z-S.z);if(HJ.on||dd>90||MODE!=='open')return{on:false,inside:false,close:0};const me=ME();const ins=!!(me&&inRoom(me.p.x,me.p.z,0,me.p.y)&&me.p.y>Y2-.4&&me.p.y<Y3-.4&&(()=>{const[lx,lz]=toL(me.p.x,me.p.z);return lz<PR.z1&&lz>PR.z0})());
+  return{on:true,inside:ins,close:clamp(1-(dd-6)/70,0,1)}}
+ function lights(dt,t){let pb=(MUS.live===2&&AU.ctx&&SETTINGS.music)?(AU.ctx.currentTime-MUS.pt0)*PARTY_BPM/60:t*PARTY_BPM/60;if(!(pb>0))pb=0;beat=pb;const bi=Math.floor(pb),fr=pb-bi,pulse=.35+.65*Math.exp(-fr*4),bar=Math.floor(bi/4),pat=Math.floor(bi/16)%3;
+  let k=0;for(let j=0;j<DF.nz;j++)for(let i=0;i<DF.nx;i++){let ci,br;if(pat===0){ci=(i+j+bi)%6;br=(i+j+bi)%2?pulse:.25}else if(pat===1){const r=Math.round(Math.hypot(i-2.5,j-4.5));ci=(r+bi)%6;br=r===((bi%5))?1:.25+.4*pulse}else{ci=(bar+j)%6;br=j===(bi%DF.nz)||j===((bi+5)%DF.nz)?1:.18}
+   _c.copy(pal(ci)).multiplyScalar(br);TILES.setColorAt(k++,_c)}TILES.instanceColor.needsUpdate=true;
+  BALL.rotation.y+=dt*.5;SPOTS.rotation.y+=dt*.32;
+  const lzOn=bar%4>=2;LZR.visible=lzOn;if(lzOn){LASERS.forEach((m,i)=>{m.rotation.y=Math.sin(pb*Math.PI/4+i*.8)*.55+(i-3.5)*.09;m.rotation.x=-.06-.12*Math.abs(Math.sin(pb*Math.PI/8+i))});LZDOT.material.opacity=.6+.4*pulse}
+  BEAMS.forEach((m,i)=>{m.rotation.x=Math.sin(pb*Math.PI/8+i*1.3)*.45;m.rotation.z=Math.cos(pb*Math.PI/8+i)*.45;m.material.color.copy(pal(bar+i));m.material.opacity=.07+.1*pulse});
+  LED.color.copy(pal(bar*2+(bi%2))).multiplyScalar(.5+.5*pulse);
+  NEON.material.opacity=.85+.15*Math.sin(t*23)*Math.sin(t*7);
+  const kick=Math.exp(-fr*9);SPK.forEach((s,i)=>s.scale.setScalar(1+(i%3===0?.08:.04)*kick));
+  DECKS.forEach((d,i)=>d.rotation.y+=dt*3.5);BOTTLES.children.forEach((b,i)=>b.material.opacity=.5+.4*Math.max(0,Math.sin(pb*Math.PI/2+i)))}
+ /* ---------- every frame ---------- */
+ let lastNet=0;
+ function tick(dt){if(MODE!=='open')return;const me=ME(),t=CLOCK;
+  const cd=Math.hypot(camera.position.x-S.x,camera.position.z-S.z);GI.visible=cd<150;RADAR.rotation.y+=dt*1.8;
+  if(!coopGuest()){
+   if(me&&onDeck(me.p)&&!PCAR&&!OPEN.active&&!HJ.on){HJ.aboardT+=dt;if(!HJ.toldIn){HJ.toldIn=true;toast('Aboard the Essex · the party’s up on the middle deck, Captain Pedro is on the bridge')}}else if(me&&!onDeck(me.p))HJ.toldIn=false;
+   HJ.cool-=dt;if(!HJ.on&&HJ.cool<=0&&HJ.aboardT>95&&me&&onDeck(me.p)&&!OPEN.active&&!FERRY.heist&&PL.dead<=0)hijackStart();
+   if(HJ.on)hijackTick(dt);
+   if(HJ.goHome>0){HJ.goHome-=dt;if(HJ.goHome<=0){if(me&&onDeck(me.p)&&!PL.swim)HJ.goHome=4;else{goHome();if(me&&Math.hypot(me.p.x-S.x,me.p.z-S.z)<300)toast('Captain Pedro brought the Essex back to the town dock')}}}
+   if(!HJ.on&&!HELM.on&&!home()&&me&&!onDeck(me.p)&&Math.hypot(me.p.x-S.x,me.p.z-S.z)>180&&!(HJ.goHome>0))goHome()}
+  // wake and spray when she's moving
+  const spd=HELM.on?Math.abs(HELM.v):HJ.on?2.4:0;HELM.wakeT=(HELM.wakeT||0)-dt;if(spd>1.5&&HELM.wakeT<=0){HELM.wakeT=.12;for(const sd of[-1,1]){const w=toW(sd*3.5,STERN-1);FX.wake(w[0],.05,w[1],S.h,1+spd*.12)}if(spd>6&&rnd()<.4){const b=toW((rnd()-.5)*2,BOW);FX.splash(b[0],.4,b[1],3,2)}}
+  if(!HELM.on&&HELM.v){HELM.v=0;HELM.yr=0}
+  if(cd<150){if(!HJ.on){lights(dt,t);if(cd<70){const b=beat;DANCERS.forEach(D=>dance(D,b,t));poseNPC(DJ,0,0,t,null);DJ.head.rotation.x=-.25+.2*Math.abs(Math.sin(b*Math.PI));DJ.aL.sh.rotation.set(-1.0,0,.25);DJ.aR.sh.rotation.set(-1.0+.15*Math.sin(b*Math.PI*.5),0,-.25);DJ.hips.position.y=.9-.03*Math.abs(Math.sin(b*Math.PI));
+     poseNPC(BART,t*1.5,.1,t,null);BART.aR.sh.rotation.set(-1.1+.4*Math.sin(t*3),0,-.1)}LZR.visible=LZR.visible&&!HJ.on}
+   else{LZR.visible=false;LED.color.set('#330000');if(cd<70){DANCERS.forEach(D=>cower(D.n,t));cower(DJ,t);cower(BART,t)}}
+   if(cd<70){if(HJ.on){poseNPC(CAP,0,0,t,null);CAP.aL.sh.rotation.set(-2.9,0,.35);CAP.aR.sh.rotation.set(-2.9,0,-.35)}else if(HELM.capByWheel){poseNPC(CAP,0,0,t,null);CAP.aL.sh.rotation.set(-1.15,0,.15);CAP.aR.sh.rotation.set(-1.15,0,-.15);if(CAP.aL.el){CAP.aL.el.rotation.x=-.5;CAP.aR.el.rotation.x=-.5}WHEEL.rotation.z=Math.sin(t*.4)*.15}
+    else{poseNPC(CAP,0,0,t,null);CAP.aL.sh.rotation.set(-.2,0,.25);CAP.aR.sh.rotation.set(-.2,0,-.25);CAP.head.rotation.y=Math.sin(t*.5)*.4}}}}
+ /* ---------- actions ---------- */
+ const nearL=(p,lx,lz,y,r)=>{const[a,b]=toL(p.x,p.z);return Math.hypot(a-lx,b-lz)<r&&Math.abs(p.y-y)<1.2};
+ function action(){const p=PL.p;
+  if(PL.swim&&hullDist(p)<5)return{t:'Climb the Essex’s swim ladder',act:climb};
+  if(!onDeck(p))return null;
+  if(HELM.on)return{t:'Hand the wheel back to Captain Pedro',act:helmGive};
+  if(nearL(p,0,9.4,Y2,1.6)||nearL(p,-1.5,9.5,Y2,1.4)){if(HJ.on)return null;if(!home()&&!HELM.capByWheel)return{t:'Take the wheel of the Essex',act:helmTake};
+   if(!home())return{t:'Ask Captain Pedro to take her back to the dock',act:()=>goHome('Captain Pedro brought the Essex back to the town dock')};return{t:'Ask Captain Pedro for the wheel',act:helmTake}}
+  if(nearL(p,-3.0,-11.4,Y2,1.5)&&!HJ.on)return{t:'Grab a soda from the bar',act:()=>{toast('The bartender slides you an ice-cold soda');sfx('beep',.4)}};
+  return null}
+ /* ---------- climbing back aboard from the water ---------- */
+ const hullDist=p=>{const[lx,lz]=toL(p.x,p.z);const ex=Math.max(0,Math.abs(lx)-hwAt(clamp(lz,STERN,BOW))),ez=Math.max(0,lz-BOW,STERN-1.4-lz);return Math.hypot(ex,ez)};
+ function climb(){const w=toW(0,STERN-.7);PL.p.set(w[0],YS+.05,w[1]);PL.vy=0;PL.swim=false;PL.yaw=S.h;toast('You climbed the swim ladder onto the Essex')}
+ function where(p){const[lx,lz]=toL(p.x,p.z),y=p.y;let spot;if(y<Y1-.6)spot='Swim platform';else if(y<Y2-.4)spot=lx>4.5&&Math.abs(lz-PLZ)<.5?'The plank':Math.abs(lx)<SAL.x&&lz>SAL.z0&&lz<SAL.z1?'Main salon':lz<SAL.z0?'Aft deck':lz>SAL.z1?'Foredeck':'Side deck';
+  else if(y<Y3-.4)spot=Math.abs(lx)<PR.x&&lz>PR.z0&&lz<PR.z1?'Party room':Math.abs(lx)<PR.x&&lz>BR.z0?'The bridge':'Upper deck';else spot='Sun deck';return{area:'The Essex',spot}}
+ function inRoom(x,z,pad,y){if(y===undefined||!onDeck({x,z,y}))return false;const[lx,lz]=toL(x,z),p=-(pad||0);
+  if(y>Y1-.6&&y<Y2-.4)return Math.abs(lx)<SAL.x-.1-p&&lz>SAL.z0+p&&lz<SAL.z1-.1-p;if(y>Y2-.4&&y<Y3-.4)return Math.abs(lx)<PR.x-.1-p&&lz>PR.z0+p&&lz<BR.z1-.5-p;return false}
+ function inside(p){return inRoom(p.x,p.z,0,p.y)}
+ const ceilFor=y=>y<Y2-.4?Y2-.2:Y3-.25;
+ function start(){HJ.on=false;HJ.list=[];HJ.aboardT=0;HJ.cool=60;HJ.plank=0;HJ.goHome=0;HELM.on=false;HELM.capByWheel=true;HELM.v=0;S.x=HOME.x;S.z=HOME.z;S.h=HOME.h;pose();capHome()}
+ function clear(){HJ.on=false;HJ.list=[];HJ.plank=0;HELM.on=false;HELM.capByWheel=true}
+ // co-op: the room maker's yacht is the one that counts; the friend's copy follows it
+ function net(){if(home()&&!HELM.on&&!HJ.on)return lastNet?(lastNet=0,[0]):null;lastNet=1;return[r2(S.x),r2(S.z),r3(S.h),HJ.on?1:0]}
+ function netApply(a){if(!Array.isArray(a))return;if(a.length===1){if(!home())moveTo(HOME.x,HOME.z,HOME.h);return}const x=+a[0],z=+a[1],h=+a[2];if(!isFinite(x)||!isFinite(z)||!isFinite(h))return;if(Math.hypot(x-HOME.x,z-HOME.z)>3000)return;moveTo(x,z,h);HJ.netOn=!!a[3]}
+ capHome();
+ const API={g:G,gi:GI,S,HOME,Y:[YS,Y1,Y2,Y3],PLZ,FL,WL,get p(){return G.position},get h(){return S.h},toL,toW,onDeck,aboard:onDeck,where,inRoom,inside,ceilFor,hullDist,climb,start,clear,tick,action,moveTo,home,goHome,
+  helmOn:()=>HELM.on,helmInput,plankOn:()=>HJ.plank>0,plankStart,plankTick,get hijack(){return HJ.on},hj:HJ,helm:HELM,partyAudible,net,netApply,cap:CAP,dancers:DANCERS,hijackStart,get beat(){return beat}};
+ return API})();
+function essexAction(){if(!PL||PCAR||PL.dead>0||MODE!=='open')return null;return ESSEX.action()}
+function essexStreet(p){if(ESSEX.aboard(p))return null;if(Math.hypot(p.x-ESSEX.HOME.x,p.z-ESSEX.HOME.z)<60&&ESSEX.home())return'Town dock · the Essex is tied up at the end';return null}
 /* ================= the Dreamland on South Water Street, with Mister Rogers on the bench out front, and the tree line at Children's Beach ================= */
 const PLACES3=(function(){const out={},v3=(x,y,z)=>new T.Vector3(x,y,z);
  const MS=(c,o)=>VSTD(Object.assign({color:c,roughness:.7},o||{}));
@@ -3476,10 +3826,10 @@ function updateCamera(dt){const k=1-Math.exp(-6*dt);if(MODE==='open'&&POL.arrest
    {const zw=WPNS[f.wpn||'marker'].zoom,z=ZOOM&&zw&&!VR.on?zw:1,fv=(camera.aspect<1?72:60)/z;if(Math.abs(camera.fov-fv)>.05){camera.fov=fv;camera.updateProjectionMatrix()}if(z>1)VM.visible=false}}
   else{f.c.g.visible=true;VM.visible=false;const back=V3(-Math.sin(f.yaw),0,-Math.cos(f.yaw)),rt=V3(Math.cos(f.yaw),0,-Math.sin(f.yaw));
    // over-the-shoulder follow cam: pulls in while aiming, eases out when sprinting, never clips through walls
-   const aiming=f.aimT<1.3||!OPENISH(),spd=Math.hypot(f.vx||0,f.vz||0),inCB=CBX.inRoom(f.p.x,f.p.z,-.1),inSS=!inCB&&SSX.inRoom(f.p.x,f.p.z,-.1),inCY=!inCB&&!inSS&&!!CYN&&CYN.inRoom(f.p.x,f.p.z,-.1),inPD=!inCB&&!inSS&&!inCY&&!!PD&&PD.inRoom(f.p.x,f.p.z,-.1),inHO=!inCB&&!inSS&&!inCY&&!inPD&&!!HOSP&&HOSP.inRoom(f.p.x,f.p.z,-.1),inFE=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&FERRY.inside(f.p),inside=inCB||inSS||inCY||inPD||inHO||inFE,room=inFE?((x,z)=>FERRY.inRoom(x,z,-.1,f.p.y)):inSS?SSX.inRoom:inCY?CYN.inRoom:inPD?PD.inRoom:inHO?HOSP.inRoom:CBX.inRoom;
+   const aiming=f.aimT<1.3||!OPENISH(),spd=Math.hypot(f.vx||0,f.vz||0),inCB=CBX.inRoom(f.p.x,f.p.z,-.1),inSS=!inCB&&SSX.inRoom(f.p.x,f.p.z,-.1),inCY=!inCB&&!inSS&&!!CYN&&CYN.inRoom(f.p.x,f.p.z,-.1),inPD=!inCB&&!inSS&&!inCY&&!!PD&&PD.inRoom(f.p.x,f.p.z,-.1),inHO=!inCB&&!inSS&&!inCY&&!inPD&&!!HOSP&&HOSP.inRoom(f.p.x,f.p.z,-.1),inFE=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&FERRY.inside(f.p),inES=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&!inFE&&ESSEX.inside(f.p),inside=inCB||inSS||inCY||inPD||inHO||inFE||inES,room=inFE?((x,z)=>FERRY.inRoom(x,z,-.1,f.p.y)):inES?((x,z)=>ESSEX.inRoom(x,z,-.1,f.p.y)):inSS?SSX.inRoom:inCY?CYN.inRoom:inPD?PD.inRoom:inHO?HOSP.inRoom:CBX.inRoom;
    footCam.d=lerp(footCam.d,f.dead>0?6:inside?2.6:aiming?(OPENISH()?3.1:3.2):4.3+Math.max(0,spd-5)*.25,1-Math.exp(-5*dt));footCam.sh=lerp(footCam.sh,aiming?.78:.55,1-Math.exp(-6*dt));
    let dist=footCam.d;const piv=e.clone().addScaledVector(rt,-footCam.sh*.5);for(let k=1;k<=10;k++){const t=k/10*dist,x=piv.x+back.x*t,z=piv.z+back.z*t,y=piv.y+(.45-f.pitch*1.2)*t/dist;if(pointInCollider(x,z,y)||(inside&&!room(x,z))){dist=Math.max(.6,t-.45);break}}
-   const want=piv.clone().addScaledVector(back,dist).addScaledVector(rt,-footCam.sh*.5).add(V3(0,(.45-f.pitch*1.2)*dist/footCam.d-(f.anim_land||0),0));const gy=surfaceY(want.x,want.z,f.p.y+.3)+.35;if(want.y<gy)want.y=gy;if(inSS){const cap=SSX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inCY){const cap=CYN.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inPD){const cap=PD.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inHO){const cap=HOSP.ceilFor();if(want.y>cap)want.y=cap}if(inFE){const cap=FERRY.ceilFor(f.p.y);if(want.y>cap)want.y=cap}
+   const want=piv.clone().addScaledVector(back,dist).addScaledVector(rt,-footCam.sh*.5).add(V3(0,(.45-f.pitch*1.2)*dist/footCam.d-(f.anim_land||0),0));const gy=surfaceY(want.x,want.z,f.p.y+.3)+.35;if(want.y<gy)want.y=gy;if(inSS){const cap=SSX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inCY){const cap=CYN.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inPD){const cap=PD.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inHO){const cap=HOSP.ceilFor();if(want.y>cap)want.y=cap}if(inFE){const cap=FERRY.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inES){const cap=ESSEX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}
    camera.position.lerp(want,f.dead>0?.05:1-Math.exp(-18*dt));camera.lookAt(e.clone().addScaledVector(d,20));
    const fovT=(camera.aspect<1?72:60)+(spd>5.5&&!aiming?6:0)-(aiming&&OPENISH()?4:0);if(Math.abs(camera.fov-lerp(camera.fov,fovT,.1))>.02){camera.fov=lerp(camera.fov,fovT,1-Math.exp(-6*dt));camera.updateProjectionMatrix()}}sunFollow(f.p);return}
  const c=PCAR;if(!c)return;if(c.kind==='heli'){heliCam(dt,c);return}
@@ -3519,7 +3869,7 @@ function drawMini(){const cv=$('mini'),x=cv.getContext('2d'),W=cv.width;const me
   if(OPEN.active&&OPEN.active.type==='deliver')dot(OPEN.active.dest,'#ffcf5a',6);
   if(PD){const q=MM.tm(PD.F.x,PD.F.z),k=6/zoom*1.4;x.fillStyle='#fff';x.fillRect(q[0]-k-1.5/zoom,q[1]-k-1.5/zoom,2*k+3/zoom,2*k+3/zoom);x.fillStyle='#1d4ed8';x.fillRect(q[0]-k,q[1]-k,2*k,2*k)}
   if(PIR.built){PIR.guns.forEach(G=>{if(G.dead<=0&&G.g.visible){const q=MM.tm(G.x,G.z),k=5/zoom*1.4;x.fillStyle='#ff3b30';x.beginPath();x.moveTo(q[0],q[1]-k);x.lineTo(q[0]+k,q[1]+k);x.lineTo(q[0]-k,q[1]+k);x.closePath();x.fill()}});pirMini(x,dot,zoom)}
-  if(HELI&&HELI!==PCAR&&HELI.j.g.visible)dot(HELI.p,'#ffffff',5);dot(FERRY.p,'#1d2a4a',8);dot(FERRY.p,'#f4f2ec',6);
+  if(HELI&&HELI!==PCAR&&HELI.j.g.visible)dot(HELI.p,'#ffffff',5);dot(FERRY.p,'#1d2a4a',8);dot(FERRY.p,'#f4f2ec',6);dot(ESSEX.p,'#0f1b33',7);dot(ESSEX.p,'#ffd23f',4);
   POL.cops.forEach(C=>dot(C.car.p,C._lit?(Math.floor(CLOCK*6)%2?'#ff3b30':'#2f6bff'):'#4f7fff',4.2))}
  if(foot&&!OPENISH()){const q=MM.tm(ARENA.x,ARENA.z);x.strokeStyle='#ff5fa2';x.lineWidth=1/zoom*2;x.beginPath();x.arc(q[0],q[1],ARENA.r*MM.sc,0,TAU);x.stroke();
   CTF.flags.forEach(fl=>{const q=MM.tm(fl.pos.x,fl.pos.z);x.fillStyle=TEAMS[fl.team].col;x.fillRect(q[0]-3/zoom*2,q[1]-3/zoom*2,6/zoom*2,6/zoom*2)})}
@@ -3676,13 +4026,13 @@ function pirateTick(dt){const me=ME();if(coopGuest())return;prepTick(dt);allyTic
   if(d>28)m2=1;else if(d<10)m2=-.6;m1=E.strafe*.7;if(E.stag>0){E.stag-=dt;m1=m2=0}
   const sy=Math.sin(E.yaw),cy=Math.cos(E.yaw),spd=(d>28?4.2:3.2)*(E.boss?.8:1),wx=(sy*m2+cy*m1),wz=(cy*m2-sy*m1),L=Math.hypot(wx,wz)||1;
   const q={x:E.p.x+wx/L*spd*dt,z:E.p.z+wz/L*spd*dt};collide(q,.4,E.p.y+.5);
-  if(E.ferry){if(FERRY.aboard({x:q.x,z:q.z,y:E.p.y})){E.p.x=q.x;E.p.z=q.z}}else{pushFromVehicles(q,.45);if(!isWater(q.x,q.z,-.3)){E.p.x=q.x;E.p.z=q.z}}
+  if(E.ferry){if((E.ship||FERRY).aboard({x:q.x,z:q.z,y:E.p.y})){E.p.x=q.x;E.p.z=q.z}}else{pushFromVehicles(q,.45);if(!isWater(q.x,q.z,-.3)){E.p.x=q.x;E.p.z=q.z}}
   E.p.y=surfaceY(E.p.x,E.p.z,E.p.y);E.spd=spd;E.ph+=spd*dt*2.1;
   E.cool-=dt;E.nadeCool-=dt;if(sees&&E.cool<=0&&d<60){E.cool=E.boss?.55+rnd()*.4:.85+rnd()*1.1;const o=E.p.clone().add(V3(0,E.boss?1.9:1.45,0)),t=tp.clone().add(V3(0,M===PL?1.1:.9,0)),sp=2.4+d*.03;t.x+=(M.vx||0)*d/58+(rnd()-.5)*sp;t.z+=(M.vz||0)*d/58+(rnd()-.5)*sp;t.y+=d*d*.0011+(rnd()-.5)*.8;const dir=t.sub(o).normalize();fireBall(E,o,dir,58,E.spec.paint);
    if(E.boss)for(const s2 of[-1,1]){const d2=dir.clone();d2.x+=s2*.07*Math.cos(E.yaw);d2.z-=s2*.07*Math.sin(E.yaw);fireBall(E,o,d2.normalize(),58,E.spec.paint,false,true)}}
   if(sees&&E.nades>0&&E.nadeCool<=0&&d>9&&d<24){E.nades--;E.nadeCool=E.boss?5:8;const dir=V3(dx,0,dz).normalize();dir.y=.32+d*.004;throwNade(E,E.p.clone().add(V3(0,1.6,0)),dir.normalize(),E.spec.paint)}
   E.n.g.position.copy(E.p);E.n.g.rotation.y=E.yaw;poseNPC(E.n,E.ph,1,CLOCK,sees&&d<60?'aim':null);if(sees&&d<60){E.n.lL.hp.rotation.x=Math.sin(E.ph)*.5;E.n.lR.hp.rotation.x=-Math.sin(E.ph)*.5}}
- if(MODE==='open'&&!OPEN.active){OPEN.ambushT-=dt;if(OPEN.ambushT<=0){OPEN.ambushT=45+rnd()*35;if(me&&!isWater(me.p.x,me.p.z,-.2)&&!FERRY.aboard(me.p)){if(!OPEN.preps.length&&rnd()<.5&&spawnPreps(me))toast('Chad and Brad are rolling up with their crew!');else{const a=rnd()*TAU;let n=0;for(let i=0;i<5;i++)if(spawnPirate(me.p.x+Math.cos(a)*70,me.p.z+Math.sin(a)*70))n++;if(n){toast('The Coatue Pirates are looking for you!');ALLY.wake=1}}}}}}
+ if(MODE==='open'&&!OPEN.active){OPEN.ambushT-=dt;if(OPEN.ambushT<=0){OPEN.ambushT=45+rnd()*35;if(me&&!isWater(me.p.x,me.p.z,-.2)&&!FERRY.aboard(me.p)&&!ESSEX.aboard(me.p)){if(!OPEN.preps.length&&rnd()<.5&&spawnPreps(me))toast('Chad and Brad are rolling up with their crew!');else{const a=rnd()*TAU;let n=0;for(let i=0;i<5;i++)if(spawnPirate(me.p.x+Math.cos(a)*70,me.p.z+Math.sin(a)*70))n++;if(n){toast('The Coatue Pirates are looking for you!');ALLY.wake=1}}}}}}
 
 /* ---------- Chad and Brad: Nantucket preps who roll up in a Land Rover or a wood-paneled Wagoneer, spray you on the way in, then jump out and fight ---------- */
 function spawnPreps(me){const s=copSpot(me.p.x,me.p.z,110,220,true);if(!s)return null;const R_=ROADS[s.ri];let bi=0,bd=1e9;R_.pts.forEach((q,i)=>{const d=Math.hypot(q[0]-s.x,q[1]-s.z);if(d<bd){bd=d;bi=i}});
@@ -3714,9 +4064,9 @@ function allyFoes(){const L=[];for(const E of OPEN.pirates)if(E.dead<=0)L.push({
 function crewSpecs(){const n=VR.on?2:3,L=[],eth=DRIVERS.find(d=>d.key==='ethan');if(eth&&DRIVERS[SEL]!==eth)L.push(eth);L.push(Object.assign({},BAND[0],{paint:'#e8c35a'}));
  const pool=DRIVERS.filter((d,i)=>i!==SEL&&d.key!=='captain'&&d.key!=='ethan'&&d.key!=='kingston');while(L.length<n&&pool.length)L.push(pool.splice((rnd()*pool.length)|0,1)[0]);return L.slice(0,n)}
 function allyCall(force){if(MODE!=='open'||!PL||PCAR||PL.dead>0||PL.swim||OPEN.allies.length||(ALLY.cool>0&&!force))return;
- const onF=FERRY.aboard(PL.p),specs=crewSpecs(),guns=['minigun','shotgun','bazooka','smg'].sort(()=>rnd()-.5);
+ const onS=ESSEX.aboard(PL.p)?ESSEX:FERRY.aboard(PL.p)?FERRY:null,onF=!!onS,specs=crewSpecs(),guns=['minigun','shotgun','bazooka','smg'].sort(()=>rnd()-.5);
  specs.forEach((sp,k)=>{const side=k===0?-1:k===1?1:0;for(let t=0;t<16;t++){const a=PL.yaw+Math.PI+side*1.25+(rnd()-.5)*.6,r=onF?1.8+rnd()*1.4:4.5+rnd()*2,x=PL.p.x+Math.sin(a)*r,z=PL.p.z+Math.cos(a)*r;
-  if(onF){if(!FERRY.aboard({x,z,y:PL.p.y}))continue}else if(pointInCollider(x,z)||isWater(x,z,-.2))continue;
+  if(onF){if(!onS.aboard({x,z,y:PL.p.y}))continue}else if(pointInCollider(x,z)||isWater(x,z,-.2))continue;
   const f=new Fighter(sp,false);f.ally=true;f.crew=true;if(f.tag){f.c.g.remove(f.tag);f.tag=null}f.wpn=guns[k%guns.length];f.spawn({x,z});f.p.y=onF?PL.p.y:surfaceY(x,z,PL.p.y+1);f.yaw=PL.yaw;f.calm=0;f.strafe=side||1;f.covT=0;OPEN.allies.push(f);break}});
  if(OPEN.allies.length){const nm=OPEN.allies.map(f=>'<b>'+esc(f.spec.name)+'</b>');feed((nm.length>1?nm.slice(0,-1).join(', ')+' and '+nm[nm.length-1]:nm[0])+' got your back',OPEN.allies[0].spec.paint);CALL.t=0;crewSay('King Stuart','<i>(radio)</i> Crew’s rolling out. Paint them up!','#d8b45a',true);ALLY.radio=12}}
 function allyDrop(f,i){drop(f.c.g);OPEN.allies.splice(i,1)}
@@ -3729,7 +4079,7 @@ function allyTick(dt){ALLY.cool-=dt;CALL.t-=dt;const foes=allyFoes();
   let m1=0,m2=0,cd=0;const toward=(gx,gz,spd)=>{const dx=gx-f.p.x,dz=gz-f.p.z,gd=Math.hypot(dx,dz);if(gd<1)return;const wx=dx/gd*spd,wz=dz/gd*spd,sy=Math.sin(f.yaw),cy=Math.cos(f.yaw);m1+=wx*cy-wz*sy;m2+=wx*sy+wz*cy};
   if(best){any=true;if(f.calm>3)crewSay(f.spec.name,rpick(CREW_LINES.see),f.spec.paint);f.calm=0;const dx=best.p.x-f.p.x,dz=best.p.z-f.p.z,want=Math.atan2(dx,dz);f.yaw=lerp(f.yaw,f.yaw+angWrap(want-f.yaw),1-Math.exp(-7*dt));
    // cover: every few seconds look for a parked car between us and them
-   f.covT-=dt;if(f.covT<=0){f.covT=2.5+rnd();const had=!!f.cov;f.cov=null;if(!FERRY.aboard(f.p)){let cb=13;for(const v of OPEN.veh){if(v.kind!=='car'||v===PCAR||Math.abs(v.vf)>1)continue;const d=Math.hypot(v.p.x-f.p.x,v.p.z-f.p.z);if(d<cb){const ex=v.p.x-best.p.x,ez=v.p.z-best.p.z,L2=Math.hypot(ex,ez)||1;if(L2<8)continue;cb=d;f.cov={x:v.p.x+ex/L2*2.7,z:v.p.z+ez/L2*2.7}}}if(f.cov&&!had&&rnd()<.4)crewSay(f.spec.name,rpick(CREW_LINES.cover),f.spec.paint)}}
+   f.covT-=dt;if(f.covT<=0){f.covT=2.5+rnd();const had=!!f.cov;f.cov=null;if(!FERRY.aboard(f.p)&&!ESSEX.aboard(f.p)){let cb=13;for(const v of OPEN.veh){if(v.kind!=='car'||v===PCAR||Math.abs(v.vf)>1)continue;const d=Math.hypot(v.p.x-f.p.x,v.p.z-f.p.z);if(d<cb){const ex=v.p.x-best.p.x,ez=v.p.z-best.p.z,L2=Math.hypot(ex,ez)||1;if(L2<8)continue;cb=d;f.cov={x:v.p.x+ex/L2*2.7,z:v.p.z+ez/L2*2.7}}}if(f.cov&&!had&&rnd()<.4)crewSay(f.spec.name,rpick(CREW_LINES.cover),f.spec.paint)}}
    cd=f.cov?Math.hypot(f.cov.x-f.p.x,f.cov.z-f.p.z):0;
    if(f.cov&&cd>1.3)toward(f.cov.x,f.cov.z,1);
    else{f.think=(f.think||0)-dt;if(f.think<=0){f.think=.6+rnd()*.6;if(rnd()<.35)f.strafe*=-1}m1=f.strafe*(f.cov?.3:.6);m2=f.cov?0:bd>26?1:bd<9?-.5:0}
@@ -3982,7 +4332,8 @@ function startOpen(){clearWorld();resetParked();CBX.spawnStaff();MODE='open';OPE
  for(let i=0;i<2;i++)spawnOrca(HARBOR.center[0],HARBOR.center[1],800);spawnOrca(...LL(41.305,-70.13),900);
  buildMarkers();vehicleTargets();polStart();heliStart();skyStart();ferryStart();ZED.state='idle';ZED.cool=0;armsVan();buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('open');setSub('foot');missionHud();CAM=0;wmStartSpawn();
  toast(IS_TOUCH?'Walk to your jeep and tap ENTER':TPK()?'Slide on the trackpad to walk to your jeep · → gets in · ← shoots':'Walk to your jeep · E to get in · click to aim')}
-function playerHit(b){if(b.owner&&b.owner.crew)return;if(b.remote===true&&coopOn())return;if(PCAR||PL.dead>0||OPEN.wasted>0)return;OPEN.hp--;OPEN.sinceHit=0;screenSplat(b.col||'#ff6a13');sfx('splat',1);if(b.remote&&typeof netHitBy==='function')netHitBy(b.owner);
+function playerHit(b){if(b.owner&&b.owner.crew)return;if(ESSEX.plankOn())return;if(b.remote===true&&coopOn())return;if(PCAR||PL.dead>0||OPEN.wasted>0)return;OPEN.hp--;OPEN.sinceHit=0;screenSplat(b.col||'#ff6a13');sfx('splat',1);if(b.remote&&typeof netHitBy==='function')netHitBy(b.owner);
+ if(OPEN.hp<=0&&ESSEX.hijack&&ESSEX.aboard(PL.p)){ESSEX.plankStart();return}
  if(OPEN.hp<=0){if(POL.wanted>0&&!POL.jail){OPEN.hp=1;bust();return}OPEN.wasted=3.2;PL.dead=3.2;$('wasted').hidden=false;if(OPEN.active&&OPEN.active.type!=='drive')missionFail('You got splatted.')}}
 function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  // health comes back if you stay out of the paint for a while
@@ -3994,7 +4345,7 @@ function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
   if(PCAR&&PCAR.kind==='car'&&nadeInput){nadeInput=false;oilDrop(PCAR)}
   if(PCAR&&PCAR.kind==='car'){const bl=[PCAR,...OPEN.veh.filter(v=>v.kind==='car'&&v!==PCAR),...OPEN.preps.map(P=>P.car),...OPEN.traffic.map(t=>t.car),...POL.cops.map(C=>C.car)];carPush(bl)}
   if(PCAR)PL.p.copy(PCAR.p)}
- else{if(AA.man)aaManTick(dt);else if(OPEN.wasted<=0&&!POL.arrest&&!ARMS.open)footInput(dt);if(!POL.arrest)PL.sync(dt)}
+ else{if(AA.man)aaManTick(dt);else if(ESSEX.plankOn())ESSEX.plankTick(dt);else if(ESSEX.helmOn())ESSEX.helmInput(dt);else if(OPEN.wasted<=0&&!POL.arrest&&!ARMS.open)footInput(dt);if(!POL.arrest)PL.sync(dt)}
  OPEN.veh.forEach(v=>{if(v===PCAR)return;if(v.kind==='boat'){v.update(dt,{gas:0,brake:0,steer:0})}else if(Math.abs(v.vf)>.3||v.awake>0){v.update(dt,STOP(v));v.awake=(v.awake||0)-dt}});
  OPEN.pboats.forEach(b=>{if(b.capsized>0){b.update(dt,{});return}let tgt=PCAR&&PCAR.kind==='boat'&&Math.hypot(PCAR.p.x-b.p.x,PCAR.p.z-b.p.z)<260?PCAR:null;if(b.raid&&!tgt)tgt=ferryRaidTarget(b);boatAI(b,dt,tgt,.9)});
  parkedTick(dt);trafficTick(dt);pedTick(dt);pirateTick(dt);orcaTick(dt);missionTick(dt);polTick(dt);heliTick(dt);skyGunnery(dt);updateFlak(dt);zedTick(dt);vehicleTargets();SSX.openTick(dt);if(CYN)CYN.openTick(dt);if(DRT)DRT.openTick(dt);
@@ -4008,8 +4359,8 @@ function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&CBX.talkable){const o=CBX.who[CBX.talkable];OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${CBX.talkable==='sam'?'Order from Bill':CBX.talkable==='packy'?'Grab a soda from Captain':'Talk to '+o.name}`}}
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt){const v=nearestVehicle();if(v)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${v.traffic?'Jack the ':v.pirate?'Steal the ':v.kind==='heli'?'Fly the ':'Drive '}${vehicleName(v)}`}}
  const pr=$('prompt');if(OPEN.prompt){pr.hidden=false;pr.textContent=tpPrompt(OPEN.prompt.t.replace(/^Start/,(IS_TOUCH?'ENTER':GP.on?GP.y:'E')+' · Start'))}else pr.hidden=true;
- const me=ME(),ss=!PCAR&&SSX.inRoom(me.p.x,me.p.z,-.1)?SSX.where(me.p):!PCAR&&CYN&&CYN.inRoom(me.p.x,me.p.z,-.1)?CYN.where(me.p):!PCAR&&PD&&PD.inRoom(me.p.x,me.p.z,-.1)?PD.where(me.p):!PCAR&&HOSP&&HOSP.inRoom(me.p.x,me.p.z,-.1)?HOSP.where(me.p):FERRY.aboard(me.p)?FERRY.where(me.p):null,ar=CBX.inRoom(me.p.x,me.p.z,-.1)?'The Box':ss?ss.area:areaAt(me.p.x,me.p.z);if(ar!==OPEN.area){OPEN.area=ar;const el=$('area');el.textContent=ar;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
- $('street').textContent=ss?ss.spot:ferryStreet(me.p)||streetAt(me.p.x,me.p.z);$('hp').innerHTML=PCAR?'':Array.from({length:4},(_,i)=>`<i class="${i<OPEN.hp?'on':''}"></i>`).join('')}
+ const me=ME(),ss=!PCAR&&SSX.inRoom(me.p.x,me.p.z,-.1)?SSX.where(me.p):!PCAR&&CYN&&CYN.inRoom(me.p.x,me.p.z,-.1)?CYN.where(me.p):!PCAR&&PD&&PD.inRoom(me.p.x,me.p.z,-.1)?PD.where(me.p):!PCAR&&HOSP&&HOSP.inRoom(me.p.x,me.p.z,-.1)?HOSP.where(me.p):FERRY.aboard(me.p)?FERRY.where(me.p):ESSEX.aboard(me.p)?ESSEX.where(me.p):null,ar=CBX.inRoom(me.p.x,me.p.z,-.1)?'The Box':ss?ss.area:areaAt(me.p.x,me.p.z);if(ar!==OPEN.area){OPEN.area=ar;const el=$('area');el.textContent=ar;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
+ $('street').textContent=ss?ss.spot:ferryStreet(me.p)||essexStreet(me.p)||streetAt(me.p.x,me.p.z);$('hp').innerHTML=PCAR?'':Array.from({length:4},(_,i)=>`<i class="${i<OPEN.hp?'on':''}"></i>`).join('')}
 
 /* ================= weapons you buy and earn, aim assist ================= */
 /* Gunny runs ACK Arms out of a van in The Box lot. Everything you own stays yours between visits.
@@ -4883,7 +5234,7 @@ function polAction(){if(MODE!=='open'||!PL)return null;
  if(PD&&!PD.alarm&&Math.hypot(PL.p.x-PD.desk.x,PL.p.z-PD.desk.z)<2.3&&Math.abs(PL.p.y-(PD.Y0+PD.FL))<1.2)return POL.wanted>0?{t:`Turn yourself in (${money(totalFine(1))}, no jail)`,act:surrender}:{t:'Talk to Sgt. Coffin',act:deskTalk};
  if(!OWNER&&CASH>=PRICE&&HUB.cb&&Math.hypot(PL.p.x-HUB.cb.door[0],PL.p.z-HUB.cb.door[1])<6)return{t:`Buy The Box (${money(PRICE)})`,act:buyBox};
  if(ARMS.van&&Math.hypot(PL.p.x-ARMS.van.x,PL.p.z-ARMS.van.z)<3.4)return{t:'Shop for guns at ACK Arms',act:shopOpen};
- {const fa=ferryAction();if(fa)return fa}if(typeof aaAction==='function'){const a=aaAction();if(a)return a}
+ {const ea=essexAction();if(ea)return ea}{const fa=ferryAction();if(fa)return fa}if(typeof aaAction==='function'){const a=aaAction();if(a)return a}
  return null}
 
 /* ---------- sirens and the station alarm ---------- */
@@ -5322,7 +5673,7 @@ const CBX=(function(){const cb=HUB.cb,F=cb.F,W=cb.W,D=cb.D,H=cb.H,G=cb.g,Y0=G.po
  let beat0=0,near=false;
  function update(dt){welcomeTick(dt);const cam=camera.position,me=typeof ME==='function'?ME():null,dCam=Math.hypot(cam.x-F.x,cam.z-F.z),dMe=me?Math.hypot(me.p.x-F.x,me.p.z-F.z):1e9;
   const dDoor=Math.hypot(cam.x-CBX.door[0],cam.z-CBX.door[1]),vis=inRoom(cam.x,cam.z,-1.5)||dDoor<18;I.visible=vis;Object.values(who).forEach(o=>{if(o.outside)o.c.g.visible=dCam<120});const inside=inRoom(cam.x,cam.z,.05)&&cam.y<Y0+H;
-  CBX.inside=inside;CBX.dist=dMe;const t=typeof CLOCK!=='undefined'?CLOCK:0;const beat=(typeof MUS!=='undefined'&&MUS.beat!==undefined&&MUS.live>.5)?MUS.beat:t*BPM/60;CBX.beat=beat;
+  CBX.inside=inside;CBX.dist=dMe;const t=typeof CLOCK!=='undefined'?CLOCK:0;const beat=(typeof MUS!=='undefined'&&MUS.beat!==undefined&&MUS.live===1)?MUS.beat:t*BPM/60;CBX.beat=beat;
   lightMode(dt,inside,beat);if(!vis){near=false;return}
   const plL=me&&!(typeof PCAR!=='undefined'&&PCAR)?toL(me.p.x,me.p.z):null;crowdTick(t,beat,dt,plL);bandTick(t,beat);staffTick(t,beat,dt);crewTick(t,beat);lightsTick(t,beat);
   // the crowd nudges back: keep the player from walking through people
@@ -6287,7 +6638,7 @@ function nightTick(){if(!NIGHT_ON){if(HEADLIGHT.parent)HEADLIGHT.parent.remove(H
  CARS.forEach(c=>{if(c.hl)return;c.hl=[-1,1].map(s=>{const g=new T.Sprite(new T.SpriteMaterial({map:glowTex(),color:'#fff1c8',blending:T.AdditiveBlending,transparent:true,depthWrite:false,opacity:.9}));g.scale.set(1.6,1.6,1);g.position.set(s*.62,.56,2.3);c.j.body.add(g);return g})})}
 
 /* ---------- music: a laid-back island one-drop, synthesized on the fly ---------- */
-const MUS={timer:null,bus:null,next:0,step:0,live:0,liveT:0,beat:0,t0:0,lp:null,crowd:null,gtr:null};
+const MUS={timer:null,bus:null,next:0,step:0,live:0,liveT:0,partyT:0,pt0:0,beat:0,t0:0,lp:null,crowd:null,gtr:null};
 const CHORDS=[[110,138.59,164.81],[82.41,103.83,123.47],[92.5,110,138.59],[73.42,92.5,110]];// A, E, F#m, D
 /* Miss Champagne's song: Damian's own "Deal or Disaster" track, streamed from his Higgsfield library the first time you get near The Box.
    If it can't load, the house band plays its built-in tune instead. */
@@ -6305,8 +6656,8 @@ function musicStart(){const c=AU.ctx;if(!c||MUS.timer)return;MUS.bus=c.createGai
  MUS.next=c.currentTime+.15;MUS.step=0;MUS.timer=setInterval(musicTick,40)}
 function toggleMusic(){SETTINGS.music=!SETTINGS.music;saveSettings();if(MUS.bus)MUS.bus.gain.setTargetAtTime(SETTINGS.music?.11:0,AU.ctx.currentTime,.1);if(MUS.songG)MUS.songG.gain.setTargetAtTime(SETTINGS.music?SONG_VOL:0,AU.ctx.currentTime,.1);const b=$('b-music');if(b)b.setAttribute('aria-pressed',SETTINGS.music);toast(SETTINGS.music?'Music on':'Music off')}
 function musicTick(){const c=AU.ctx;if(!c||!SETTINGS.music)return;if(c.currentTime-MUS.next>.5){MUS.next=c.currentTime+.05}let guard=0;
- while(MUS.next<c.currentTime+.2&&guard++<32){if(MUS.step%16===0){const want=MUS.liveT>.5?1:0;if(want!==MUS.live){MUS.live=want;MUS.step=0;if(want)MUS.t0=MUS.next;else songStop()}}
-  if(MUS.live){if(MUS.song)songStep(MUS.next);else liveStep(MUS.step,MUS.next);MUS.next+=60/LIVE_BPM/4}else{playStep(MUS.step,MUS.next);MUS.next+=60/92/4*(MUS.step%2?.9:1.1)}MUS.step=(MUS.step+1)%64}}
+ while(MUS.next<c.currentTime+.2&&guard++<32){if(MUS.step%16===0){const want=MUS.liveT>.5?1:MUS.partyT>.5?2:0;if(want!==MUS.live){if(MUS.live===1)songStop();MUS.live=want;MUS.step=0;if(want===1)MUS.t0=MUS.next;if(want===2)MUS.pt0=MUS.next}}
+  if(MUS.live===2){partyStep(MUS.step,MUS.next);MUS.next+=60/PARTY_BPM/4}else if(MUS.live){if(MUS.song)songStep(MUS.next);else liveStep(MUS.step,MUS.next);MUS.next+=60/LIVE_BPM/4}else{playStep(MUS.step,MUS.next);MUS.next+=60/92/4*(MUS.step%2?.9:1.1)}MUS.step=(MUS.step+1)%64}}
 /* the house band: straight-ahead bar rock in E */
 const LIVE_BPM=118,LIVE_CH=[82.41,65.41,98,73.42];
 function pchord(f,t,d,g){[1,1.498,2].forEach((k,i)=>{const c=AU.ctx,o=c.createOscillator(),a=c.createGain();o.type='sawtooth';o.frequency.value=f*k*(1+(i-1)*.002);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.01);a.gain.setValueAtTime(g*.8,t+d*.7);a.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(a);a.connect(MUS.gtr);o.start(t);o.stop(t+d+.02)})}
@@ -6320,6 +6671,14 @@ function liveStep(i,t){const bar=Math.floor(i/16)%4,st=i%16,root=LIVE_CH[bar];
 function tone(f,t,d,type,g,dest,fq){const c=AU.ctx,o=c.createOscillator(),a=c.createGain();o.type=type;o.frequency.value=f;a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.008);a.gain.exponentialRampToValueAtTime(.0008,t+d);
  if(fq){const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=fq;bp.Q.value=1.2;o.connect(bp);bp.connect(a)}else o.connect(a);a.connect(dest||MUS.bus);o.start(t);o.stop(t+d+.02)}
 function hit(t,d,g,freq,type='highpass'){const c=AU.ctx,s=c.createBufferSource();s.buffer=AU.noise;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;const a=c.createGain();a.gain.setValueAtTime(g,t);a.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f);f.connect(a);a.connect(MUS.bus);s.start(t,Math.random()*.5,d+.05)}
+/* the Essex party: DJ Sandbar's own house beat (made here in code), A minor at 124 */
+function partyStep(i,t){const bar=Math.floor(i/16)%4,st=i%16,root=[110,87.31,130.81,98][bar],q=bar?1.26:1.19;
+ if(st%4===0){tone(52,t,.32,'sine',1.05);tone(104,t,.035,'triangle',.35)}
+ if(st===4||st===12)hit(t,.16,.38,1500,'bandpass');
+ if(st%4===2)hit(t,.09,.16,9000);else if(st%2)hit(t,.025,.06,11000);
+ if(st%4===2||st===15)tone(root/2,t,.17,'sawtooth',.2,null,380);
+ if(st===3||st===10)[1,q,1.5].forEach(k=>tone(root*2*k,t,.16,'square',.045,null,2200));
+ if(bar===3&&st%2===0)tone(root*4*[1,1.5,2,1.5,q,1.5,2,2.5][st/2],t,.12,'triangle',.07)}
 function playStep(i,t){const bar=Math.floor(i/16)%4,st=i%16,ch=CHORDS[bar],root=ch[0];
  if(st%2===0)hit(t,.04,st%4===2?.22:.12,7000);if(st===14)hit(t,.18,.14,6000);
  if(st===8){tone(52,t,.35,'sine',.9);hit(t,.12,.4,1800,'bandpass')}
@@ -6531,7 +6890,7 @@ function coopPupState(E){return E.dead>0?((E.down-E.dead)<1.6?1:2):0}
 function coopSendWorld(){const e=[],c=[];
  for(const E of OPEN.pirates){if(!E.nid)E.nid=++COOP.nid;e.push([E.nid,E.boss?'boss':E.prep?E.prep:E.sea?'sea':'pir',r2(E.p.x),r2(E.p.y),r2(E.p.z),r2(E.yaw),coopPupState(E),r2(E.spd||0),E.hp|0,E.max|0]);if(e.length>=40)break}
  for(const P of OPEN.preps){const k=P.car;if(!k.nid)k.nid=++COOP.nid;c.push([k.nid,k.model,k.spec.jeep||'#c9ccd1',r2(k.p.x),r2(k.p.y),r2(k.p.z),r3(k.h),r2(k.pitch||0),r2(k.roll||0)])}
- const o=$('obj'),ob=o&&!o.hidden?(o.textContent||'').replace(/\s+/g,' ').trim().slice(0,90):'',m={t:'w',e,c};if(ob!==COOP.obS){COOP.obS=ob;m.ob=ob}coopSend(m)}
+ const o=$('obj'),ob=o&&!o.hidden?(o.textContent||'').replace(/\s+/g,' ').trim().slice(0,90):'',m={t:'w',e,c};{const y=ESSEX.net();if(y)m.y=y}if(ob!==COOP.obS){COOP.obS=ob;m.ob=ob}coopSend(m)}
 function coopFoeShot(owner,o,dir,speed){if(!owner||!COOP.fp||COOP.fp.x==null)return;const id=owner.nid;if(!id||!(owner.tgt&&owner.n||owner.prepAI))return;
  if(Math.hypot(o.x-COOP.fp.x,o.z-COOP.fp.z)>170)return;coopSend({t:'f',i:id,o:[r2(o.x),r2(o.y),r2(o.z)],d:[r3(dir.x),r3(dir.y),r3(dir.z)],s:r2(speed)})}
 function coopKillBy(E,cash,who){if(!coopTogether()||COOP.role!=='host')return;coopSend({t:'k',c:cash,w:E.spec.name});feed(`<b>${esc(coopFriendName())}</b> splatted ${who}`,(DRIVERS.find(d=>COOP.fp&&d.key===COOP.fp.d)||{}).paint||'#ffd23f')}
@@ -6557,7 +6916,7 @@ function coopWorld(m){if(!coopGuest())return;COOP.lastW=performance.now();const 
  if(Array.isArray(m.c))for(const r of m.c.slice(0,6)){if(!Array.isArray(r)||typeof r[0]!=='number')continue;seenC.add(r[0]);const C=COOP.cars.get(r[0])||coopCar(r);C.to.set(+r[3]||0,+r[4]||0,+r[5]||0);C.toH=+r[6]||0;C.pi=+r[7]||0;C.rl=+r[8]||0}
  [...COOP.pup.values()].forEach(U=>{if(!seen.has(U.id))coopDropPup(U,COOP.pup)});[...COOP.cars.values()].forEach(C=>{if(!seenC.has(C.id))coopDropPup(C,COOP.cars)});
  bossHud(boss);
- if(typeof m.ob==='string'&&m.ob!==COOP.ob){COOP.ob=m.ob;if(m.ob)feed(`<b>${esc(coopFriendName())}</b>’s mission: ${esc(m.ob.slice(0,90))}`,'#ffd23f')}}
+ if(Array.isArray(m.y))ESSEX.netApply(m.y);if(typeof m.ob==='string'&&m.ob!==COOP.ob){COOP.ob=m.ob;if(m.ob)feed(`<b>${esc(coopFriendName())}</b>’s mission: ${esc(m.ob.slice(0,90))}`,'#ffd23f')}}
 function coopPuppetTick(dt){const k=1-Math.exp(-10*dt),me=ME();
  COOP.pup.forEach(U=>{if(U.p.distanceTo(U.to)>20)U.p.copy(U.to);else U.p.lerp(U.to,k);U.yaw+=angWrap(U.toYaw-U.yaw)*k;
   const near=me&&Math.hypot(me.p.x-U.p.x,me.p.z-U.p.z)<60;U.ph+=(U.st===2?12:Math.min(14,U.spd*2.1))*dt;U.n.g.position.copy(U.p);U.n.g.rotation.y=U.yaw;
@@ -6637,8 +6996,9 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  CBX.update(dt);SSX.update(dt);if(CYN)CYN.update(dt);if(DRT)DRT.update(dt);if(PD)PD.update(dt);if(HOSP)HOSP.update(dt);tpTick(dt);wmTick(dt);
  // distant parked cars and traffic are just a few pixels: skip drawing them
  {const cp=camera.position;for(const c of PARKED){if(c===PCAR)continue;const far=Math.hypot(c.p.x-cp.x,c.p.z-cp.z)>420;if(far!==!!c._far){c._far=far;c.j.g.visible=!far}}}
- if(AU.ctx&&MUS.lp){const ct=AU.ctx.currentTime,d=CBX.dist,ins=CBX.inside;MUS.liveT=ins||d<55?1:0;if(MUS.liveT)songLoad();const close=clamp(1-(d-8)/50,0,1);MUS.lp.frequency.setTargetAtTime(MUS.live?(ins?9000:500+close*1500):5200,ct,.15);
-  MUS.crowd.gain.setTargetAtTime(SETTINGS.music&&MUS.live?(ins?.055:.02*close)*(1+.8*Math.max(0,Math.sin(ct*.37)*Math.sin(ct*.23))):0,ct,.3);if(MUS.live)MUS.beat=MUS.songSrc&&ct>=MUS.songT0?(ct-MUS.songT0)*SONG_BPM/60:(ct-MUS.t0)*LIVE_BPM/60}
+ if(AU.ctx&&MUS.lp){const ct=AU.ctx.currentTime,d=CBX.dist,ins=CBX.inside;MUS.liveT=ins||d<55?1:0;if(MUS.liveT)songLoad();const close=clamp(1-(d-8)/50,0,1),pa=ESSEX.partyAudible();MUS.partyT=pa.on&&pa.close>0?1:0;
+  MUS.lp.frequency.setTargetAtTime(MUS.live===2?(pa.inside?9000:400+pa.close*1600):MUS.live?(ins?9000:500+close*1500):5200,ct,.15);
+  MUS.crowd.gain.setTargetAtTime(SETTINGS.music&&MUS.live===1?(ins?.055:.02*close)*(1+.8*Math.max(0,Math.sin(ct*.37)*Math.sin(ct*.23))):0,ct,.3);if(MUS.live===1)MUS.beat=MUS.songSrc&&ct>=MUS.songT0?(ct-MUS.songT0)*SONG_BPM/60:(ct-MUS.t0)*LIVE_BPM/60}
  updateRemotes(dt);netTick(dt);coopTick(dt);nightTick();
  updateCamera(dt);if(MODE!=='menu'&&MODE!=='raceover'&&MODE!=='battleover'&&(PCAR||PL))updateHUD()}
 
