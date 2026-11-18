@@ -2865,7 +2865,7 @@ function ferryStreet(p){if(FERRY.aboard(p))return null;const F=FERRY;if(Math.hyp
 /* ================= the Essex: a luxury yacht tied up at the end of the town dock ================= */
 /* Three decks: the main deck (aft deck, salon, foredeck, a swim platform and a plank out over the water), the middle deck (a party room with glass
    walls all round, a DJ up on an elevated booth, lasers, a disco ball and a dance floor that lights up to the beat; the bridge forward of it, where
-   Captain Pedro lets you take the wheel), and the sun deck on top. After a while aboard, the Seaweed crew climb on and hijack her: fight them off
+   Captain Owen Chase lets you take the wheel), and the sun deck on top. After a while aboard, the Seaweed crew climb on and hijack her: fight them off
    with your crew, or they make you walk the plank. */
 // Songs for the DJ booth. Empty for now, so the booth plays its own built-in beat. To play real tracks later, add entries like
 // {url:'https://…/track.mp3',bpm:124,name:'Track name'} (only music you have the rights to).
@@ -3067,7 +3067,7 @@ const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
  const mats={hull:M.hull,navy:M.navy,teak:M.teak,glass:M.glass,chrome:M.chrome,brass:M.brass,sofa:M.sofa,cush:M.cush,wood:M.wood,iwall:M.iwall,ceil:M.ceil,pfloor:M.pfloor,carpet:M.carpet,ebon:M.ebon,grey:M.grey,lamp:M.lamp,led:LED};
  const OUT=K.build(G,mats,['glass','lamp']);KI.build(GI,mats,['glass','lamp','carpet','pfloor','ceil']);KL.build(GI,mats,['led']);if(OUT.glass)OUT.glass.renderOrder=2;
  G.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.userData.keep=true});
- /* ---------- Captain Pedro: dressed like a Nantucket whaling officer of the 1820s (dark coat, brass buttons, high white collar, side-whiskers) ---------- */
+ /* ---------- Captain Owen Chase: dressed like a Nantucket whaling officer of the 1820s (dark coat, brass buttons, high white collar, side-whiskers) ---------- */
  const PART=(geo,c,b,x,y,z,rx,rz)=>{const m=new T.Mesh(geo,new T.MeshStandardMaterial({color:c,roughness:.75,metalness:c==='#c9a34a'?.8:0}));m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;b.add(m);return m};
  const CAP=makeNPC({look:'pedro',skin:'#c8956b',shirt:'#16203a',pants:'#2b2723'});
  {const n=CAP;PART(new T.BoxGeometry(.2,.3,.02),'#d8c9a3',n.torso,0,.35,.125);PART(new T.CylinderGeometry(.07,.085,.09,12),'#f4f1ea',n.torso,0,.64,0);PART(new T.SphereGeometry(.05,8,6),'#f4f1ea',n.torso,0,.56,.1);
@@ -3076,7 +3076,7 @@ const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
   PART(new T.SphereGeometry(.128,12,8,0,TAU,0,Math.PI*.55).scale(1,1.02,1.06),'#3a2516',n.head,0,.015,-.01);for(const s of[-1,1])PART(new T.BoxGeometry(.03,.11,.06),'#3a2516',n.head,s*.112,-.035,.02);
   PART(new T.CylinderGeometry(.115,.125,.15,16),'#111114',n.head,0,.16,0);PART(new T.CylinderGeometry(.2,.2,.015,18),'#111114',n.head,0,.09,0);PART(new T.CylinderGeometry(.118,.127,.025,16),'#3a2a1c',n.head,0,.1,0);
   for(const l of[n.lL,n.lR])PART(new T.BoxGeometry(.105,.22,.13),'#141416',l.kn,0,-.32,.01);
-  const tg=nameSprite('Captain Pedro','#c9a34a');tg.position.set(0,2.05,0);tg.scale.multiplyScalar(.7);n.g.add(tg);GI.add(n.g)}
+  const tg=nameSprite('Captain Owen Chase','#c9a34a');tg.position.set(0,2.05,0);tg.scale.multiplyScalar(.7);n.g.add(tg);GI.add(n.g)}
  const capHome=()=>{CAP.g.position.set(HELM.capByWheel?0:-1.5,Y2,9.5);CAP.g.rotation.y=HELM.capByWheel?0:Math.PI*.15};
  /* ---------- the DJ, the bartender and the dancers ---------- */
  const DJ=makeNPC({look:'party',shirt:'#111114',pants:'#26262b'});DJ.g.position.set(0,Y2+.5,2.3);DJ.g.rotation.y=Math.PI;GI.add(DJ.g);
@@ -3110,14 +3110,14 @@ const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
   if(PL&&!PCAR)add(PL,d=>{PL.yaw+=d;PL.bodyYaw+=d});
   if(MODE==='open'){for(const E of OPEN.pirates)if(E.ship===API)add(E,d=>{E.yaw+=d});for(const f of OPEN.allies)add(f,d=>{f.yaw+=d;f.bodyYaw+=d})}
   S.x=nx;S.z=nz;S.h=nh;pose();for(const r of R){const w=toW(r.l[0],r.l[1]);r.o.p.x=w[0];r.o.p.z=w[1];r.rot(dh)}}
- /* ---------- driving her: Captain Pedro hands you the wheel ---------- */
+ /* ---------- driving her: Captain Owen Chase hands you the wheel ---------- */
  const HELM={on:false,v:0,yr:0,capByWheel:true,bump:0,auto:0,told:false};
  const PROBE=[[0,BOW+.4],[-3.5,STERN],[3.5,STERN],[-5,-8],[5,-8],[-5,6],[5,6],[-3,16],[3,16]];
  function clearAt(x,z,h){const c=Math.cos(h),s=Math.sin(h);for(const[lx,lz]of PROBE){const wx=x+lx*c+lz*s,wz=z-lx*s+lz*c;if(!isWater(wx,wz,-1.3))return false;if(FERRY.hullDist({x:wx,z:wz})<1.5)return false}return true}
  function helmTake(){if(coopGuest()){toast('Only the room maker can drive the Essex');return}HELM.on=true;HELM.capByWheel=false;capHome();HELM.v=0;
-  if(!HELM.told){HELM.told=true;showMissionCard('You have the wheel',`${IS_TOUCH?'Stick':GP.on?'Left stick':'W and S'} for the throttle, ${IS_TOUCH?'left and right':GP.on?'left and right':'A and D'} to steer. ${keyE()} hands her back to Captain Pedro.`)}
-  else toast('Captain Pedro: She’s all yours. Easy on the throttle near the docks.')}
- function helmGive(){HELM.on=false;HELM.capByWheel=true;capHome();toast(home()?'Captain Pedro has the wheel':'Captain Pedro has the wheel · ask him to take her back to the dock')}
+  if(!HELM.told){HELM.told=true;showMissionCard('You have the wheel',`${IS_TOUCH?'Stick':GP.on?'Left stick':'W and S'} for the throttle, ${IS_TOUCH?'left and right':GP.on?'left and right':'A and D'} to steer. ${keyE()} hands her back to Captain Owen Chase.`)}
+  else toast('Captain Owen Chase: She’s all yours. Easy on the throttle near the docks.')}
+ function helmGive(){HELM.on=false;HELM.capByWheel=true;capHome();toast(home()?'Captain Owen Chase has the wheel':'Captain Owen Chase has the wheel · ask him to take her back to the dock')}
  function helmInput(dt){const k=keys;let st=((k.KeyD?1:0)-(k.KeyA?1:0))+TOUCH.mx+(GP.on?GP.lx:0),th=((k.KeyW?1:0)-(k.KeyS?1:0))-TOUCH.my-(GP.on?GP.ly:0)+(GP.on?(GP.gas||0)-(GP.brake||0):0);st=clamp(st,-1,1);th=clamp(th,-1,1);
   const sens=IS_TOUCH?.0035:.0024;PL.pitch=clamp(PL.pitch-look.dy*sens,-1.1,1.1);look.dx=look.dy=0;drive(dt,th,st);
   const w=toW(0,9.55);PL.p.set(w[0],Y2,w[1]);PL.vx=PL.vz=0;PL.vy=0;PL.yaw=S.h;PL.bodyYaw=S.h}
@@ -3134,21 +3134,21 @@ const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
  function bestHeading(){let best=S.h,bd=-1;for(let i=0;i<16;i++){const h=i/16*TAU;let d=0;for(let r=20;r<=300;r+=20){if(!isWater(S.x+Math.sin(h)*r,S.z+Math.cos(h)*r,-2)){break}d=r}if(d>bd){bd=d;best=h}}return best}
  function hijackStart(){HJ.on=true;HJ.wave=1;HJ.list=[];HJ.plank=0;HJ.plankDone=false;HJ.drift=0;HJ.dir=bestHeading();if(HELM.on){HELM.on=false;toast('The Seaweed crew pulled you off the wheel!')}HELM.capByWheel=false;HELM.v=0;
   const n=spawnWave(6,0);sfx('beep',.8);showMissionCard('The Seaweed crew are boarding!',`They climbed up from a skiff and they’re taking the Essex. Splat all ${n} of them before they sail off with her, or they’ll make you walk the plank.`);
-  ALLY.cool=0;ALLY.wake=1;crewSay('Captain Pedro','Pirates! They’ve got the helm. Fight them off!','#c9a34a',true)}
- function hijackWin(){HJ.on=false;HJ.cool=240;HJ.aboardT=0;addCash(200,'saving the Essex');sfx('win',1);showMissionCard('You saved the Essex!','Captain Pedro has the wheel back and the party’s on again · +$200');crewSay('Captain Pedro','The Essex is ours again. Drinks are on me tonight!','#c9a34a',true);HELM.capByWheel=true;capHome();OPEN.respect+=2}
+  ALLY.cool=0;ALLY.wake=1;crewSay('Captain Owen Chase','Pirates! They’ve got the helm. Fight them off!','#c9a34a',true)}
+ function hijackWin(){HJ.on=false;HJ.cool=240;HJ.aboardT=0;addCash(200,'saving the Essex');sfx('win',1);showMissionCard('You saved the Essex!','Captain Owen Chase has the wheel back and the party’s on again · +$200');crewSay('Captain Owen Chase','The Essex is ours again. Drinks are on me tonight!','#c9a34a',true);HELM.capByWheel=true;capHome();OPEN.respect+=2}
  function hijackEnd(){HJ.on=false;HJ.cool=240;HJ.aboardT=0;for(const E of HJ.list)if(E.dead<=0){E.dead=E.down=.01;E.hp=0}HJ.list=[];HELM.capByWheel=true;capHome()}
  // losing: the crew line you up on the plank and you walk off it into the harbor
  function plankStart(){HJ.plank=4.5;OPEN.hp=1;const w=toW(4.9,PLZ);PL.p.set(w[0],Y1+.1,w[1]);PL.vx=PL.vz=PL.vy=0;PL.yaw=S.h+Math.PI/2;PL.bodyYaw=PL.yaw;
   showMissionCard('Walk the plank!','The Seaweed crew got the better of you. Over the side you go!');sfx('beep',1);
   let k=0;for(const E of HJ.list){if(E.dead>0||k>=3)continue;const w2=toW(3.2,PLZ-1.4+k*1.4);E.p.set(w2[0],Y1+.02,w2[1]);k++}}
  function plankTick(dt){HJ.plank-=dt;look.dx=look.dy=0;if(!PL.swim)PL.move(dt,0,HJ.plank<3.6?.55:0,false,false);else if(!HJ.plankDone){HJ.plankDone=true;FX.splash(PL.p.x,.2,PL.p.z,10,3);sfx('splat',.8);
-   OPEN.hp=4;hijackEnd();showMissionCard('Splash!','You walked the plank. The Seaweed crew took off in their skiff, and Captain Pedro is bringing the Essex back to the town dock. Swim to her ladder to climb back aboard.');HJ.goHome=6}
+   OPEN.hp=4;hijackEnd();showMissionCard('Splash!','You walked the plank. The Seaweed crew took off in their skiff, and Captain Owen Chase is bringing the Essex back to the town dock. Swim to her ladder to climb back aboard.');HJ.goHome=6}
   if(HJ.plank<=-6&&!PL.swim){HJ.plank=0;OPEN.hp=4;if(HJ.on)hijackEnd()}if(PL.swim&&HJ.plankDone)HJ.plank=0}
  function hijackTick(dt){HJ.list=HJ.list.filter(E=>OPEN.pirates.includes(E));const alive=HJ.list.filter(E=>E.dead<=0).length;
   if(alive===0){if(HJ.wave===1){HJ.wave=2;const n=spawnWave(5,2);showMissionCard('More of them!',`Another ${n} of the Seaweed crew are climbing over the rail. These ones have paint grenades.`);ALLY.cool=0;ALLY.wake=1;return}hijackWin();return}
   // the pirates motor her slowly out toward open water
   if(HJ.drift<260){const sp=2.4,nh=S.h+angWrap(HJ.dir-S.h)*Math.min(1,dt*.25),nx=S.x+Math.sin(nh)*sp*dt,nz=S.z+Math.cos(nh)*sp*dt;if(clearAt(nx,nz,nh)){moveTo(nx,nz,nh);HJ.drift+=sp*dt}else HJ.dir=bestHeading()}
-  const me=ME();if(me&&!onDeck(me.p)&&Math.hypot(me.p.x-S.x,me.p.z-S.z)>220){hijackEnd();toast('The Seaweed crew sailed off · Captain Pedro will bring the Essex back');HJ.goHome=8}}
+  const me=ME();if(me&&!onDeck(me.p)&&Math.hypot(me.p.x-S.x,me.p.z-S.z)>220){hijackEnd();toast('The Seaweed crew sailed off · Captain Owen Chase will bring the Essex back');HJ.goHome=8}}
  /* ---------- the party: lights to the beat, music when you're close ---------- */
  const PAL0=['#ff2d95','#00e5ff','#7c4dff','#ffd600','#00ff85','#ff6d00'].map(c=>new T.Color(c)),PAL={length:6},_c=new T.Color();for(let i=0;i<6;i++)PAL[i]=PAL0[i];const pal=k=>PAL0[((k%6)+6)%6];
  let beat=0,lastB=-1;
@@ -3169,10 +3169,10 @@ const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
  function tick(dt){if(MODE!=='open')return;const me=ME(),t=CLOCK;
   const cd=Math.hypot(camera.position.x-S.x,camera.position.z-S.z);GI.visible=cd<150;RADAR.rotation.y+=dt*1.8;
   if(!coopGuest()){
-   if(me&&onDeck(me.p)&&!PCAR&&!OPEN.active&&!HJ.on){HJ.aboardT+=dt;if(!HJ.toldIn){HJ.toldIn=true;toast('Aboard the Essex · the party’s up on the middle deck, Captain Pedro is on the bridge')}}else if(me&&!onDeck(me.p))HJ.toldIn=false;
+   if(me&&onDeck(me.p)&&!PCAR&&!OPEN.active&&!HJ.on){HJ.aboardT+=dt;if(!HJ.toldIn){HJ.toldIn=true;toast('Aboard the Essex · the party’s up on the middle deck, Captain Owen Chase is on the bridge')}}else if(me&&!onDeck(me.p))HJ.toldIn=false;
    HJ.cool-=dt;if(!HJ.on&&HJ.cool<=0&&HJ.aboardT>95&&me&&onDeck(me.p)&&!OPEN.active&&!FERRY.heist&&PL.dead<=0)hijackStart();
    if(HJ.on)hijackTick(dt);
-   if(HJ.goHome>0){HJ.goHome-=dt;if(HJ.goHome<=0){if(me&&onDeck(me.p)&&!PL.swim)HJ.goHome=4;else{goHome();if(me&&Math.hypot(me.p.x-S.x,me.p.z-S.z)<300)toast('Captain Pedro brought the Essex back to the town dock')}}}
+   if(HJ.goHome>0){HJ.goHome-=dt;if(HJ.goHome<=0){if(me&&onDeck(me.p)&&!PL.swim)HJ.goHome=4;else{goHome();if(me&&Math.hypot(me.p.x-S.x,me.p.z-S.z)<300)toast('Captain Owen Chase brought the Essex back to the town dock')}}}
    if(!HJ.on&&!HELM.on&&!home()&&me&&!onDeck(me.p)&&Math.hypot(me.p.x-S.x,me.p.z-S.z)>180&&!(HJ.goHome>0))goHome()}
   // wake and spray when she's moving
   const spd=HELM.on?Math.abs(HELM.v):HJ.on?2.4:0;HELM.wakeT=(HELM.wakeT||0)-dt;if(spd>1.5&&HELM.wakeT<=0){HELM.wakeT=.12;for(const sd of[-1,1]){const w=toW(sd*3.5,STERN-1);FX.wake(w[0],.05,w[1],S.h,1+spd*.12)}if(spd>6&&rnd()<.4){const b=toW((rnd()-.5)*2,BOW);FX.splash(b[0],.4,b[1],3,2)}}
@@ -3187,9 +3187,9 @@ const ESSEX=(function(){const v3=(x,y,z)=>new T.Vector3(x,y,z);
  function action(){const p=PL.p;
   if(PL.swim&&hullDist(p)<5)return{t:'Climb the Essex’s swim ladder',act:climb};
   if(!onDeck(p))return null;
-  if(HELM.on)return{t:'Hand the wheel back to Captain Pedro',act:helmGive};
+  if(HELM.on)return{t:'Hand the wheel back to Captain Owen Chase',act:helmGive};
   if(nearL(p,0,9.4,Y2,1.6)||nearL(p,-1.5,9.5,Y2,1.4)){if(HJ.on)return null;if(!home()&&!HELM.capByWheel)return{t:'Take the wheel of the Essex',act:helmTake};
-   if(!home())return{t:'Ask Captain Pedro to take her back to the dock',act:()=>goHome('Captain Pedro brought the Essex back to the town dock')};return{t:'Ask Captain Pedro for the wheel',act:helmTake}}
+   if(!home())return{t:'Ask Captain Owen Chase to take her back to the dock',act:()=>goHome('Captain Owen Chase brought the Essex back to the town dock')};return{t:'Ask Captain Owen Chase for the wheel',act:helmTake}}
   if(nearL(p,-3.0,-11.4,Y2,1.5)&&!HJ.on)return{t:'Grab a soda from the bar',act:()=>{toast('The bartender slides you an ice-cold soda');sfx('beep',.4)}};
   return null}
  /* ---------- climbing back aboard from the water ---------- */
