@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 22</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 23</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -1667,10 +1667,10 @@ let _glow=null;function glowTex(){if(_glow)return _glow;const c=document.createE
   const tail=mk(new T.BoxGeometry(.3,.3,11),'#5a4a3a',0,5.5,-7,g);tail.rotation.x=-.75;LANDMARK.mill=g;LANDMARK.millHub=hub;addCollider({type:'c',x:p.x,z:p.z,r:4.3})}
  // 'Sconset: little rose-covered cottages
  {const Sc=SITE.sconset,rose=new T.InstancedMesh(new T.IcosahedronGeometry(.28,0),mat('#e2557a'),260),m4=new T.Matrix4();let n=0;
-  for(let k=0;k<7;k++){const a=k/7*TAU+.4,x=Sc.x+Math.cos(a)*(22+k*3),z=Sc.z+Math.sin(a)*(22+k*3);if(maskAt(x,z)<.56||nearestRoad(x,z).d<9)continue;const y=groundH(x,z),g=new T.Group();g.position.set(x,y,z);g.rotation.y=a;scene.add(g);
-   mk(new T.BoxGeometry(6,3.4,5),'#8c8780',0,1.7,0,g);const rg=new T.CylinderGeometry(3.4,3.4,5.4,3,1);rg.rotateX(Math.PI/2);rg.rotateZ(Math.PI/2);rg.scale(1.02,.5,1);mk(rg,'#4d4945',0,4.3,0,g);addCollider({type:'b',x,z,c:Math.cos(a),s:-Math.sin(a),hw:3,hd:2.5,top:y+6});
+  for(let k=0;k<7;k++){const a=k/7*TAU+.4,x=Sc.x+Math.cos(a)*(22+k*3),z=Sc.z+Math.sin(a)*(22+k*3);if(maskAt(x,z)<.56||nearestRoad(x,z).d<9)continue;const y=groundH(x,z),g=new T.Group();g.position.set(x,y,z);g.rotation.y=a;g.visible=false;
+   mk(new T.BoxGeometry(6,3.4,5),'#8c8780',0,1.7,0,g);const rg=new T.CylinderGeometry(3.4,3.4,5.4,3,1);rg.rotateX(Math.PI/2);rg.rotateZ(Math.PI/2);rg.scale(1.02,.5,1);mk(rg,'#4d4945',0,4.3,0,g);
    for(let i=0;i<34&&n<260;i++){const u=(rnd()-.5)*6,v=rnd()*3.4;m4.makeTranslation(x+Math.cos(a)*u+Math.sin(a)*2.55,y+v,z-Math.sin(a)*u+Math.cos(a)*2.55);rose.setMatrixAt(n++,m4)}}
-  rose.count=n;scene.add(rose)}
+  rose.count=0;n=0}
  LANDMARK.sankaty=sankatyHead(SITE.sankaty);
  LANDMARK.greatpoint=lighthouse(SITE.greatpoint,{h:18,r:2.1,stone:true,beam:true,base:true});
  const rr=mulberry(5150);
@@ -2590,14 +2590,14 @@ const LAMPS=[];
 
 /* ---------- houses: chimneys, roof walks, picket fences, hedges ---------- */
 (function(){const ch=[],walks=[],fences=[],hedges=[],roses=[];
- HOUSES.forEach(o=>{const town=inTown(o.x,o.z),ca=Math.cos(o.a),sa=Math.sin(o.a);
+ HOUSES.forEach(o=>{const town=inTown(o.x,o.z),ca=Math.cos(o.a),sa=Math.sin(o.a),sc=!o.bx&&Math.hypot(o.x-4482,o.z-1041)<=210;
   const ridge=o.y+o.h+1.9+o.w*.18;
-  if(rnd()<.7){const off=(rnd()<.5?-1:1)*o.d*.28,x=o.x+sa*off,z=o.z+ca*off;ch.push({x,y:ridge+.5,z,a:o.a,sx:.7,sy:2.2,sz:.7,c:rnd()<.6?'#7e3d30':'#9b9590'})}
-  if(town&&rnd()<.16)walks.push({x:o.x,y:ridge+.25,z:o.z,a:o.a,sx:1.6,sy:.5,sz:1.6});
+  if(rnd()<.7){const off=(rnd()<.5?-1:1)*o.d*.28,x=o.x+sa*off,z=o.z+ca*off;if(!sc)ch.push({x,y:ridge+.5,z,a:o.a,sx:.7,sy:2.2,sz:.7,c:rnd()<.6?'#7e3d30':'#9b9590'})}
+  if(town&&rnd()<.16&&!sc)walks.push({x:o.x,y:ridge+.25,z:o.z,a:o.a,sx:1.6,sy:.5,sz:1.6});
   // the side of the house that faces the street
   let best=null;for(const s of[-1,1]){const px=o.x+ca*s*(o.w/2+1.7),pz=o.z-sa*s*(o.w/2+1.7),nr=nearestRoad(px,pz);if(!best||nr.d<best.d)best={d:nr.d,r:nr.r,px,pz,s}}
   if(!best||best.r<0||best.d>9||best.d<ROADS[best.r].w/2+.9)return;const y=groundH(best.px,best.pz),fa=o.a-Math.PI/2;
-  if(town&&rnd()<.55)fences.push({x:best.px,y:y+.45,z:best.pz,a:fa,sx:o.d+1.5});else if(rnd()<.4){hedges.push({x:best.px,y:y+.6,z:best.pz,a:fa,sx:o.d+1,sy:1.2,sz:.8});if(Math.hypot(o.x-SITE.sconset.x,o.z-SITE.sconset.z)<260)roses.push({x:best.px,y:y+1.1,z:best.pz,a:fa,sx:o.d+1.1,sy:.4,sz:.85})}});
+  if(town&&rnd()<.55){if(!sc)fences.push({x:best.px,y:y+.45,z:best.pz,a:fa,sx:o.d+1.5})}else if(rnd()<.4&&!sc){hedges.push({x:best.px,y:y+.6,z:best.pz,a:fa,sx:o.d+1,sy:1.2,sz:.8});if(Math.hypot(o.x-SITE.sconset.x,o.z-SITE.sconset.z)<260)roses.push({x:best.px,y:y+1.1,z:best.pz,a:fa,sx:o.d+1.1,sy:.4,sz:.85})}});
  instanced(new T.BoxGeometry(1,1,1),new T.MeshLambertMaterial({color:'#fff'}),ch);
  instanced(new T.BoxGeometry(1,1,1),mat('#f4f1ea'),walks);
  const[pc,px]=mkCanvas(128,32);px.clearRect(0,0,128,32);px.fillStyle='#f6f4ee';for(let i=0;i<8;i++){px.beginPath();px.moveTo(i*16+3,32);px.lineTo(i*16+3,6);px.lineTo(i*16+8,0);px.lineTo(i*16+13,6);px.lineTo(i*16+13,32);px.fill()}px.fillRect(0,9,128,3);px.fillRect(0,23,128,3);
@@ -2753,37 +2753,7 @@ const SCONSET21=(function(){if(!BLUFF||!BLUFF.pt)return null;const B=BLUFF,rr=mu
 
  /* ===== 'Sconset village ===== */
  const VK=Kit();
- // the market and the post office face each other across Main Street at Post Office Square
- {const f={x:4500,y:0,z:1022.5,a:0};let mx=-1e9;for(const[dx,dz]of[[-5,-4],[5,-4],[-5,5.5],[5,5.5]])mx=Math.max(mx,Y(f.x+dx,f.z+dz));f.y=mx+.15;
-  VK.add('stone',boxM(9.4,2,7.4),f,0,-.9,0);VK.add('shingle',boxM(9,3.6,7),f,0,1.8,0);VK.add('roof',gable(8.2,2.8,10),f,0,3.6,0,Math.PI/2);
-  VK.add('roof',boxM(9.8,.15,2.4),f,0,3.15,4.6,0,.16);for(const x of[-4.4,4.4])VK.add('trim',new T.BoxGeometry(.2,3,.2),f,x,1.5,5.6);VK.add('wood',new T.BoxGeometry(9.6,.2,2.3),f,0,.05,4.6);
-  for(const x of[-2.7,2.7]){VK.add('trim',new T.BoxGeometry(3.2,1.9,.05),f,x,1.65,3.52);VK.add('glass',new T.BoxGeometry(2.9,1.6,.06),f,x,1.65,3.55);VK.add('trim',new T.BoxGeometry(.06,1.6,.08),f,x,1.65,3.57)}
-  VK.add('trim',new T.BoxGeometry(1.4,2.5,.05),f,0,1.25,3.52);VK.add('glass',new T.BoxGeometry(1.1,2.2,.06),f,0,1.15,3.55);
-  for(const[ix,iz]of[[-1,-1],[1,-1],[-1,1],[1,1]])VK.add('trim',new T.BoxGeometry(.22,3.6,.22),f,ix*4.5,1.8,iz*3.5);
-  sign([{t:'VILLAGE MARKET',f:'bold 64px Georgia',y:78}],5.6,.75,f,0,3.42,5.82,0,{bg:'#2f4a3a',color:'#f2ead6'});
-  sign([{t:'COFFEE · SANDWICHES · FLOWERS · PAPERS',f:'bold 30px Georgia',y:40}],3.4,.42,f,-2.7,2.85,3.6,0,{bg:'#f2efe6',color:'#2f4a3a'});
-  // produce crates on a bench, buckets of flowers, a bench and two bikes
-  VK.add('wood',new T.BoxGeometry(3,.12,.8),f,-2.7,.75,4.6);for(const x of[-3.8,-3.1,-2.4,-1.7])VK.add('wood',boxM(.62,.35,.6),f,x,1,4.6);
-  for(const x of[-3.8,-3.1,-2.4,-1.7]){const c=['#c0392b','#5aa02c','#f39c12','#d6c14a'][Math.round((x+3.8)/.7)];for(let i=0;i<5;i++){const p=ROT(f,x+(rr()-.5)*.4,4.6+(rr()-.5)*.35);add('flower',{x:p[0],y:f.y+1.22,z:p[1],c})}}
-  for(let i=0;i<5;i++){const lx=1.6+i*.55,p=ROT(f,lx,4.9);VK.add('dark',new T.CylinderGeometry(.18,.15,.4,10),f,lx,.32,4.9);for(let j=0;j<5;j++)add('flower',{x:p[0]+(rr()-.5)*.25,y:f.y+.65+rr()*.15,z:p[1]+(rr()-.5)*.25,c:FC[(i+j)%FC.length]})}
-  add('bench',{x:ROT(f,3.2,6.2)[0],y:Y(4503.2,1028.7),z:ROT(f,3.2,6.2)[1],a:Math.PI,c:'#2f4a3a'});
-  for(const bx of[5.8,6.6]){const p=ROT(f,bx,4.5),bf={x:p[0],y:Y(p[0],p[1]),z:p[1],a:Math.PI/2};for(const wz of[-.55,.55])VK.add('dark',new T.TorusGeometry(.33,.035,6,18),bf,0,.36,wz,Math.PI/2);VK.add(bx<6?'red':'blue',new T.BoxGeometry(.05,.05,1.1),bf,0,.62,0);VK.add(bx<6?'red':'blue',new T.BoxGeometry(.05,.55,.05),bf,0,.5,-.2,0,.3);VK.add('dark',new T.BoxGeometry(.5,.05,.05),bf,0,.95,.5)}
-  addCollider({type:'b',x:f.x,z:f.z,c:1,s:0,hw:4.6,hd:3.6,top:f.y+7})}
- {const f={x:4508,y:0,z:1047,a:Math.PI};let mx=-1e9;for(const[dx,dz]of[[-4,-4],[4,-4],[-4,4],[4,4]])mx=Math.max(mx,Y(f.x+dx,f.z+dz));f.y=mx+.15;
-  VK.add('stone',boxM(7.4,2,6.4),f,0,-.9,0);VK.add('shingle',boxM(7,3.4,6),f,0,1.7,0);VK.add('roof',gable(6.8,2.4,7.8),f,0,3.4,0,Math.PI/2);
-  for(const[ix,iz]of[[-1,-1],[1,-1],[-1,1],[1,1]])VK.add('trim',new T.BoxGeometry(.2,3.4,.2),f,ix*3.5,1.7,iz*3);VK.add('trim',new T.BoxGeometry(7.2,.25,6.2),f,0,3.35,0);
-  VK.add('navy',new T.BoxGeometry(1.2,2.3,.08),f,0,1.15,3.04);VK.add('trim',new T.BoxGeometry(1.6,2.6,.05),f,0,1.3,3.02);for(const x of[-2.2,2.2]){VK.add('trim',new T.BoxGeometry(1.3,1.5,.05),f,x,1.8,3.02);VK.add('glass',new T.BoxGeometry(1.05,1.25,.06),f,x,1.8,3.05)}
-  VK.add('stone',new T.BoxGeometry(2.4,.2,1.2),f,0,.1,3.6);
-  sign([{t:'U.S. POST OFFICE',f:'bold 46px Georgia',y:56}],3.4,.6,f,0,2.85,3.08,0,{bg:'#f2efe6',color:'#1d2f4f'});
-  sign([{t:'SIASCONSET, MASS. 02564',f:'bold 30px Georgia',y:38}],3.4,.42,f,0,4.15,3.42,0,{bg:'#f2efe6',color:'#1d2f4f'});
-  // flagpole and the blue mailbox out front
-  const fp=ROT(f,-4.4,3.8),fy=Y(fp[0],fp[1]);VK.add('trim',new T.CylinderGeometry(.06,.09,9,8),{x:fp[0],y:fy,z:fp[1],a:0},0,4.5,0);VK.add('trim',new T.SphereGeometry(.14,8,6),{x:fp[0],y:fy,z:fp[1],a:0},0,9.05,0);
-  {const c=document.createElement('canvas');c.width=190;c.height=100;const x=c.getContext('2d');for(let i=0;i<13;i++){x.fillStyle=i%2?'#ffffff':'#b22234';x.fillRect(0,i*100/13,190,100/13+.5)}x.fillStyle='#3c3b6e';x.fillRect(0,0,76,54);x.fillStyle='#fff';for(let i=0;i<5;i++)for(let j=0;j<6;j++)x.fillRect(6+j*12,5+i*10,3,3);
-   const fl=new T.Mesh(new T.PlaneGeometry(1.9,1,6,1),new T.MeshLambertMaterial({map:cTex(c),side:T.DoubleSide}));const pa=fl.geometry.attributes.position;for(let i=0;i<pa.count;i++)pa.setZ(i,Math.sin(pa.getX(i)*2.4)*.12);fl.geometry.computeVertexNormals();
-   fl.position.set(fp[0]+Math.cos(f.a)*.98,fy+8.4,fp[1]-Math.sin(f.a)*.98);fl.rotation.y=f.a;scene.add(fl)}
-  addCollider({type:'c',x:fp[0],z:fp[1],r:.15});
-  const mb=ROT(f,2.7,4.3),mf={x:mb[0],y:Y(mb[0],mb[1]),z:mb[1],a:f.a};VK.add('blue',new T.BoxGeometry(.55,.75,.5),mf,0,.75,0);VK.add('blue',new T.CylinderGeometry(.275,.275,.5,12,1,false,0,Math.PI).rotateZ(Math.PI/2).rotateY(Math.PI/2),mf,0,1.12,0);for(const sd of[-1,1])VK.add('dark',new T.BoxGeometry(.06,.4,.06),mf,sd*.22,.2,0);
-  addCollider({type:'c',x:mb[0],z:mb[1],r:.35});addCollider({type:'b',x:f.x,z:f.z,c:Math.cos(f.a),s:-Math.sin(f.a),hw:3.6,hd:3.1,top:f.y+6})}
+ // the market and the post office are built by S23 (Build 23) so you can walk in
  // the signpost in the middle of the rotary
  {const R=ROADS.find(r=>r.name==='Sconset Rotary');if(R){let cx=0,cz=0;R.pts.forEach(p=>{cx+=p[0];cz+=p[1]});cx/=R.pts.length;cz/=R.pts.length;const y=Y(cx,cz)+.12,f={x:cx,y,z:cz,a:0};
   const isl=new T.Mesh(new T.CylinderGeometry(2.4,2.5,.3,24),mat('#4f7a36'));isl.position.set(cx,y+.05,cz);isl.receiveShadow=true;scene.add(isl);
@@ -2832,6 +2802,276 @@ const SCONSET21=(function(){if(!BLUFF||!BLUFF.pt)return null;const B=BLUFF,rr=mu
  instanced(pitG,mat('#6f6b66'),lists.pit);instanced(new T.BoxGeometry(1,1,1),white,lists.slab,false);instanced(new T.BoxGeometry(1,1,1),white,lists.tread);instanced(new T.BoxGeometry(1,1,1),white,lists.post);
  lists.bench.forEach(o=>addCollider({type:'c',x:o.x,z:o.z,r:.5,top:o.y+.9}));lists.arbor.forEach(o=>{for(const sd of[-1,1])addCollider({type:'c',x:o.x+Math.cos(o.a)*sd,z:o.z-Math.sin(o.a)*sd,r:.15})});
  return{path:C,stairs:STAIRS,sea:SEA.length,counts:Object.fromEntries(Object.entries(lists).map(([k,v])=>[k,v.length]))}})();
+/* ---------- Build 23: 'Sconset, Baxter Road and Sankaty get things to do, and look like the real places ----------
+   Look (from photos of the real village): tiny silver-shingled cottages with white trim, small-paned windows, flower boxes,
+   picket fences and rose arbors at the gate, shell paths, quarterboards with the cottage's name over the door, a brick
+   chimney and the odd lean-to added on the back. The town pump under its little shingled roof on Broadway. Sankaty Light
+   inside a post-and-rail fence on the golf links. Original models throughout.
+   Things to do: climb the lighthouse and use the spyglass, Seaweed's doubloons hidden all over, the market and the post
+   office you can walk into (lemonade from Rosie, the mail run from Hal), four new missions, and townspeople to talk to. */
+const S23=(function(){if(typeof SCONSET21==='undefined'||!SCONSET21||!BLUFF)return null;const rr=mulberry(2323),q2=GFX.q2,L1=GFX.L>=1;
+ const ROT=(f,lx,lz)=>[f.x+lx*Math.cos(f.a)+lz*Math.sin(f.a),f.z-lx*Math.sin(f.a)+lz*Math.cos(f.a)];
+ const boxM=(w,h,d)=>{const g=new T.BoxGeometry(w,h,d),uv=g.attributes.uv,n=g.attributes.normal;for(let i=0;i<uv.count;i++){const ax=Math.abs(n.getX(i)),ay=Math.abs(n.getY(i)),U=uv.getX(i),V=uv.getY(i);if(ax>.5)uv.setXY(i,U*d,V*h);else if(ay>.5)uv.setXY(i,U*w,V*d);else uv.setXY(i,U*w,V*h)}return g};
+ const gable=(base,hgt,len)=>{const s=new T.Shape();s.moveTo(-base/2,0);s.lineTo(0,hgt);s.lineTo(base/2,0);const g=new T.ExtrudeGeometry(s,{depth:len,bevelEnabled:false});g.translate(0,0,-len/2);
+  // roof texture in metres along the slope
+  const uv=g.attributes.uv,pa=g.attributes.position;for(let i=0;i<uv.count;i++)uv.setXY(i,pa.getZ(i),Math.hypot(pa.getX(i),pa.getY(i)-hgt));return g};
+ function Kit(){const L={};return{add(k,g,f,x,y,z,ry=0,rx=0,rz=0){(L[k]||(L[k]=[])).push({g,f,x,y,z,ry,rx,rz})},
+  build(M){const out=[],m4=new T.Matrix4(),mf=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(0,0,0,'YXZ'),nm=new T.Matrix3(),v=new T.Vector3(),one=new T.Vector3(1,1,1);
+   for(const k in L){const P=[],N=[],U=[];for(const it of L[k]){const g=it.g.index?it.g.toNonIndexed():it.g;e.set(it.rx,it.ry,it.rz,'YXZ');q.setFromEuler(e);m4.compose(new T.Vector3(it.x,it.y,it.z),q,one);
+     const f=it.f;mf.compose(new T.Vector3(f.x,f.y,f.z),new T.Quaternion().setFromEuler(new T.Euler(0,f.a,0)),one);m4.premultiply(mf);nm.getNormalMatrix(m4);
+     const pa=g.attributes.position,na=g.attributes.normal,ua=g.attributes.uv;for(let i=0;i<pa.count;i++){v.fromBufferAttribute(pa,i).applyMatrix4(m4);P.push(v.x,v.y,v.z);v.fromBufferAttribute(na,i).applyMatrix3(nm).normalize();N.push(v.x,v.y,v.z);if(ua)U.push(ua.getX(i),ua.getY(i));else U.push(0,0)}}
+    const bg=new T.BufferGeometry();bg.setAttribute('position',new T.Float32BufferAttribute(P,3));bg.setAttribute('normal',new T.Float32BufferAttribute(N,3));bg.setAttribute('uv',new T.Float32BufferAttribute(U,2));bg.computeBoundingSphere();
+    const me=new T.Mesh(bg,M[k]);me.castShadow=!/glass|in_|cool|qb/.test(k);me.receiveShadow=true;scene.add(me);out.push(me)}return out}}}
+ const lit=(c,e)=>new T.MeshLambertMaterial({color:c,emissive:new T.Color(e)});
+ const M={shingle:PHOTO_ON?PHOTO.mat('shingles','#ffffff',[.55,.55]):mat('#8c8780'),clap:PHOTO_ON?PHOTO.mat('clapboard','#ffffff',[.5,.5]):mat('#ece7dc'),roof:PHOTO_ON?PHOTO.mat('roof','#ffffff',[.7,.7]):mat('#4d4945'),
+  trim:mat('#f4f1ea'),glass:new T.MeshStandardMaterial({color:'#3b4d5a',roughness:.1,metalness:.4,envMapIntensity:1.4,emissive:new T.Color('#141c22')}),brick:PHOTO_ON?PHOTO.mat('brick','#ffffff',[.6,.6]):mat('#7b3e2e'),
+  wood:PHOTO_ON?PHOTO.mat('deck','#ffffff',[.5,.5]):mat('#8b7357'),stone:PHOTO_ON?PHOTO.mat('granite','#ffffff',[.4,.4]):mat('#bdb7ab'),navy:mat('#1d2f4f'),dark:mat('#26292e'),red:mat('#8f2b24'),green:mat('#2f4a2e'),yellow:mat('#d9b44a'),
+  sky:mat('#5d8fb8'),in_pine:lit('#c9a77a','#4a3622'),in_floor:lit('#9a7a55','#2e2316'),in_white:lit('#f2eee4','#5a564e'),in_shelf:lit('#8b6a45','#2e2214'),cool:lit('#dff1ff','#9fc7e6'),blue:mat('#264b8c'),gravel:PHOTO_ON?PHOTO.mat('shell','#e8dfcc',[.5,.5]):mat('#d6ccb4')};
+ const Y=(x,z)=>groundH(x,z);
+ const lists={pick:[],flower:[],rose:[],leaf:[],slab:[],rail:[],hyd:[],hydL:[],mbox:[],goods:[],flag:[]};const add=(k,o)=>lists[k].push(o);
+ const FC=['#e0457b','#f2a0bb','#f6f0f2','#b48ad6','#f2c94c','#e8613c'],HC=['#5b7fd1','#4f6fc9','#7d74c9','#9fb6e8'];
+ const clearAt=(x,z,r)=>{if(Y(x,z)<.6||isWater(x,z,.1))return false;for(let k=0;k<8;k++){const a=k/8*TAU,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(pointInCollider(px,pz))return false;const nr=nearestRoad(px,pz);if(nr.r>=0&&nr.d<ROADS[nr.r].w/2+.6)return false}return !pointInCollider(x,z)};
+
+ /* ===== 'Sconset cottages: the box houses in the old village become real cottages ===== */
+ const VC={x:4482,z:1041},CK=Kit(),qbNames=["SNUG HARBOR","ROSE LEA","WEE NOOK","SEA SPRAY","DRIFTWOOD","BIDE-A-WEE","HEART'S EASE","SANS SOUCI","CAPTAIN'S REST","LIBERTY HALL","DOLL HOUSE","COZY CORNER","SHELL HOUSE","FAIR WINDS","SUNNYSIDE","THE ANCHORAGE"];
+ const qbTex=(()=>{const c=document.createElement('canvas');c.width=512;c.height=512;const x=c.getContext('2d');qbNames.forEach((t,i)=>{const y=i*32;x.fillStyle='#f3efe4';x.fillRect(0,y,512,32);x.fillStyle='#1d2f4f';x.font='bold 22px Georgia';x.textAlign='center';x.textBaseline='middle';x.fillText(t,256,y+17);x.strokeStyle='#1d2f4f';x.lineWidth=2;x.strokeRect(3,y+3,506,26)});const t=cTex(c);return t})();
+ M.qb=new T.MeshLambertMaterial({map:qbTex});
+ const qbGeo=i=>{const g=new T.PlaneGeometry(1.7,.26),uv=g.attributes.uv;for(let k=0;k<uv.count;k++)uv.setY(k,1-(i+1-uv.getY(k))/16);return g};
+ const pickG=(()=>{const P=[];const b=(w,h,d,x,y,z)=>{const g=new T.BoxGeometry(w,h,d);g.translate(x,y,z);P.push(g)};b(.04,.06,2,0,.32,0);b(.04,.06,2,0,.72,0);for(let i=0;i<9;i++)b(.025,.95,.08,.03,.475,-.9+i*.225);return mergeGeos(P)})();
+ const COT=[],hideIdx=[];
+ HOUSES.forEach((o,i)=>{if(o.bx||Math.hypot(o.x-VC.x,o.z-VC.z)>210)return;COT.push(o);hideIdx.push(i)});
+ // hide the stand-in box houses (their colliders stay: the cottages use the same footprint)
+ {const z0=new T.Matrix4().makeScale(0,0,0);scene.children.forEach(m=>{if(m.isInstancedMesh&&m.count===HOUSES.length){hideIdx.forEach(i=>m.setMatrixAt(i,z0));m.instanceMatrix.needsUpdate=true}})}
+ const doorMats=['navy','red','green','yellow','sky','wood'];let qbI=0;
+ COT.forEach((o,k)=>{const f={x:o.x,y:o.y,z:o.z,a:o.a},w=o.w,d=o.d,h=o.h,Hr=2.2+w*.18,Wr=(w+.8)/2,base=h-.3,wallK=o.c==='#ece7dc'?'clap':'shingle';
+  CK.add(wallK,boxM(w,h,d),f,0,h/2-.3,0);CK.add('roof',gable(w+.8,Hr,d+.8),f,0,base,0);
+  // corner boards, fascia and rake boards
+  for(const sx of[-1,1])for(const sz of[-1,1])CK.add('trim',new T.BoxGeometry(.16,h-.25,.16),f,sx*w/2,(h-.25)/2-.3,sz*d/2);
+  for(const sx of[-1,1])CK.add('trim',new T.BoxGeometry(.08,.2,d+.8),f,sx*(Wr+.02),base-.06,0);
+  const rl=Math.hypot(Wr,Hr),ra=Math.atan2(Hr,Wr);for(const sz of[-1,1])for(const sx of[-1,1])CK.add('trim',new T.BoxGeometry(rl,.2,.08),f,sx*Wr/2,base+Hr/2,sz*(d/2+.42),0,0,-sx*ra);
+  // the front door (local +x faces the street), off-centre like the old cottages
+  const dz=d*(rr()<.5?-.22:.22),dm=doorMats[(rr()*doorMats.length)|0];
+  CK.add('trim',new T.BoxGeometry(.08,2.25,1.2),f,w/2+.02,1.1-.3,dz);CK.add(dm,new T.BoxGeometry(.08,1.95,.86),f,w/2+.05,.97-.3,dz);CK.add('glass',new T.BoxGeometry(.04,.32,.6),f,w/2+.1,1.65-.3,dz);
+  CK.add('stone',new T.BoxGeometry(.7,.16,1.3),f,w/2+.35,-.22,dz);
+  if(rr()<.5){CK.add('roof',gable(1.6,.55,.75),f,w/2+.33,2.05-.3,dz,Math.PI/2);for(const s of[-1,1])CK.add('trim',new T.BoxGeometry(.08,.6,.08),f,w/2+.55,1.75-.3,dz+s*.6)}
+  if(qbI<qbNames.length*3&&rr()<.4){CK.add('qb',qbGeo(qbI%qbNames.length),f,w/2+.07,2.3-.3,dz,Math.PI/2);qbI++}
+  // small-paned windows with white frames: front, back and the gable ends
+  const win=(face,u,y,s=1)=>{// face: 'f' +x, 'b' -x, 'l' -z, 'r' +z
+   const W0=.8*s,H0=1.05*s;if(face==='f'||face==='b'){const sx=face==='f'?1:-1,x=sx*(w/2+.02);CK.add('trim',new T.BoxGeometry(.09,H0+.18,W0+.18),f,x,y,u);CK.add('glass',new T.BoxGeometry(.1,H0,W0),f,x+sx*.01,y,u);CK.add('trim',new T.BoxGeometry(.11,H0,.04),f,x+sx*.015,y,u);CK.add('trim',new T.BoxGeometry(.11,.04,W0),f,x+sx*.015,y,u);return[x+sx*.25,u]}
+   const sz=face==='r'?1:-1,z=sz*(d/2+.02);CK.add('trim',new T.BoxGeometry(W0+.18,H0+.18,.09),f,u,y,z);CK.add('glass',new T.BoxGeometry(W0,H0,.1),f,u,y,z+sz*.01);CK.add('trim',new T.BoxGeometry(.04,H0,.11),f,u,y,z+sz*.015);CK.add('trim',new T.BoxGeometry(W0,.04,.11),f,u,y,z+sz*.015);return null};
+  const wy=1.45-.3;
+  for(const u of[-dz*.95,dz<0?d*.4:-d*.4].filter(u=>Math.abs(u-dz)>1.2&&Math.abs(u)<d/2-.6)){const p=win('f',u,wy);
+   if(p){CK.add('green',new T.BoxGeometry(.28,.22,.95),f,w/2+.17,wy-.66,u);for(let j=0;j<(q2?3:6);j++){const q=ROT(f,w/2+.2,u+(rr()-.5)*.8);add('flower',{x:q[0],y:o.y+wy-.5,z:q[1],c:FC[(rr()*FC.length)|0]})}}}
+  for(const u of[-d*.25,d*.25])win('b',u,wy);for(const sd of['l','r']){win(sd,0,wy);if(Hr>2.9)win(sd,0,base+Hr*.38,.55)}
+  // brick chimney on the ridge, and a lean-to on the back of some
+  {const cz=d*(rr()<.5?.22:-.22);CK.add('brick',boxM(.7,1.7,.9),f,0,base+Hr-.35,cz);CK.add('stone',new T.BoxGeometry(.8,.1,1),f,0,base+Hr+.5,cz)}
+  if(rr()<.45){const lw=2.1,ld=Math.min(d*.6,4.4),lh=h*.68,lx=-(w/2+lw/2),lz=(rr()-.5)*(d-ld)*.6,c=ROT(f,lx,lz);if(clearAt(c[0],c[1],1.3)){CK.add(wallK,boxM(lw,lh,ld),f,lx,lh/2-.3,lz);CK.add('roof',new T.BoxGeometry(lw+.5,.14,ld+.4),f,lx-.05,lh-.2,lz,0,0,Math.atan2(.9,lw));win('b',lz,wy*.9,.8);
+   addCollider({type:'b',x:c[0],z:c[1],c:Math.cos(o.a),s:-Math.sin(o.a),hw:lw/2,hd:ld/2,top:o.y+lh+1})}}
+  // picket fence along the street with a gate opposite the door, a rose arbor on half of them and a shell path
+  const nr=nearestRoad(o.x,o.z);if(nr.r<0)return;const edge=nr.d-ROADS[nr.r].w/2,fx=Math.min(w/2+2.4,edge-.7);if(fx<w/2+.9)return;
+  const segs=[[-d/2-1.2,dz-.75],[dz+.75,d/2+1.2]];for(const[z0,z1]of segs){const L=z1-z0;if(L<.6)continue;const n=Math.max(1,Math.round(L/2)),sl=L/n;for(let j=0;j<n;j++){const lz=z0+sl*(j+.5),p=ROT(f,fx,lz);if(pointInCollider(p[0],p[1]))continue;add('pick',{x:p[0],y:Y(p[0],p[1])-.02,z:p[1],a:o.a,sz:sl/2,c:'#f4f1ea'})}}
+  const gp=ROT(f,fx,dz);if(rr()<.55){CK.add('trim',new T.BoxGeometry(.12,2.3,.12),{x:gp[0],y:Y(gp[0],gp[1]),z:gp[1],a:o.a},0,1.15,-.75);CK.add('trim',new T.BoxGeometry(.12,2.3,.12),{x:gp[0],y:Y(gp[0],gp[1]),z:gp[1],a:o.a},0,1.15,.75);
+   CK.add('trim',new T.TorusGeometry(.75,.05,4,10,Math.PI),{x:gp[0],y:Y(gp[0],gp[1]),z:gp[1],a:o.a},0,2.3,0,Math.PI/2);
+   for(let j=0;j<(q2?8:16);j++){const t=rr()*Math.PI,lz=Math.cos(t)*.75,ly=2.3+Math.sin(t)*.75,q=ROT({x:gp[0],z:gp[1],a:o.a},(rr()-.5)*.25,lz);add(j%3?'rose':'leaf',{x:q[0],y:Y(gp[0],gp[1])+ly+(rr()-.5)*.15,z:q[1],c:j%3?FC[rr()<.8?0:1]:'#3e5f2d'})}
+   for(let j=0;j<(q2?4:8);j++){const q=ROT({x:gp[0],z:gp[1],a:o.a},0,(rr()<.5?-.75:.75)+(rr()-.5)*.15);add('rose',{x:q[0],y:Y(gp[0],gp[1])+.3+rr()*1.9,z:q[1],c:FC[0]})}}
+  const pl=fx-w/2-.7;if(pl>.4){const c=ROT(f,w/2+.7+pl/2,dz);add('slab',{x:c[0],y:Y(c[0],c[1])+.03,z:c[1],a:o.a,sx:pl,sy:.06,sz:.9,c:'#e9e1cf'})}
+  // hydrangeas tucked along the front
+  if(fx-w/2>1.4)for(const u of[-d*.36,d*.36]){if(Math.abs(u-dz)<1.1)continue;const q=ROT(f,w/2+.95,u),y=Y(q[0],q[1]);add('hydL',{x:q[0],y:y+.4,z:q[1],sx:.75,sy:.6,sz:.75,c:'#3f5f30'});const c=HC[(rr()*HC.length)|0];for(let j=0;j<3;j++)add('hyd',{x:q[0]+(rr()-.5)*.6,y:y+.85+rr()*.15,z:q[1]+(rr()-.5)*.6,c})}});
+
+ /* ===== the town pump on Broadway ===== */
+ let PUMP=null;{const R=ROADS.find(r=>r.name==='Broadway');if(R){const pts=catmull(R.pts,2);for(let i=Math.floor(pts.length/2),k=0;k<pts.length&&!PUMP;k++){const j=(i+(k%2?1:-1)*Math.ceil(k/2)+pts.length)%pts.length,p=pts[j],q=pts[Math.min(pts.length-1,j+1)],o=pts[Math.max(0,j-1)];let dx=q[0]-o[0],dz=q[1]-o[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
+   for(const s of[1,-1]){const x=p[0]-dz*s*(R.w/2+2.6),z=p[1]+dx*s*(R.w/2+2.6);if(clearAt(x,z,1.9)){PUMP={x,z,a:Math.atan2(dz*s,-dx*s)};break}}}}
+  if(PUMP){const f={x:PUMP.x,y:Y(PUMP.x,PUMP.z),z:PUMP.z,a:PUMP.a};CK.add('stone',new T.BoxGeometry(2.9,.25,2.9),f,0,.05,0);for(const sx of[-1,1])for(const sz of[-1,1])CK.add('trim',new T.BoxGeometry(.16,2.4,.16),f,sx*1.2,1.3,sz*1.2);
+   CK.add('trim',new T.BoxGeometry(2.6,.2,2.6),f,0,2.5,0);CK.add('roof',gable(3.2,1.1,3.2),f,0,2.6,0);for(const sz of[-1,1])CK.add('shingle',new T.BoxGeometry(2.4,.9,.06),f,0,3,sz*1.3);
+   CK.add('dark',new T.CylinderGeometry(.16,.2,1.2,10),f,0,.75,0);CK.add('dark',new T.BoxGeometry(.08,.08,.9),f,0,1.3,.35,0,-.5);CK.add('dark',new T.CylinderGeometry(.04,.04,.3,6),f,0,1.15,-.2,0,Math.PI/2);
+   CK.add('wood',new T.CylinderGeometry(.3,.26,.4,12),f,0,.35,-.55);addCollider({type:'b',x:f.x,z:f.z,c:Math.cos(f.a),s:-Math.sin(f.a),hw:1.3,hd:1.3,top:f.y+3.6});
+   const sg=textTex([{t:'TOWN PUMP · 1776',f:'bold 46px Georgia',y:52}],512,80,{bg:'#f2efe6',color:'#2b3a4a'}),sm=new T.Mesh(new T.PlaneGeometry(1.8,.28),new T.MeshBasicMaterial({map:sg}));for(const sd of[-1,1]){const m2=sm.clone(),p=ROT(f,0,sd*1.33);m2.position.set(p[0],f.y+2.45,p[1]);m2.rotation.y=f.a+(sd>0?0:Math.PI);scene.add(m2)}}}
+
+ /* ===== the market and the post office, now you can walk in ===== */
+ const SHOPS=[];
+ function shopSpot(x0,z0,r){for(let rad=0;rad<40;rad+=1.5)for(let k=0;k<(rad?16:1);k++){const a=k/16*TAU,x=x0+Math.cos(a)*rad,z=z0+Math.sin(a)*rad;if(!clearAt(x,z,r))continue;const nr=nearestRoad(x,z);if(nr.r<0||nr.d>ROADS[nr.r].w/2+r+9)continue;return[x,z,Math.atan2(nr.q[0]-x,nr.q[1]-z)]}return[x0,z0,0]}
+ function shell(f,W,D,H,door,wallK){const t=.2,hw=W/2,hd=D/2,K=CK;let mx=-1e9;for(const[dx,dz]of[[-hw,-hd],[hw,-hd],[-hw,hd],[hw,hd]]){const p=ROT(f,dx,dz);mx=Math.max(mx,Y(p[0],p[1]))}f.y=mx+.15;
+  K.add('stone',boxM(W+.4,1.2,D+.4),f,0,-.55,0);K.add('in_floor',new T.BoxGeometry(W-.3,.1,D-.3),f,0,.1,0);
+  K.add(wallK,boxM(W,H,t),f,0,H/2,-hd+t/2);for(const s of[-1,1])K.add(wallK,boxM(t,H,D),f,s*(hw-t/2),H/2,0);
+  // front wall: a doorway in the middle, big windows either side
+  const sw=hw-door/2;for(const s of[-1,1]){const cx=s*(door/2+sw/2);K.add(wallK,boxM(sw,.9,t),f,cx,.45,hd-t/2);K.add(wallK,boxM(sw,H-2.5,t),f,cx,2.5+(H-2.5)/2,hd-t/2);K.add('glass',new T.BoxGeometry(sw-.3,1.6,.06),f,cx,1.7,hd-t/2);K.add('trim',new T.BoxGeometry(sw-.1,.1,.26),f,cx,.92,hd-t/2);K.add('trim',new T.BoxGeometry(.08,1.6,.24),f,cx,1.7,hd-t/2)}
+  K.add(wallK,boxM(door,H-2.35,t),f,0,2.35+(H-2.35)/2,hd-t/2);for(const s of[-1,1])K.add('trim',new T.BoxGeometry(.14,2.4,.28),f,s*door/2,1.2,hd-t/2);K.add('trim',new T.BoxGeometry(door+.3,.16,.28),f,0,2.4,hd-t/2);
+  for(const[ix,iz]of[[-1,-1],[1,-1],[-1,1],[1,1]])K.add('trim',new T.BoxGeometry(.24,H,.24),f,ix*hw,H/2,iz*hd);
+  // inside: painted pine walls and a white ceiling so it reads as a lit room
+  K.add('in_pine',new T.BoxGeometry(W-.42,H-.1,.04),f,0,H/2,-hd+t+.02);for(const s of[-1,1])K.add('in_pine',new T.BoxGeometry(.04,H-.1,D-.42),f,s*(hw-t-.02),H/2,0);
+  for(const s of[-1,1])K.add('in_pine',new T.BoxGeometry(sw-.05,.9,.04),f,s*(door/2+sw/2),.45,hd-t-.02);K.add('in_white',new T.BoxGeometry(W-.4,.08,D-.4),f,0,H-.04,0);
+  const c=Math.cos(f.a),s=-Math.sin(f.a),wc=(lx,lz,hx,hz)=>{const p=ROT(f,lx,lz);addCollider({type:'b',x:p[0],z:p[1],c,s,hw:hx,hd:hz,top:f.y+H+3})};
+  wc(0,-hd+t/2,hw,t/2);wc(-hw+t/2,0,t/2,hd);wc(hw-t/2,0,t/2,hd);for(const sd of[-1,1])wc(sd*(door/2+sw/2),hd-t/2,sw/2,t/2);
+  PLATS.push({fx:f.x,fz:f.z,c:Math.cos(f.a),s:Math.sin(f.a),x0:-hw,x1:hw,z0:-hd,z1:hd+1.2,top:f.y+.15,lvl:true});
+  const S={f,W,D,H,door:ROT(f,0,hd+1),inn:ROT(f,0,hd-1.2)};SHOPS.push(S);return S}
+ // the Village Market: produce, a cooler, shelves of snacks and Rosie at the register
+ let MKT,PO;{const sp=shopSpot(4500,1022.5,5.4),f={x:sp[0],y:0,z:sp[1],a:sp[2]};MKT=shell(f,9,7,3.6,1.6,'shingle');const hd=3.5;
+  CK.add('roof',gable(8.2,2.8,10),f,0,3.6,0,Math.PI/2);CK.add('roof',boxM(9.8,.15,2.4),f,0,3.15,4.6,0,.16);for(const x of[-4.4,4.4])CK.add('trim',new T.BoxGeometry(.2,3,.2),f,x,1.5,5.6);CK.add('wood',new T.BoxGeometry(9.6,.2,2.3),f,0,.05,4.6);
+  // shelves on the back wall, goods on them
+  for(const y of[.45,1.15,1.85])CK.add('in_shelf',new T.BoxGeometry(7.6,.06,.45),f,-.2,y,-3.05);for(const x of[-4,-1.5,1.1,3.6])CK.add('in_shelf',new T.BoxGeometry(.06,2.2,.45),f,x,1.1,-3.05);
+  const GC=['#e94f37','#f2d24a','#3a86c8','#5aa469','#ff8c42','#f4f1ea','#b48ad6','#8a5a3a'];for(const y of[.45,1.15,1.85])for(let x=-3.9;x<3.5;x+=q2?.5:.3){if(rr()<.15)continue;const p=ROT(f,x+.1,-3.05),hh=.18+rr()*.22;add('goods',{x:p[0],y:f.y+y+.03+hh/2,z:p[1],a:f.a,sx:.18+rr()*.08,sy:hh,sz:.2,c:GC[(rr()*GC.length)|0]})}
+  // the drinks cooler on the left wall, the counter and register on the right, a produce table in the middle
+  CK.add('in_white',new T.BoxGeometry(.7,2.2,2.4),f,-3.95,1.1,0);CK.add('cool',new T.BoxGeometry(.06,1.8,2.1),f,-3.58,1.15,0);for(let y=.5;y<2;y+=.45)CK.add('trim',new T.BoxGeometry(.05,.03,2.1),f,-3.55,y,0);
+  for(let y=.55;y<2;y+=.45)for(let z=-.9;z<1;z+=q2?.35:.2){const p=ROT(f,-3.75,z);add('goods',{x:p[0],y:f.y+y+.12,z:p[1],a:f.a,sx:.08,sy:.24,sz:.08,c:GC[(rr()*GC.length)|0]})}
+  CK.add('in_shelf',new T.BoxGeometry(.8,1.05,2.6),f,2.9,.6,.4);CK.add('wood',new T.BoxGeometry(.9,.06,2.7),f,2.9,1.14,.4);CK.add('dark',new T.BoxGeometry(.4,.28,.36),f,2.85,1.32,-.2);CK.add('dark',new T.BoxGeometry(.32,.18,.04),f,2.7,1.55,-.2,Math.PI/2,-.3);
+  CK.add('in_shelf',new T.BoxGeometry(1.6,.8,1),f,-.6,.5,.2);for(let j=0;j<(q2?10:22);j++){const p=ROT(f,-.6+(rr()-.5)*1.4,.2+(rr()-.5)*.8);add('goods',{x:p[0],y:f.y+.98,z:p[1],a:rr()*6,sx:.16,sy:.14,sz:.16,c:['#c0392b','#5aa02c','#f39c12','#d6c14a'][j%4]})}
+  {const p=ROT(f,2.9,.4);addCollider({type:'b',x:p[0],z:p[1],c:Math.cos(f.a),s:-Math.sin(f.a),hw:.45,hd:1.35,top:f.y+1.2})}{const p=ROT(f,-.6,.2);addCollider({type:'b',x:p[0],z:p[1],c:Math.cos(f.a),s:-Math.sin(f.a),hw:.8,hd:.5,top:f.y+.9})}
+  // out front: produce crates, flower buckets, bikes and a bench, like before
+  CK.add('wood',new T.BoxGeometry(3,.12,.8),f,-2.7,.75,4.6);for(const x of[-3.8,-3.1,-2.4,-1.7]){CK.add('wood',boxM(.62,.35,.6),f,x,1,4.6);const c=['#c0392b','#5aa02c','#f39c12','#d6c14a'][Math.round((x+3.8)/.7)];for(let i=0;i<5;i++){const p=ROT(f,x+(rr()-.5)*.4,4.6+(rr()-.5)*.35);add('flower',{x:p[0],y:f.y+1.22,z:p[1],c})}}
+  for(let i=0;i<5;i++){const lx=1.6+i*.55,p=ROT(f,lx,4.9);CK.add('dark',new T.CylinderGeometry(.18,.15,.4,10),f,lx,.32,4.9);for(let j=0;j<5;j++)add('flower',{x:p[0]+(rr()-.5)*.25,y:f.y+.65+rr()*.15,z:p[1]+(rr()-.5)*.25,c:FC[(i+j)%FC.length]})}
+  const sg=(lines,w,h,lx,ly,lz,o)=>{const tx=textTex(lines,Math.round(w*128),Math.round(h*128),o),me=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:tx}));const p=ROT(f,lx,lz);me.position.set(p[0],f.y+ly,p[1]);me.rotation.y=f.a;scene.add(me)};
+  sg([{t:'VILLAGE MARKET',f:'bold 64px Georgia',y:78}],5.6,.75,0,3.42,5.82,{bg:'#2f4a3a',color:'#f2ead6'});sg([{t:'COFFEE · SANDWICHES · FLOWERS · PAPERS',f:'bold 30px Georgia',y:40}],3.4,.42,-2.7,2.85,3.62,{bg:'#f2efe6',color:'#2f4a3a'});
+  MKT.name='Village Market';MKT.keeper={lx:3.7,lz:.4,face:-Math.PI/2}}
+ // the post office: brass boxes on one wall, Hal at the counter
+ {const sp=shopSpot(4508,1047,4.7),f={x:sp[0],y:0,z:sp[1],a:sp[2]};PO=shell(f,7,6,3.4,1.4,'shingle');
+  CK.add('roof',gable(7.6,2.4,6.8),f,0,3.4,0);CK.add('trim',new T.BoxGeometry(7.2,.25,6.2),f,0,3.35,0);CK.add('stone',new T.BoxGeometry(2.4,.2,1.2),f,0,.1,3.6);
+  {const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext('2d');x.fillStyle='#5a4128';x.fillRect(0,0,512,256);for(let i=0;i<16;i++)for(let j=0;j<8;j++){x.fillStyle='#b8893a';x.fillRect(4+i*32,4+j*32,26,26);x.fillStyle='#e8c66a';x.fillRect(8+i*32,8+j*32,18,12);x.fillStyle='#3a2a18';x.fillRect(14+i*32,22+j*32,6,4)}
+   const pm=new T.Mesh(new T.PlaneGeometry(4.2,2.1),new T.MeshLambertMaterial({map:cTex(c),emissive:new T.Color('#3a2a14')}));const p=ROT(f,-3.27,0);pm.position.set(p[0],f.y+1.4,p[1]);pm.rotation.y=f.a+Math.PI/2;scene.add(pm)}
+  CK.add('in_shelf',new T.BoxGeometry(4.2,1.05,.7),f,.6,.6,-1.3);CK.add('wood',new T.BoxGeometry(4.3,.06,.8),f,.6,1.14,-1.3);CK.add('in_white',new T.BoxGeometry(1.6,.9,.5),f,1.4,.45,-2.6);
+  for(let j=0;j<(q2?5:10);j++){const p=ROT(f,1+(rr()-.5)*1.2,-2.6+(rr()-.5)*.3);add('goods',{x:p[0],y:f.y+.98,z:p[1],a:f.a+rr()*.4,sx:.35,sy:.2,sz:.25,c:rr()<.6?'#c9a77a':'#f4f1ea'})}
+  {const p=ROT(f,.6,-1.3);addCollider({type:'b',x:p[0],z:p[1],c:Math.cos(f.a),s:-Math.sin(f.a),hw:2.15,hd:.4,top:f.y+1.2})}
+  const sg=(lines,w,h,lx,ly,lz,o)=>{const tx=textTex(lines,Math.round(w*128),Math.round(h*128),o),me=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:tx}));const p=ROT(f,lx,lz);me.position.set(p[0],f.y+ly,p[1]);me.rotation.y=f.a;scene.add(me)};
+  sg([{t:'U.S. POST OFFICE',f:'bold 52px Georgia',y:60}],3.2,.6,0,2.95,3.12,{bg:'#f2efe6',color:'#1d2f4f'});sg([{t:'SIASCONSET, MASS. 02564',f:'bold 40px Georgia',y:48}],3.4,.42,0,4.05,3.14,{bg:'#f2efe6',color:'#1d2f4f'});
+  // flagpole and the blue mailbox out front
+  const fp=ROT(f,-4.4,3.8),fy=Y(fp[0],fp[1]);CK.add('trim',new T.CylinderGeometry(.06,.09,9,8),{x:fp[0],y:fy,z:fp[1],a:0},0,4.5,0);CK.add('trim',new T.SphereGeometry(.14,8,6),{x:fp[0],y:fy,z:fp[1],a:0},0,9.05,0);
+  {const c=document.createElement('canvas');c.width=190;c.height=100;const x=c.getContext('2d');for(let i=0;i<13;i++){x.fillStyle=i%2?'#ffffff':'#b22234';x.fillRect(0,i*100/13,190,100/13+.5)}x.fillStyle='#3c3b6e';x.fillRect(0,0,76,54);x.fillStyle='#fff';for(let i=0;i<5;i++)for(let j=0;j<6;j++)x.fillRect(6+j*12,5+i*10,3,3);
+   const fl=new T.Mesh(new T.PlaneGeometry(1.9,1,6,1),new T.MeshLambertMaterial({map:cTex(c),side:T.DoubleSide}));const pa=fl.geometry.attributes.position;for(let i=0;i<pa.count;i++)pa.setZ(i,Math.sin(pa.getX(i)*2.4)*.12);fl.geometry.computeVertexNormals();
+   fl.position.set(fp[0]+Math.cos(f.a)*.98,fy+8.4,fp[1]-Math.sin(f.a)*.98);fl.rotation.y=f.a;scene.add(fl)}
+  addCollider({type:'c',x:fp[0],z:fp[1],r:.15});
+  const mb=ROT(f,2.7,4.3),mf={x:mb[0],y:Y(mb[0],mb[1]),z:mb[1],a:f.a};CK.add('blue',new T.BoxGeometry(.55,.75,.5),mf,0,.75,0);CK.add('blue',new T.CylinderGeometry(.275,.275,.5,12,1,false,0,Math.PI).rotateZ(Math.PI/2).rotateY(Math.PI/2),mf,0,1.12,0);for(const sd of[-1,1])CK.add('dark',new T.BoxGeometry(.06,.4,.06),mf,sd*.22,.2,0);
+  addCollider({type:'c',x:mb[0],z:mb[1],r:.35});PO.name='Post Office';PO.keeper={lx:.6,lz:-2.1,face:0}}
+
+ /* ===== Sankaty: fence, path, sign and the golf links around the light ===== */
+ const SK=SITE.sankaty,skY=Math.max(Y(SK.x,SK.z),.4),galY=skY+21.27;let door=0;{const nr=nearestRoad(SK.x,SK.z);if(nr.q)door=Math.atan2(nr.q[0]-SK.x,nr.q[1]-SK.z)}
+ {const c=COL.find(o=>o.type==='c'&&Math.abs(o.x-SK.x)<.01&&Math.abs(o.z-SK.z)<.01);if(c)c.top=skY+20.4}
+ PLATS.push({fn:(x,z,y)=>{if(y===undefined||y<galY-2.6)return -1e9;const dx=x-SK.x,dz=z-SK.z,r=dx*dx+dz*dz;return r>2.1&&r<8.3?galY:-1e9}});
+ {const R=9.5;for(let i=0;i<28;i++){const a0=i/28*TAU,a1=(i+1)/28*TAU,am=(a0+a1)/2;if(Math.abs(angWrap(am-door))<.16)continue;const x=SK.x+Math.sin(am)*R,z=SK.z+Math.cos(am)*R,L=2*R*Math.sin(Math.PI/28);add('rail',{x,y:Y(x,z),z,a:am+Math.PI/2,sz:L,c:'#f4f1ea'})}
+  for(let t=4;t<26;t+=1.6){const x=SK.x+Math.sin(door)*t,z=SK.z+Math.cos(door)*t;const nr=nearestRoad(x,z);if(nr.r>=0&&nr.d<ROADS[nr.r].w/2)break;add('slab',{x,y:Y(x,z)+.03,z,a:door,sx:1.6,sy:.06,sz:1.7,c:'#d8cfbb'})}
+  const sp=[SK.x+Math.sin(door+.5)*11,SK.z+Math.cos(door+.5)*11],sf={x:sp[0],y:Y(sp[0],sp[1]),z:sp[1],a:door+Math.PI/2};CK.add('wood',new T.BoxGeometry(.12,1.1,.12),sf,0,.55,-.6);CK.add('wood',new T.BoxGeometry(.12,1.1,.12),sf,0,.55,.6);
+  const tx=textTex([{t:'SANKATY HEAD LIGHT',f:'bold 46px Georgia',y:60},{t:'Lit 1850 · moved back from the eroding',f:'28px Georgia',y:110},{t:'bluff on rails in 2007 · 92 steps up',f:'28px Georgia',y:150}],512,190,{bg:'#2f3e4f',color:'#f2ead6'});
+  for(const sd of[1,-1]){const m=new T.Mesh(new T.PlaneGeometry(1.5,.56),new T.MeshBasicMaterial({map:tx}));const p=ROT(sf,sd*.07,0);m.position.set(p[0],sf.y+1.25,p[1]);m.rotation.y=sf.a+(sd>0?Math.PI/2:-Math.PI/2);scene.add(m)}CK.add('wood',new T.BoxGeometry(.06,.66,1.6),sf,0,1.25,0)}
+ // golf links inland from the light: fairways, greens with flags, bunkers (conforming to the ground)
+ const discs={fair:[],green:[],sand:[]},GREENS=[];
+ {const inl=[-1,0];// sea is to the east here
+  const nearHouse=(x,z,r)=>HOUSES.some(o=>Math.abs(o.x-x)<r&&Math.abs(o.z-z)<r);
+  for(let k=0;k<400&&GREENS.length<3;k++){const x=SK.x+inl[0]*(50+rr()*190)+(rr()-.5)*40,z=SK.z+(rr()-.5)*330;if(GREENS.some(g=>Math.hypot(g.x-x,g.z-z)<70))continue;if(!clearAt(x,z,12)||nearHouse(x,z,26))continue;
+   const nr=nearestRoad(x,z);if(nr.r>=0&&nr.d<ROADS[nr.r].w/2+14)continue;GREENS.push({x,z})}
+  GREENS.forEach((g,i)=>{const a=rr()*TAU;discs.fair.push([g.x+Math.cos(a)*16,g.z+Math.sin(a)*16,30,13,a]);discs.green.push([g.x,g.z,8.5,7,rr()*3]);discs.sand.push([g.x+Math.cos(a+1.9)*10,g.z+Math.sin(a+1.9)*10,3.2,2.2,a])})}
+ function discMesh(L,col,lift,seg){if(!L.length)return;const P=[],I=[];let b=0;for(const[cx,cz,rx,rz,ro]of L){P.push(cx,Y(cx,cz)+lift,cz);const n=seg;for(let i=0;i<n;i++){const t=i/n*TAU,lx=Math.cos(t)*rx,lz=Math.sin(t)*rz,x=cx+lx*Math.cos(ro)-lz*Math.sin(ro),z=cz+lx*Math.sin(ro)+lz*Math.cos(ro);P.push(x,Math.max(Y(x,z),.3)+lift,z)}
+   for(let i=0;i<n;i++)I.push(b,b+1+((i+1)%n),b+1+i);b+=n+1}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setIndex(I);g.computeVertexNormals();const m=new T.Mesh(g,new T.MeshLambertMaterial({color:col,side:T.DoubleSide}));m.receiveShadow=true;scene.add(m)}
+ discMesh(discs.fair,'#6aa046',.05,24);discMesh(discs.green,'#86c25a',.09,20);discMesh(discs.sand,'#e6d6a8',.1,14);
+ GREENS.forEach(g=>{const y=Y(g.x,g.z);CK.add('trim',new T.CylinderGeometry(.03,.03,2.2,6),{x:g.x,y,z:g.z,a:0},0,1.1,0);add('flag',{x:g.x+.35,y:y+1.95,z:g.z,a:0,c:'#e8443a'})});
+
+ /* ===== Baxter Road: blue hydrangeas and a mailbox post at every house ===== */
+ HOUSES.forEach(o=>{if(!o.bx)return;const nr=nearestRoad(o.x,o.z);if(nr.r<0)return;const ux=(nr.q[0]-o.x)/(nr.d||1),uz=(nr.q[1]-o.z)/(nr.d||1),edge=nr.d-ROADS[nr.r].w/2;if(edge<o.w/2+1.5)return;
+  const mx=nr.q[0]-ux*(ROADS[nr.r].w/2+.8)+uz*2,mz=nr.q[1]-uz*(ROADS[nr.r].w/2+.8)-ux*2;if(!pointInCollider(mx,mz))add('mbox',{x:mx,y:Y(mx,mz),z:mz,a:Math.atan2(ux,uz),c:'#f4f1ea'});
+  for(let j=-2;j<=2;j++){if(j===0)continue;const d=o.w/2+1.1,x=o.x+ux*d-uz*j*1.6,z=o.z+uz*d+ux*j*1.6;if(pointInCollider(x,z))continue;const y=Y(x,z);add('hydL',{x,y:y+.4,z,sx:.85,sy:.65,sz:.85,c:'#3f5f30'});const c=HC[(rr()*HC.length)|0];for(let i=0;i<(q2?2:3);i++)add('hyd',{x:x+(rr()-.5)*.7,y:y+.9+rr()*.15,z:z+(rr()-.5)*.7,c})}});
+
+ CK.build(M);
+ const white=new T.MeshLambertMaterial({color:'#fff'}),leafM=L1?leafy(new T.MeshLambertMaterial({color:'#fff'}),.02):white;
+ const railG=(()=>{const P=[];const b=(w,h,d,x,y,z)=>{const g=new T.BoxGeometry(w,h,d);g.translate(x,y,z);P.push(g)};b(.12,1.1,.12,0,.55,-.5);b(.06,.1,1,0,.95,0);b(.06,.1,1,0,.5,0);return mergeGeos(P)})();
+ const mboxG=(()=>{const P=[];const b=(w,h,d,x,y,z)=>{const g=new T.BoxGeometry(w,h,d);g.translate(x,y,z);P.push(g)};b(.1,1.1,.1,0,.55,0);b(.3,.28,.5,0,1.2,0);return mergeGeos(P)})();
+ instanced(pickG,white,lists.pick);instanced(railG,white,lists.rail);instanced(mboxG,white,lists.mbox);instanced(new T.BoxGeometry(1,1,1),white,lists.slab,false);
+ instanced(new T.IcosahedronGeometry(.13,0),white,lists.rose,false);instanced(new T.IcosahedronGeometry(.16,0),leafM,lists.leaf,false);instanced(new T.IcosahedronGeometry(.11,0),white,lists.flower,false);
+ instanced(new T.IcosahedronGeometry(1,1),leafM,lists.hydL);instanced(new T.IcosahedronGeometry(.36,L1&&!q2?1:0),white,lists.hyd,false);instanced(new T.BoxGeometry(1,1,1),lists.goods.length?lit('#ffffff','#2a2a2a'):white,lists.goods,false);
+ instanced(new T.PlaneGeometry(.7,.45),new T.MeshLambertMaterial({color:'#fff',side:T.DoubleSide}),lists.flag,false);
+ lists.mbox.forEach(o=>addCollider({type:'c',x:o.x,z:o.z,r:.15}));
+
+ /* ================= gameplay ================= */
+ const keyL=()=>IS_TOUCH?'ENTER':GP.on?GP.y:'E';
+ // ---- Captain Seaweed's doubloons ----
+ const BOX={};try{(JSON.parse(localStorage.getItem('ack-doubloons')||'[]')||[]).forEach(k=>BOX[k]=1)}catch(e){}
+ const DB=[];const dbAdd=(id,x,z,y)=>{if(x===undefined||isNaN(x))return;DB.push({id,x,z,y:y!==undefined?y:surfaceY(x,z)+.9})};
+ {const p=SCONSET21.path,st=SCONSET21.stairs||[],E=BLUFF.EST||[];
+  dbAdd('light',SK.x+Math.sin(door+Math.PI)*2.2,SK.z+Math.cos(door+Math.PI)*2.2,galY+.9);
+  {const q=ROT(MKT.f,2.9,1.3);dbAdd('market',q[0],q[1],MKT.f.y+1.45)}{const q=ROT(PO.f,-.8,-1.3);dbAdd('post',q[0],q[1],PO.f.y+1.45)}
+  if(PUMP)dbAdd('pump',PUMP.x,PUMP.z,Y(PUMP.x,PUMP.z)+1.05);
+  {const R=ROADS.find(r=>r.name==='Sconset Rotary');if(R){let cx=0,cz=0;R.pts.forEach(q=>{cx+=q[0];cz+=q[1]});cx/=R.pts.length;cz/=R.pts.length;dbAdd('rotary',cx+1.4,cz,Y(cx,cz)+1)}}
+  st.forEach((s,i)=>dbAdd('stairs'+i,s.x+s.nx*(s.R+1.4),s.z+s.nz*(s.R+1.4),s.ys[s.ys.length-1]+.9));
+  E.forEach((e,i)=>dbAdd('estate'+i,e[0]+e[2]*12+e[3]*4,e[1]+e[3]*12-e[2]*4));
+  [60,170,280].forEach((k,i)=>{const a=p[k],b=p[k+1];if(!a||!b)return;const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;dbAdd('walk'+i,a[0]-dz/l*1.6,a[1]+dx/l*1.6)});
+  if(GREENS[0])dbAdd('green',GREENS[0].x+.8,GREENS[0].z+.5);
+  {const o=COT[(COT.length*.37)|0];if(o){const q=ROT({x:o.x,z:o.z,a:o.a},o.w/2+1.2,o.d*.4);dbAdd('cottage',q[0],q[1])}}
+  {const b=BLUFF&&ROADS.find(r=>r.name==='Gully Road');if(b){const q=SCONSET21.path[SCONSET21.path.length-1];dbAdd('gully',q[0]+3,q[1]+2)}}}
+ const coinG=new T.CylinderGeometry(.3,.3,.07,18).rotateX(Math.PI/2),coinM=new T.MeshStandardMaterial({color:'#f2c240',metalness:.85,roughness:.25,emissive:new T.Color('#6b4a00'),envMapIntensity:1.6});
+ const COIN=new T.InstancedMesh(coinG,coinM,Math.max(1,DB.length));COIN.frustumCulled=false;scene.add(COIN);
+ const glow=new T.InstancedMesh(new T.CylinderGeometry(.5,.5,120,8,1,true),new T.MeshBasicMaterial({color:'#ffd35a',transparent:true,opacity:.22,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide}),Math.max(1,DB.length));glow.frustumCulled=false;glow.visible=false;scene.add(glow);
+ const ST={reveal:0,spin:0,climbed:false,talk:{},freeLemon:false};try{ST.climbed=localStorage.getItem('ack-sankaty')==='1';ST.freeLemon=localStorage.getItem('ack-lemon')==='1'}catch(e){}
+ const got=()=>DB.filter(d=>BOX[d.id]).length;
+ function coinTick(dt){ST.spin+=dt*2.4;const m4=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),z0=new T.Matrix4().makeScale(0,0,0);
+  DB.forEach((d,i)=>{if(BOX[d.id]){COIN.setMatrixAt(i,z0);glow.setMatrixAt(i,z0);return}e.set(0,ST.spin+i,0);q.setFromEuler(e);m4.compose(V3(d.x,d.y+Math.sin(ST.spin*1.3+i)*.12,d.z),q,V3(1,1,1));COIN.setMatrixAt(i,m4);m4.makeTranslation(d.x,d.y+58,d.z);glow.setMatrixAt(i,m4)});
+  COIN.instanceMatrix.needsUpdate=true;glow.instanceMatrix.needsUpdate=true;if(ST.reveal>0){ST.reveal-=dt;glow.visible=true;glow.material.opacity=.22*Math.min(1,ST.reveal/3)}else glow.visible=false;
+  if(!PL||PCAR||PL.dead>0)return;for(const d of DB){if(BOX[d.id])continue;if(Math.hypot(PL.p.x-d.x,PL.p.z-d.z)<1.4&&Math.abs(PL.p.y+1-d.y)<2.2){BOX[d.id]=1;try{localStorage.setItem('ack-doubloons',JSON.stringify(Object.keys(BOX)))}catch(e){}
+    const n=got();sfx('cp');addCash(50,'doubloon');if(n>=DB.length){addCash(500,'all doubloons');showMissionCard('All of Seaweed’s doubloons!',`You found all ${DB.length} · ${money(550)}`);earnSpecial('you found every one of Captain Seaweed’s doubloons',null,4600)}else toast(`Seaweed’s doubloon ${n} of ${DB.length} · ${money(50)}`)}}}
+ // ---- townspeople ----
+ const FOLK=[];const folk=(name,col,look,at,lines)=>{FOLK.push({name,col,look,at,lines,i:0,n:null})};
+ folk('Rosie','#e0457b',{shirt:'#2f4a3a',pants:'#c6b48a',skin:'#f2c8ad'},()=>{const p=ROT(MKT.f,MKT.keeper.lx,MKT.keeper.lz);return[p[0],p[1],MKT.f.y+.15,MKT.f.a+MKT.keeper.face]},null);
+ folk('Hal','#3a86c8',{shirt:'#223a5e',pants:'#2c3a52',skin:'#c98f6a'},()=>{const p=ROT(PO.f,PO.keeper.lx,PO.keeper.lz);return[p[0],p[1],PO.f.y+.15,PO.f.a]},null);
+ folk('Keeper Maggie','#d8b45a',{shirt:'#1d2a4a',pants:'#c6b48a',skin:'#e3b08f'},()=>{const x=SK.x+Math.sin(door+.35)*5.4,z=SK.z+Math.cos(door+.35)*5.4;return[x,z,Y(x,z),door]},
+  ['Sankaty Light’s been shining since 1850. The bluff kept washing away, so in 2007 they rolled the whole tower back on rails!','It’s 92 steps to the top. Up there the spyglass shows you everything glinting in ’Sconset.','Captain Seaweed’s crew stashed doubloons all over the village. I’ve seen them glinting from the gallery.']);
+ if(BLUFF.EST&&BLUFF.EST[1]){const e=BLUFF.EST[1];folk('Lou the gardener','#5aa469',{shirt:'#5aa469',pants:'#5c5a44',skin:'#9c6a48'},()=>{let x=e[0]-e[2]*10+e[3]*6,z=e[1]-e[3]*10-e[2]*6;for(let k=0;k<12&&pointInCollider(x,z);k++){x-=e[2]*1.5;z-=e[3]*1.5}return[x,z,Y(x,z),Math.atan2(e[2],e[3])]},
+  ['Every summer these hydrangeas come in blue. It’s the soil out here.','Chad and Brad keep cutting across my lawns on the way to the bluff walk.','Walk the bluff path north and you’ll see the whole ocean side of Baxter Road.'])}
+ function folkTick(dt,me){for(const F of FOLK){if(!F.n){F.n=makeNPC(Object.assign({},F.look));F.tag=nameSprite(F.name,F.col);F.tag.position.set(0,2.15,0);F.tag.scale.multiplyScalar(.6);F.n.g.add(F.tag);const a=F.at();F.p=V3(a[0],a[2],a[1]);F.yaw0=a[3];F.yaw=a[3]}
+   if(!F.n.g.parent)scene.add(F.n.g);const d=me?Math.hypot(me.p.x-F.p.x,me.p.z-F.p.z):1e9;F.n.g.visible=d<160;if(!F.n.g.visible)continue;
+   const want=d<6?Math.atan2(me.p.x-F.p.x,me.p.z-F.p.z):F.yaw0;F.yaw+=angWrap(want-F.yaw)*(1-Math.exp(-4*dt));F.n.g.position.copy(F.p);F.n.g.rotation.y=F.yaw;poseNPC(F.n,CLOCK*1.5,0,CLOCK,null)}}
+ // ---- the lighthouse climb and the spyglass ----
+ const onGal=()=>PL&&PL.p.y>galY-1.6&&Math.hypot(PL.p.x-SK.x,PL.p.z-SK.z)<4;
+ const doorP=()=>[SK.x+Math.sin(door)*4.1,SK.z+Math.cos(door)*4.1];
+ function climbUp(){const a=door;PL.p.set(SK.x+Math.sin(a)*2.15,galY+.02,SK.z+Math.cos(a)*2.15);PL.vx=PL.vz=PL.vy=0;PL.swim=false;PL.yaw=a;
+  if(!ST.climbed){ST.climbed=true;try{localStorage.setItem('ack-sankaty','1')}catch(e){}addCash(100,'Sankaty Light');showMissionCard('Top of Sankaty Light','92 steps · walk round the gallery · the spyglass is on the ocean side')}else toast('92 steps to the top of Sankaty Light')}
+ function climbDown(){const p=doorP();PL.p.set(p[0],surfaceY(p[0],p[1]),p[1]);PL.vx=PL.vz=PL.vy=0;PL.yaw=door;toast('Back down the 92 steps')}
+ function spy(){ST.reveal=60;const n=DB.length-got();sfx('go');showMissionCard('Through the spyglass',n?`${n} doubloon${n>1?'s':''} glinting around ’Sconset · follow the gold beams`:'Not a single doubloon left out there. You found them all!')}
+ // ---- interaction ----
+ const API={talkable:false,prompt:null,act:null};
+ function lemonade(){if(!ST.freeLemon){if(CASH<5){crewSay('Rosie','Lemonade’s five dollars, hon. Come back when you’ve got it!','#e0457b');return}addCash(-5,'lemonade',true)}OPEN.hp=4;OPEN.sinceHit=0;sfx('cp');crewSay('Rosie',ST.freeLemon?'On the house, my hero. You’re all patched up.':'Fresh-squeezed. That’ll put you right back together.','#e0457b',true)}
+ const mission=id=>MISSIONS.find(m=>m.id===id);
+ function talk(F){if(F.name==='Rosie'){if(OPEN.hp<4){lemonade();return}const M=mission('chase');if(M&&!OPEN.done.chase&&!OPEN.active){crewSay('Rosie','Chad and Brad swiped my flower money and ran up the bluff walk! Please get it back!','#e0457b',true);missionStart(M);return}
+   crewSay('Rosie',rpick(['Best lemonade on the island. Grab one when you’re hurt.','The roses on these cottages bloom all of June and July.',OPEN.done.chase?'You got my flower money back. Lemonade’s on the house, forever.':'Watch out for those preps.']),'#e0457b',true);return}
+  if(F.name==='Hal'){const M=mission('mail');if(M&&!OPEN.active){crewSay('Hal','Package for one of the cottages. Quick as you can, the tip’s better when it’s fast.','#3a86c8',true);missionStart(M);return}crewSay('Hal','Finish what you’re doing first, then come see me.','#3a86c8',true);return}
+  crewSay(F.name,F.lines[F.i++%F.lines.length],F.col,true)}
+ function openTick(dt){API.talkable=false;API.prompt=null;API.act=null;const me=ME();coinTick(dt);folkTick(dt,me);if(!PL||!me)return;{const g=onGal();OPEN.markers.forEach(m=>{if(m.M.at==='sankaty'&&!OPEN.active)m.g.visible=!g})}
+  // the gallery railing keeps you on the deck
+  if(onGal()){const dx=PL.p.x-SK.x,dz=PL.p.z-SK.z,r=Math.hypot(dx,dz)||1,rc=clamp(r,1.6,2.55);if(rc!==r){PL.p.x=SK.x+dx/r*rc;PL.p.z=SK.z+dz/r*rc}if(PL.p.y<galY-.05&&PL.p.y>galY-1.6)PL.p.y=galY}
+  if(PCAR||PL.dead>0)return;
+  const on=onGal();if(on){const a=Math.atan2(PL.p.x-SK.x,PL.p.z-SK.z);if(Math.abs(angWrap(a-door))<.75){API.prompt='Climb back down';API.act=climbDown}else if(Math.abs(angWrap(a-door-Math.PI))<1.1){API.prompt='Look through the spyglass';API.act=spy}}
+  else{const dp=doorP();if(Math.hypot(PL.p.x-dp[0],PL.p.z-dp[1])<2.4&&PL.p.y<skY+3){API.prompt='Climb Sankaty Light · 92 steps';API.act=climbUp}}
+  if(!API.act)for(const F of FOLK){if(!F.p||!F.n||!F.n.g.visible)continue;const d=Math.hypot(PL.p.x-F.p.x,PL.p.z-F.p.z);if(d<2.7&&Math.abs(PL.p.y-F.p.y)<2){
+   API.prompt=F.name==='Rosie'?(OPEN.hp<4?(ST.freeLemon?'Free lemonade from Rosie':'Buy a lemonade from Rosie · $5'):'Talk to Rosie'):F.name==='Hal'?'Pick up the mail run from Hal':'Talk to '+F.name;API.act=()=>talk(F);break}}
+  API.talkable=!!API.act}
+ function inRoom(x,z,m){for(const S of SHOPS){const dx=x-S.f.x,dz=z-S.f.z,lx=dx*Math.cos(S.f.a)-dz*Math.sin(S.f.a),lz=dx*Math.sin(S.f.a)+dz*Math.cos(S.f.a);if(Math.abs(lx)<S.W/2-.25+(m||0)&&Math.abs(lz)<S.D/2-.25+(m||0))return true}return false}
+ function ceilFor(){const me=ME();for(const S of SHOPS)if(me&&Math.hypot(me.p.x-S.f.x,me.p.z-S.f.z)<8)return S.f.y+S.H-.3;return 1e9}
+
+ // ---- missions ----
+ const PATH=SCONSET21.path,CUM=[0];for(let i=1;i<PATH.length;i++)CUM.push(CUM[i-1]+Math.hypot(PATH[i][0]-PATH[i-1][0],PATH[i][1]-PATH[i-1][1]));
+ function spot(k){if(k==='chase'){const q=PATH[PATH.length-1];return[q[0],q[1]]}
+  if(k==='rotary'){const R=ROADS.find(r=>r.name==='Sconset Rotary');if(!R)return null;let cx=0,cz=0;R.pts.forEach(q=>{cx+=q[0];cz+=q[1]});return[cx/R.pts.length+7,cz/R.pts.length]}
+  if(k==='garden'){const e=BLUFF.EST[1];if(!e)return null;for(let r=16;r<40;r+=2){const x=e[0]-e[2]*r,z=e[1]-e[3]*r;if(!pointInCollider(x,z)&&nearestRoad(x,z).d>4)return[x,z]}return[e[0]-e[2]*16,e[1]-e[3]*16]}
+  if(k==='sankaty')return[SK.x+Math.sin(door+.9)*15,SK.z+Math.cos(door+.9)*15];
+  if(k==='po')return[PO.door[0],PO.door[1]];return null}
+ function pickMail(){const L=COT.filter(o=>Math.hypot(o.x-PO.f.x,o.z-PO.f.z)>45);for(let k=0;k<60&&L.length;k++){const o=L[(rnd()*L.length)|0],nr=nearestRoad(o.x,o.z);if(nr.r<0||!ROADS[nr.r].name)continue;
+   const p=ROT({x:o.x,z:o.z,a:o.a},o.w/2+1.6,0);let x=p[0],z=p[1];if(pointInCollider(x,z)){const dx=nr.q[0]-o.x,dz=nr.q[1]-o.z,l=Math.hypot(dx,dz)||1,off=ROADS[nr.r].w/2+1.4;x=nr.q[0]-dx/l*off;z=nr.q[1]-dz/l*off}if(pointInCollider(x,z))continue;
+   const D=Math.hypot(x-PO.f.x,z-PO.f.z),num=2+((rnd()*40)|0)*2+(rnd()<.5?1:0),nm=qbNames[(rnd()*qbNames.length)|0].toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+   return{x,z,addr:`“${nm}”, ${num} ${ROADS[nr.r].name}`,limit:Math.round(D/4.2+30),pay:Math.round((60+D*.5)/5)*5,d:D}}return null}
+ // the bluff walk chase: Chad and Brad run north up the walk toward their Land Rover on Baxter Road
+ function chaseStart(A){const N=PATH.length-1;A.run=[];A.count=2;A.got=0;A.limit=240;
+  const car=new Car({name:'Chad’s Land Rover',paint:PREP_COL,jeep:'#2f4a35'},false,{model:'defender',driver:false});const e0=PATH[0],nr=nearestRoad(e0[0],e0[1]);const cp=nr.q&&nr.d<60?[nr.q[0],nr.q[1]]:e0;car.place(cp[0],cp[1],Math.atan2(e0[0]-cp[0],e0[1]-cp[1]));A.car=car;
+  A.bcn=beacon(cp[0],cp[1],'#e8735a','CHAD’S LAND ROVER');
+  ['chad','brad'].forEach((who,i)=>{const s=N-14-i*5,q=PATH[s];const E=spawnPirate(q[0],q[1],{mission:A.id,prep:who,at:{x:q[0],z:q[1],y:surfaceY(q[0],q[1])}});if(E){E.run={i:s,s:CUM[s],lane:i?1.1:-1.1,cool:2.5+i};A.run.push(E)}});
+  crewSay('Chad','Thanks for the flower money, Rosie! Bye!','#e8735a',true)}
+ function runStep(E,dt,me){const R=E.run,d=Math.hypot(me.p.x-E.p.x,me.p.z-E.p.z),spd=d<10?6.1:d>50?3.6:5.2,N=PATH.length-1;R.s=Math.max(0,R.s-spd*dt);if(R.s<=0)R.done=true;
+  while(R.i>0&&CUM[R.i]>R.s)R.i--;while(R.i<N-1&&CUM[R.i+1]<R.s)R.i++;const a=PATH[R.i],b=PATH[R.i+1],t=clamp((R.s-CUM[R.i])/((CUM[R.i+1]-CUM[R.i])||1),0,1),x=lerp(a[0],b[0],t),z=lerp(a[1],b[1],t),dx=a[0]-b[0],dz=a[1]-b[1],l=Math.hypot(dx,dz)||1;
+  const px=x-dz/l*R.lane*.6,pz=z+dx/l*R.lane*.6;E.yaw=Math.atan2(dx,dz);E.p.set(px,surfaceY(px,pz,E.p.y),pz);E.spd=spd;E.ph+=spd*dt*2.1;
+  R.cool-=dt;let pose='flee';if(R.cool<=0&&d<34&&d>5){R.cool=2.2+rnd()*1.6;const o=E.p.clone().add(V3(0,1.45,0)),tg=me.p.clone().add(V3(0,1.1,0));tg.x+=(rnd()-.5)*2;tg.z+=(rnd()-.5)*2;fireBall(E,o,tg.sub(o).normalize(),58,E.spec.paint);E.yaw=Math.atan2(me.p.x-E.p.x,me.p.z-E.p.z);pose='aim';
+   if(rnd()<.5)crewSay(E.spec.name,rpick(E.prep==='chad'?['You’ll never catch the Chad!','Cardio, baby!','These flowers smell amazing, by the way!']:['Dude, run faster!','My boat shoes are not built for this!','Chad, wait up!']),E.spec.paint)}
+  E.n.g.position.copy(E.p);E.n.g.rotation.y=E.yaw;poseNPC(E.n,E.ph,1,CLOCK,pose)}
+ function chaseTick(A,dt){const alive=A.run.filter(E=>E.dead<=0&&OPEN.pirates.includes(E));A.left=alive.length?Math.min(...alive.map(E=>E.run.s)):0;
+  if(A.got>=2||(!alive.length&&A.t>2)){A.got=2;ST.freeLemon=true;try{localStorage.setItem('ack-lemon','1')}catch(e){}crewSay('Rosie','You got my flower money back! Lemonade’s on the house from now on.','#e0457b',true);missionDone();return}
+  if(alive.some(E=>E.run.done)){missionFail('Chad and Brad made it to their Land Rover with Rosie’s flower money.');return}if(A.t>A.limit){missionFail('They got away up the bluff walk.');return}
+  if(Math.floor(A.t*2)!==Math.floor((A.t-dt)*2))missionHud()}
+ function chaseClean(A){if(A.car){drop(A.car.j.g);A.car=null}(A.run||[]).forEach(E=>{E.run=null})}
+ return{openTick,inRoom,ceilFor,onGal:()=>onGal(),galBlock:(x,z)=>Math.hypot(x-SK.x,z-SK.z)<1.55,spot,pickMail,chaseStart,chaseTick,chaseClean,runStep,get talkable(){return API.talkable},get prompt(){return API.prompt},interact(){if(API.act)API.act()},
+  DB,BOX,SHOPS,MKT,PO,PUMP,GREENS,galY,door,cottages:COT.length,FOLK,ST}})();
+
 
 
 /* ---------- beach grass, beaches, umbrellas ---------- */
@@ -4418,10 +4658,10 @@ function updateCamera(dt){const k=1-Math.exp(-6*dt);if(MODE==='open'&&POL.arrest
    {const zw=WPNS[f.wpn||'marker'].zoom,z=ZOOM&&zw&&!VR.on?zw:1,fv=(camera.aspect<1?72:60)/z;if(Math.abs(camera.fov-fv)>.05){camera.fov=fv;camera.updateProjectionMatrix()}if(z>1)VM.visible=false}}
   else{f.c.g.visible=true;VM.visible=false;const back=V3(-Math.sin(f.yaw),0,-Math.cos(f.yaw)),rt=V3(Math.cos(f.yaw),0,-Math.sin(f.yaw));
    // over-the-shoulder follow cam: pulls in while aiming, eases out when sprinting, never clips through walls
-   const aiming=f.aimT<1.3||!OPENISH(),spd=Math.hypot(f.vx||0,f.vz||0),inCB=CBX.inRoom(f.p.x,f.p.z,-.1),inSS=!inCB&&SSX.inRoom(f.p.x,f.p.z,-.1),inCY=!inCB&&!inSS&&!!CYN&&CYN.inRoom(f.p.x,f.p.z,-.1),inPD=!inCB&&!inSS&&!inCY&&!!PD&&PD.inRoom(f.p.x,f.p.z,-.1),inHO=!inCB&&!inSS&&!inCY&&!inPD&&!!HOSP&&HOSP.inRoom(f.p.x,f.p.z,-.1),inFE=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&FERRY.inside(f.p),inES=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&!inFE&&ESSEX.inside(f.p),inside=inCB||inSS||inCY||inPD||inHO||inFE||inES,room=inFE?((x,z)=>FERRY.inRoom(x,z,-.1,f.p.y)):inES?((x,z)=>ESSEX.inRoom(x,z,-.1,f.p.y)):inSS?SSX.inRoom:inCY?CYN.inRoom:inPD?PD.inRoom:inHO?HOSP.inRoom:CBX.inRoom;
+   const aiming=f.aimT<1.3||!OPENISH(),spd=Math.hypot(f.vx||0,f.vz||0),inCB=CBX.inRoom(f.p.x,f.p.z,-.1),inSS=!inCB&&SSX.inRoom(f.p.x,f.p.z,-.1),inCY=!inCB&&!inSS&&!!CYN&&CYN.inRoom(f.p.x,f.p.z,-.1),inPD=!inCB&&!inSS&&!inCY&&!!PD&&PD.inRoom(f.p.x,f.p.z,-.1),inHO=!inCB&&!inSS&&!inCY&&!inPD&&!!HOSP&&HOSP.inRoom(f.p.x,f.p.z,-.1),inFE=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&FERRY.inside(f.p),inES=!inCB&&!inSS&&!inCY&&!inPD&&!inHO&&!inFE&&ESSEX.inside(f.p),inSC=!inCB&&!!S23&&S23.inRoom(f.p.x,f.p.z,-.1),inGal=!!S23&&S23.onGal(),inside=inCB||inSS||inCY||inPD||inHO||inFE||inES||inSC,room=inSC?S23.inRoom:inFE?((x,z)=>FERRY.inRoom(x,z,-.1,f.p.y)):inES?((x,z)=>ESSEX.inRoom(x,z,-.1,f.p.y)):inSS?SSX.inRoom:inCY?CYN.inRoom:inPD?PD.inRoom:inHO?HOSP.inRoom:CBX.inRoom;
    footCam.d=lerp(footCam.d,f.dead>0?6:inside?2.6:aiming?(OPENISH()?3.1:3.2):4.3+Math.max(0,spd-5)*.25,1-Math.exp(-5*dt));footCam.sh=lerp(footCam.sh,aiming?.78:.55,1-Math.exp(-6*dt));
-   let dist=footCam.d;const piv=e.clone().addScaledVector(rt,-footCam.sh*.5);for(let k=1;k<=10;k++){const t=k/10*dist,x=piv.x+back.x*t,z=piv.z+back.z*t,y=piv.y+(.45-f.pitch*1.2)*t/dist;if(pointInCollider(x,z,y)||(inside&&!room(x,z))){dist=Math.max(.6,t-.45);break}}
-   const want=piv.clone().addScaledVector(back,dist).addScaledVector(rt,-footCam.sh*.5).add(V3(0,(.45-f.pitch*1.2)*dist/footCam.d-(f.anim_land||0),0));const gy=surfaceY(want.x,want.z,f.p.y+.3)+.35;if(want.y<gy)want.y=gy;if(inSS){const cap=SSX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inCY){const cap=CYN.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inPD){const cap=PD.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inHO){const cap=HOSP.ceilFor();if(want.y>cap)want.y=cap}if(inFE){const cap=FERRY.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inES){const cap=ESSEX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}
+   let dist=footCam.d;const piv=e.clone().addScaledVector(rt,-footCam.sh*.5);for(let k=1;k<=10;k++){const t=k/10*dist,x=piv.x+back.x*t,z=piv.z+back.z*t,y=piv.y+(.45-f.pitch*1.2)*t/dist;if(pointInCollider(x,z,y)||(inside&&!room(x,z))||(inGal&&S23.galBlock(x,z))){dist=Math.max(.6,t-.45);break}}
+   const want=piv.clone().addScaledVector(back,dist).addScaledVector(rt,-footCam.sh*.5).add(V3(0,(.45-f.pitch*1.2)*dist/footCam.d-(f.anim_land||0),0));const gy=surfaceY(want.x,want.z,f.p.y+.3)+.35;if(want.y<gy)want.y=gy;if(inSS){const cap=SSX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inCY){const cap=CYN.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inPD){const cap=PD.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inHO){const cap=HOSP.ceilFor();if(want.y>cap)want.y=cap}if(inFE){const cap=FERRY.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inES){const cap=ESSEX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inSC){const cap=S23.ceilFor();if(want.y>cap)want.y=cap}
    camera.position.lerp(want,f.dead>0?.05:1-Math.exp(-18*dt));camera.lookAt(e.clone().addScaledVector(d,20));
    const fovT=(camera.aspect<1?72:60)+(spd>5.5&&!aiming?6:0)-(aiming&&OPENISH()?4:0);if(Math.abs(camera.fov-lerp(camera.fov,fovT,.1))>.02){camera.fov=lerp(camera.fov,fovT,1-Math.exp(-6*dt));camera.updateProjectionMatrix()}}sunFollow(f.p);return}
  const c=PCAR;if(!c)return;if(c.kind==='heli'){heliCam(dt,c);return}
@@ -4612,6 +4852,7 @@ function pirateTick(dt){const me=ME();if(coopGuest())return;prepTick(dt);allyTic
   if(!me)continue;const M=coopAim(E,me),tp=M.p,dx=tp.x-E.p.x,dz=tp.z-E.p.z,d=Math.hypot(dx,dz);
   if(d>420&&!E.mission){drop(E.n.g);const i=TARGETS.indexOf(E.tgt);if(i>=0)TARGETS.splice(i,1);OPEN.pirates.splice(k,1);continue}
   // bowled over by the player's car
+  if(E.run&&S23){S23.runStep(E,dt,me);continue}
   if(!E.ferry&&PCAR&&PCAR.kind==='car'&&Math.abs(PCAR.vf)>7&&Math.hypot(PCAR.p.x-E.p.x,PCAR.p.z-E.p.z)<2.2){pirateDown(E,{owner:PCAR,col:DRIVERS[SEL].paint,byCar:true});continue}
   const sees=d<75&&!blocked(E.p.x,E.p.z,tp.x,tp.z,E.p.y+1.5);let m1=0,m2=0;E.yaw=lerp(E.yaw,E.yaw+angWrap(Math.atan2(dx,dz)-E.yaw),1-Math.exp(-5*dt));
   E.think-=dt;if(E.think<=0){E.think=.5+rnd()*.5;if(rnd()<.3)E.strafe*=-1}
@@ -4737,7 +4978,7 @@ function crewAction(){if(!PL||PCAR||PL.dead>0)return null;
 function prankHit(v){const A=OPEN.active;if(!A||A.type!=='prank'||A.car!==v||A.stage!==1)return;A.hits++;missionHud();if(A.hits<A.count)return;
  A.stage=2;if(A.bcn){drop(A.bcn.g);A.bcn=null}const s=Math.sin(v.h),co=Math.cos(v.h);let n=0;['chad','brad','tucker'].forEach((look,i)=>{if(spawnPirate(v.p.x+co*(5+i*2),v.p.z-s*(5+i*2),{prep:look,nades:i<2,mission:A.id}))n++});
  A.got=0;A.count=n;showMissionCard('Uh oh','Chad and Brad saw the paint job. Splat them!');ALLY.cool=0;ALLY.wake=1;missionHud()}
-function missionCleanup(A){if(!A)return;if(A.ring){drop(A.ring);A.ring=null}if(A.bcn){drop(A.bcn.g);A.bcn=null}if(A.cps){A.cps.forEach(b=>drop(b.g));A.cps=null}if(A.type==='heist'){FERRY.heist=false;bossHud(null)}
+function missionCleanup(A){if(!A)return;if(A.ring){drop(A.ring);A.ring=null}if(A.bcn){drop(A.bcn.g);A.bcn=null}if(A.cps){A.cps.forEach(b=>drop(b.g));A.cps=null}if(A.type==='heist'){FERRY.heist=false;bossHud(null)}if(A.type==='chase'&&S23)S23.chaseClean(A);
  OPEN.pirates.forEach(e=>{if(e.mission===A.id)e.mission=null})}
 /* the Ferry Heist: Captain Seaweed's wild crew take the Eagle; catch her by boat, climb the stern ladder and clear the decks */
 const HEIST_SPOTS=[[-4,-30,1],[4,-27,1],[0,-33,1],[-3,25,1],[3,22,1],[0,28,1],[-5,-19,2],[5,-18,2],[0,14,2]];
@@ -4852,8 +5093,13 @@ const MISSIONS=[
  {id:'hold',name:'Hold the Harbor',type:'hold',secs:75,desc:'The Coatue Pirates want the town pier. Stay in the ring with your crew for 75 seconds.'},
  {id:'takebox',name:'Take Back The Box',type:'turf',prep:true,at:'box',count:6,nades:true,desc:'Chad and Brad’s crew took over the front of The Box. Splat 6 of them.'},
  {id:'heist',name:'Ferry Heist',type:'heist',desc:'Captain Seaweed’s wild crew took the Eagle! Grab a boat, catch her, climb aboard and clear the decks.'},
+ {id:'chase',name:'Bluff Walk Chase',type:'chase',at:'chase',desc:'Chad and Brad swiped Rosie’s flower money at the Village Market and ran up the bluff walk. Splat them both before they reach their Land Rover.'},
+ {id:'rotary',name:'Defend the Rotary',type:'hold',at:'rotary',secs:60,sea:true,desc:'Captain Seaweed’s crew came up from Codfish Park. Hold the ’Sconset rotary with your crew for 60 seconds.'},
+ {id:'garden',name:'Garden Party Crashers',type:'turf',prep:true,at:'garden',count:6,desc:'Chad and Brad’s crew crashed a garden party on Baxter Road and cannonballed into the pool. Splat 6 of them.'},
+ {id:'sankaty',name:'Lighthouse Siege',type:'turf',at:'sankaty',count:8,nades:true,sea:true,desc:'Seaweed’s crew want Sankaty Light for a lookout. Splat 8 of them.'},
+ {id:'mail',name:'’Sconset Mail Run',type:'deliver',repeat:true,at:'po',local:true,desc:'Hal at the post office has a package for a cottage in the village. Faster pays more.'},
  {id:'deliver',name:'Box Delivery',type:'deliver',repeat:true,desc:'Run a hot order from The Box to a house across the island. Faster pays more, but speed where a cop can see you and you get pulled over.'}];
-function missionPos(M){if(M.type==='boats')return[HARBOR.shore[0]-4,HARBOR.shore[1]+2];if(M.type==='heist')return[HARBOR.shore[0]-5,HARBOR.shore[1]-9];
+function missionPos(M){if(M.at&&M.at!=='box'&&S23){const s=S23.spot(M.at);if(s)return s}if(M.type==='boats')return[HARBOR.shore[0]-4,HARBOR.shore[1]+2];if(M.type==='heist')return[HARBOR.shore[0]-5,HARBOR.shore[1]-9];
  let q=M.type==='hold'?[HARBOR.shore[0]-30,HARBOR.shore[1]+4]:M.at==='box'?[HUB.cb.front[0],HUB.cb.front[1]]:null;if(q){for(let r=0;r<200;r+=4){for(let a=0;a<TAU;a+=.5){const x=q[0]+Math.cos(a)*r,z=q[1]+Math.sin(a)*r;if(!isWater(x,z,.2)&&!pointInCollider(x,z)&&(M.type!=='hold'||r>0||1))return[x,z]}}return q}if(M.type==='drive'){const s=HUB.spawn,h=s.h+Math.PI;return[s.x+Math.sin(h)*30,s.z+Math.cos(h)*30]}let p=M.type==='deliver'?[HUB.cb.deck[0],HUB.cb.deck[1]]:LL(M.ll[0],M.ll[1]);
  for(let r=0;r<200;r+=6){let ok=null;for(let a=0;a<TAU;a+=.5){const x=p[0]+Math.cos(a)*r,z=p[1]+Math.sin(a)*r;if(!isWater(x,z,.2)&&!pointInCollider(x,z)){ok=[x,z];break}}if(ok)return ok}return p}
 function buildMarkers(){OPEN.markers.forEach(m=>drop(m.g));OPEN.markers=MISSIONS.map(M=>{const p=missionPos(M),g=new T.Group();g.position.set(p[0],surfaceY(p[0],p[1]),p[1]);scene.add(g);
@@ -4862,9 +5108,10 @@ function buildMarkers(){OPEN.markers.forEach(m=>drop(m.g));OPEN.markers=MISSIONS
   const lbl=new T.Sprite(new T.SpriteMaterial({map:textTex([{t:M.name.toUpperCase(),f:'bold 54px Anton, Impact, sans-serif',y:48}],1024,96,{color:'#fff4d6'}),depthWrite:false,transparent:true}));lbl.scale.set(18,1.7,1);lbl.position.y=6.5;g.add(lbl);
   return{M,g,cyl,x:p[0],z:p[1]}})}
 function missionStart(M){if(coopGuest()){toast('Your friend starts the missions while you play together');return}const mk2=OPEN.markers.find(m=>m.M===M);OPEN.active={id:M.id,type:M.type,name:M.name,count:M.count||0,got:0,t:0,limit:M.limit||0};
- if(M.type==='turf'){const p=[mk2.x,mk2.z];let n=0;for(let i=0;i<M.count*8&&n<M.count;i++){const a=i/M.count*TAU+rnd()*.4,r=M.prep?9+rnd()*14:22+rnd()*26;if(spawnPirate(p[0]+Math.cos(a)*r,p[1]+Math.sin(a)*r,{mission:M.id,nades:M.nades&&(!M.prep||n<2),prep:M.prep?['chad','brad','tucker','hunter'][n%4]:undefined}))n++}OPEN.active.count=n;if(M.prep){ALLY.cool=0;ALLY.wake=1}}
+ if(M.type==='turf'){const p=[mk2.x,mk2.z];let n=0;for(let i=0;i<M.count*8&&n<M.count;i++){const a=i/M.count*TAU+rnd()*.4,r=M.prep?9+rnd()*14:22+rnd()*26;if(spawnPirate(p[0]+Math.cos(a)*r,p[1]+Math.sin(a)*r,{mission:M.id,sea:M.sea,nades:M.nades&&(!M.prep||n<2),prep:M.prep?['chad','brad','tucker','hunter'][n%4]:undefined}))n++}OPEN.active.count=n;if(M.prep){ALLY.cool=0;ALLY.wake=1}}
  const A_=OPEN.active;
- if(M.type==='hold'){A_.zx=mk2.x;A_.zz=mk2.z;A_.secs=M.secs;A_.held=0;A_.out=0;A_.spawnT=1.5;const rg=new T.Mesh(new T.RingGeometry(17.3,18,72),new T.MeshBasicMaterial({color:'#ffcf5a',transparent:true,opacity:.6,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(A_.zx,surfaceY(A_.zx,A_.zz)+.2,A_.zz);scene.add(rg);A_.ring=rg;ALLY.cool=0;ALLY.wake=1}
+ if(M.type==='chase'&&S23)S23.chaseStart(A_,M);
+ if(M.type==='hold'){A_.sea=M.sea;A_.zx=mk2.x;A_.zz=mk2.z;A_.secs=M.secs;A_.held=0;A_.out=0;A_.spawnT=1.5;const rg=new T.Mesh(new T.RingGeometry(17.3,18,72),new T.MeshBasicMaterial({color:'#ffcf5a',transparent:true,opacity:.6,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(A_.zx,surfaceY(A_.zx,A_.zz)+.2,A_.zz);scene.add(rg);A_.ring=rg;ALLY.cool=0;ALLY.wake=1}
  if(M.type==='heist')heistStart(A_,M);
  if(M.type==='kidrace'){const c=[ICE?ICE.x:mk2.x,ICE?ICE.z:mk2.z],P=[];for(let k=0;k<400&&P.length<5;k++){const s=SPOTS[(rnd()*SPOTS.length)|0],d=Math.hypot(s.x-c[0],s.z-c[1]);if(d<60||d>240||isWater(s.x,s.z,-.2)||P.some(q=>Math.hypot(q.x-s.x,q.z-s.z)<55))continue;P.push({x:s.x,z:s.z,a:Math.atan2(s.x-c[0],s.z-c[1])})}
   if(P.length<3){OPEN.active=null;toast('Kingston can’t find a good course right now');return}P.sort((a,b)=>a.a-b.a);A_.cps=P.map((q,i)=>beacon(q.x,q.z,'#f26d9a',`FLAG ${i+1} OF ${P.length}`));A_.cp=0;A_.limit=60+P.length*24;A_.cps.forEach((b,i)=>b.g.visible=i===0)}
@@ -4872,8 +5119,8 @@ function missionStart(M){if(coopGuest()){toast('Your friend starts the missions 
   Object.assign(A_,{car,bcn:beacon(s.x,s.z,'#ffcf5a','PAINT CHAD’S LAND ROVER'),stage:1,hits:0,count:M.count})}
  if(M.type==='boats'){for(let i=0;i<M.count;i++){for(let k=0;k<40;k++){const c=HARBOR.center,x=c[0]+(rnd()-.5)*700,z=c[1]+(rnd()-.5)*450;if(isWater(x,z,-2.5)){spawnPirateBoat(x,z);break}}}if(OPEN.orcas.length<3)spawnOrca(HARBOR.center[0],HARBOR.center[1],600)}
  if(M.type==='drive'){setRoute('sconset');CPVIS.forEach(v=>v.g.visible=true);OPEN.active.cp=0;updateOpenCP()}
- if(M.type==='deliver'){const D=pickDelivery();if(!D){OPEN.active=null;toast('No orders right now');return}Object.assign(OPEN.active,{dest:D,limit:D.limit,pay:D.pay,addr:D.addr});Object.assign(D,beacon(D.x,D.z,'#ffcf5a','DELIVER · '+D.addr.toUpperCase()))}
- OPEN.markers.forEach(m=>m.g.visible=false);sfx('go');showMissionCard(M.name,M.type==='turf'?M.desc.replace(/Splat \d+/,'Splat '+OPEN.active.count):M.type==='deliver'?`${M.kid?'Kingston needs ice cream taken to':'Deliver to'} ${OPEN.active.addr} in ${clockStr(OPEN.active.limit)} · ${money(OPEN.active.pay)}, plus a tip if it's still hot`:M.desc);missionHud()}
+ if(M.type==='deliver'){const D=M.local&&S23?S23.pickMail():pickDelivery();if(!D){OPEN.active=null;toast('No orders right now');return}Object.assign(OPEN.active,{dest:D,limit:D.limit,pay:D.pay,addr:D.addr});Object.assign(D,beacon(D.x,D.z,'#ffcf5a','DELIVER · '+D.addr.toUpperCase()))}
+ OPEN.markers.forEach(m=>m.g.visible=false);sfx('go');showMissionCard(M.name,M.type==='turf'?M.desc.replace(/Splat \d+/,'Splat '+OPEN.active.count):M.type==='deliver'?`${M.kid?'Kingston needs ice cream taken to':M.local?'Hal needs this package taken to':'Deliver to'} ${OPEN.active.addr} in ${clockStr(OPEN.active.limit)} · ${money(OPEN.active.pay)}, plus a tip if it's still hot`:M.desc);missionHud()}
 function updateOpenCP(){const A=OPEN.active;CPVIS.forEach((v,i)=>{v.g.visible=!!A&&A.type==='drive'&&i>=A.cp;v.lbl.visible=A&&i===A.cp})}
 function missionDone(){const A=OPEN.active;if(!A)return;missionCleanup(A);if(A.type!=='deliver'&&!OPEN.done[A.id])earnSpecial('mission complete: '+A.name,null,4600);let pay,card,title='Mission complete';
  if(A.type==='deliver'){const left=Math.max(0,A.limit-A.t),tip=Math.round(A.pay*.6*left/A.limit/5)*5;pay=A.pay+tip;title='Order delivered';card=`${A.addr} · ${money(A.pay)}${tip?` + ${money(tip)} tip`:''}`;if(A.dest)drop(A.dest.g)}
@@ -4887,7 +5134,7 @@ function missionHud(){const el=$('obj');if(!el)return;const A=OPEN.active,list=M
  const goal=OWNER?`<small>${money(CASH)} · you own The Box</small>`:`<small>${money(CASH)} / ${money(PRICE)} · buy The Box</small>`,bar=OWNER?'':`<i class="bar"><u style="width:${Math.min(100,CASH/PRICE*100).toFixed(1)}%"></u></i>`;
  if(!A&&ZED.state==='wave'){el.innerHTML=`${goal}<b>Hospital outbreak</b><span>Wave ${ZED.wave+1} of 3 · ${ZED.list.filter(z=>z.dead<=0).length} zombies left</span>`;return}
  if(!A){el.innerHTML=`${goal}<b>Free roam</b><span>${!OWNER&&CASH>=PRICE?'You can afford it · go buy the Box!':`${done}/${list.length} missions · Box deliveries`}</span>${bar}`;return}
- const prog=A.type==='drive'?`Checkpoint ${Math.min(A.cp+1,CPS.length)}/${CPS.length} · ${fmtT(Math.max(0,A.limit-A.t)).replace(/\.\d+$/,'')} left`:A.type==='boats'?`Pirate boats sunk ${A.got}/${A.count}`:A.type==='deliver'?`${esc(A.addr)} · ${clockStr(A.limit-A.t)} left`:A.type==='hold'?`Hold the pier ${Math.floor(A.held)}/${A.secs}s${A.out>0?' · get back in the ring!':''}`:A.type==='heist'?(A.stage===2?'Take down Captain Seaweed and his crew':`Seaweed crew splatted ${A.got}/${A.count}${A.boarded?'':' · catch the Eagle by boat'}`):A.type==='kidrace'?`Flag ${Math.min(A.cp+1,A.cps.length)}/${A.cps.length} · ${clockStr(Math.max(0,A.limit-A.t))} left`:A.type==='prank'?(A.stage===1?`Paint on Chad’s Land Rover ${A.hits}/${A.count}`:`Preps splatted ${A.got}/${A.count}`):`${OPEN.pirates.some(e=>e.mission===A.id&&e.prep)?'Preps':'Pirates'} splatted ${A.got}/${A.count}`;
+ const prog=A.type==='drive'?`Checkpoint ${Math.min(A.cp+1,CPS.length)}/${CPS.length} · ${fmtT(Math.max(0,A.limit-A.t)).replace(/\.\d+$/,'')} left`:A.type==='boats'?`Pirate boats sunk ${A.got}/${A.count}`:A.type==='deliver'?`${esc(A.addr)} · ${clockStr(A.limit-A.t)} left`:A.type==='hold'?`Hold the pier ${Math.floor(A.held)}/${A.secs}s${A.out>0?' · get back in the ring!':''}`:A.type==='heist'?(A.stage===2?'Take down Captain Seaweed and his crew':`Seaweed crew splatted ${A.got}/${A.count}${A.boarded?'':' · catch the Eagle by boat'}`):A.type==='kidrace'?`Flag ${Math.min(A.cp+1,A.cps.length)}/${A.cps.length} · ${clockStr(Math.max(0,A.limit-A.t))} left`:A.type==='chase'?`Chad and Brad splatted ${A.got}/2 · ${Math.round(A.left||0)} m from their Land Rover`:A.type==='prank'?(A.stage===1?`Paint on Chad’s Land Rover ${A.hits}/${A.count}`:`Preps splatted ${A.got}/${A.count}`):`${OPEN.pirates.some(e=>e.mission===A.id&&e.prep)?'Preps':'Pirates'} splatted ${A.got}/${A.count}`;
  el.innerHTML=`${goal}<b>${esc(A.name)}</b><span>${prog}</span>`}
 function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
  if(!A){if(OPEN.markerCool>0)OPEN.markerCool-=dt;for(const m of OPEN.markers){m.cyl.rotation.y+=dt;const d=Math.hypot(me.p.x-m.x,me.p.z-m.z),dc=Math.hypot(camera.position.x-m.x,camera.position.z-m.z);m.g.children[1].material.opacity=.12*clamp((dc-3)/14,0,1);m.g.children[2].visible=dc>12;m.cyl.material.opacity=clamp((dc-3)/9,0,1)*.35;
@@ -4901,13 +5148,14 @@ function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
  if(A.type==='boats'){const left=OPEN.pboats.filter(b=>b.capsized<=0).length;if(left===0&&A.t>3){A.got=A.count;missionDone()}}
  const tick2=()=>{if(Math.floor(A.t*2)!==Math.floor((A.t-dt)*2))missionHud()};
  if(A.type==='hold'){const inZ=Math.hypot(me.p.x-A.zx,me.p.z-A.zz)<18&&PL.dead<=0&&OPEN.wasted<=0;if(inZ){A.held+=dt;A.out=0}else A.out+=dt;if(A.out>15){missionFail('You lost the harbor. The pirates took the pier.');return}
-  A.spawnT-=dt;const alive=OPEN.pirates.filter(e=>e.mission===A.id&&e.dead<=0).length;if(A.spawnT<=0&&alive<7&&A.held<A.secs-6){A.spawnT=10;const a0=rnd()*TAU;let n=0;for(let i=0;i<14&&n<3;i++){const a=a0+(rnd()-.5)*1.3,r=38+rnd()*16;if(spawnPirate(A.zx+Math.sin(a)*r,A.zz+Math.cos(a)*r,{mission:A.id,nades:rnd()<.3}))n++}if(n)ALLY.wake=1}
+  A.spawnT-=dt;const alive=OPEN.pirates.filter(e=>e.mission===A.id&&e.dead<=0).length;if(A.spawnT<=0&&alive<7&&A.held<A.secs-6){A.spawnT=10;const a0=rnd()*TAU;let n=0;for(let i=0;i<14&&n<3;i++){const a=a0+(rnd()-.5)*1.3,r=38+rnd()*16;if(spawnPirate(A.zx+Math.sin(a)*r,A.zz+Math.cos(a)*r,{mission:A.id,nades:rnd()<.3,sea:A.sea}))n++}if(n)ALLY.wake=1}
   if(A.held>=A.secs){missionDone();return}tick2()}
  if(A.type==='heist'){if(FERRY.aboard(me.p)&&!A.boarded){A.boarded=1;ALLY.cool=0;ALLY.wake=1;showMissionCard('You’re aboard!','Clear the Seaweed crew off every deck');missionHud()}
   const left=OPEN.pirates.filter(e=>e.mission===A.id&&e.dead<=0).length;if(A.stage===1&&left===0&&A.t>2)heistBoss(A);else if(A.stage===2&&left===0&&A.t>2){missionDone();return}
   if(A.t>A.limit||(FERRY.state!=='sail'&&A.t>20)){missionFail('Captain Seaweed got away with the Eagle. Try again from the pier.');return}tick2()}
  if(A.type==='kidrace'){const b=A.cps[A.cp];b.cyl.rotation.y+=dt;const dc=Math.hypot(camera.position.x-b.x,camera.position.z-b.z);b.lbl.visible=dc>12;if(Math.hypot(me.p.x-b.x,me.p.z-b.z)<(PCAR?9:5)&&me.p.y<surfaceY(b.x,b.z)+12){sfx('cp');b.g.visible=false;A.cp++;if(A.cp>=A.cps.length){missionDone();return}A.cps[A.cp].g.visible=true;missionHud()}
   if(A.t>A.limit){missionFail('Too slow! Kingston says try again.');return}tick2()}
+ if(A.type==='chase'&&S23){if(A.bcn)A.bcn.cyl.rotation.y+=dt;S23.chaseTick(A,dt);return}
  if(A.type==='prank'){if(A.bcn)A.bcn.cyl.rotation.y+=dt;if(Math.hypot(me.p.x-A.car.p.x,me.p.z-A.car.p.z)>700){missionFail('You left Chad’s Land Rover behind.');return}
   if(A.stage===2){const left=OPEN.pirates.filter(e=>e.mission===A.id&&e.dead<=0).length;if(left===0&&A.t>1){missionDone();return}}}
  if(A.type==='deliver'){const D=A.dest;D.cyl.rotation.y+=dt;const dc=Math.hypot(camera.position.x-D.x,camera.position.z-D.z);D.beam.material.opacity=.16*clamp((dc-3)/14,0,1);D.lbl.visible=dc>12;D.cyl.material.opacity=clamp((dc-3)/9,0,1)*.35;
@@ -4937,7 +5185,7 @@ function playerHit(b){if(b.owner&&b.owner.crew)return;if(ESSEX.plankOn())return;
 function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  // health comes back if you stay out of the paint for a while
  OPEN.sinceHit=(OPEN.sinceHit||0)+dt;if(OPEN.hp<4&&OPEN.wasted<=0&&OPEN.sinceHit>7){OPEN.hp++;OPEN.sinceHit=3.5}
- if(enterInput){enterInput=false;const pa=polAction();if(ARMS.open)shopClose();else if(POL.arrest){if(pa)pa.act()}else if(PCAR){if(PCAR.kind==='heli'&&!PCAR.canExit())toast(IS_TOUCH?'Land first: hold BRAKE to come down':TPK()?'Land first: hold ↓ to come down':'Land first: hold Shift to come down');else{const fb=PCAR.kind==='boat'&&FERRY.hullDist(PCAR.p)<12,eb=!fb&&PCAR.kind==='boat'&&ESSEX.hullDist(PCAR.p)<10;exitVehicle();if(eb&&PL&&!PCAR)ESSEX.climb();if(fb&&PL&&!PCAR){FERRY.climb();if(OPEN.active&&OPEN.active.type==='heist')toast('You jumped aboard the Eagle!')}}}else if(pa)pa.act();else if(PL.dead<=0&&CBX.offer){CBX.takeOffer()}else if(PL.dead<=0&&CBX.talkable){CBX.talk(CBX.talkable)}else if(PL.dead<=0&&SSX.takeable){SSX.take()}else if(PL.dead<=0&&CYN&&CYN.takeable){CYN.take()}else if(PL.dead<=0&&DRT&&DRT.talkable){DRT.interact()}else if(PL.dead<=0){const v=nearestVehicle();if(v)enterVehicle(v);else{const m=OPEN.markers.find(q=>Math.hypot(PL.p.x-q.x,PL.p.z-q.z)<5.5);if(m&&!OPEN.active)missionStart(m.M)}}}
+ if(enterInput){enterInput=false;const pa=polAction();if(ARMS.open)shopClose();else if(POL.arrest){if(pa)pa.act()}else if(PCAR){if(PCAR.kind==='heli'&&!PCAR.canExit())toast(IS_TOUCH?'Land first: hold BRAKE to come down':TPK()?'Land first: hold ↓ to come down':'Land first: hold Shift to come down');else{const fb=PCAR.kind==='boat'&&FERRY.hullDist(PCAR.p)<12,eb=!fb&&PCAR.kind==='boat'&&ESSEX.hullDist(PCAR.p)<10;exitVehicle();if(eb&&PL&&!PCAR)ESSEX.climb();if(fb&&PL&&!PCAR){FERRY.climb();if(OPEN.active&&OPEN.active.type==='heist')toast('You jumped aboard the Eagle!')}}}else if(pa)pa.act();else if(PL.dead<=0&&CBX.offer){CBX.takeOffer()}else if(PL.dead<=0&&CBX.talkable){CBX.talk(CBX.talkable)}else if(PL.dead<=0&&SSX.takeable){SSX.take()}else if(PL.dead<=0&&CYN&&CYN.takeable){CYN.take()}else if(PL.dead<=0&&DRT&&DRT.talkable){DRT.interact()}else if(PL.dead<=0&&S23&&S23.talkable){S23.interact()}else if(PL.dead<=0){const v=nearestVehicle();if(v)enterVehicle(v);else{const m=OPEN.markers.find(q=>Math.hypot(PL.p.x-q.x,PL.p.z-q.z)<5.5);if(m&&!OPEN.active)missionStart(m.M)}}}
  if(OPEN.wasted>0){OPEN.wasted-=dt;PL.dead=OPEN.wasted;if(OPEN.wasted<=0){$('wasted').hidden=true;OPEN.hp=4;PL.dead=0;const f=OPEN.home||{x:HUB.cb.front[0],z:HUB.cb.front[1]};PL.spawn({x:f.x,z:f.z});if(f.yaw!==undefined)PL.yaw=f.yaw;toast(/^near /i.test(OPEN.homeName||'')?'Back '+OPEN.homeName.replace(/^Near/,'near'):'Back at '+(OPEN.homeName||'The Box'))}}
  if(PCAR){const inp=POL.arrest?STOP(PCAR):PCAR.kind==='heli'?heliInput():driveInput();if(resetInput){PCAR.respawn();resetInput=false;TP.vyaw=null}PCAR.update(dt,inp);
   if(!PCAR){}else if(PCAR.kind==='heli'){if(inp.fire)PCAR.shoot();if(nadeInput){nadeInput=false;PCAR.rocket()}}else if(inp.fire){const cands=OPEN.pirates.filter(e=>e.dead<=0).concat(OPEN.preps.map(P=>P.car),OPEN.pboats,OPEN.traffic.map(t=>t.car),typeof remoteCars==='function'?remoteCars():[]);PCAR.shoot(aimTarget(PCAR,cands,.35,80))}
@@ -4947,13 +5195,14 @@ function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  else{if(AA.man)aaManTick(dt);else if(ESSEX.plankOn())ESSEX.plankTick(dt);else if(ESSEX.helmOn())ESSEX.helmInput(dt);else if(OPEN.wasted<=0&&!POL.arrest&&!ARMS.open)footInput(dt);if(!POL.arrest)PL.sync(dt)}
  OPEN.veh.forEach(v=>{if(v===PCAR)return;if(v.kind==='boat'){v.update(dt,{gas:0,brake:0,steer:0})}else if(Math.abs(v.vf)>.3||v.awake>0){v.update(dt,STOP(v));v.awake=(v.awake||0)-dt}});
  OPEN.pboats.forEach(b=>{if(b.capsized>0){b.update(dt,{});return}let tgt=PCAR&&PCAR.kind==='boat'&&Math.hypot(PCAR.p.x-b.p.x,PCAR.p.z-b.p.z)<260?PCAR:null;if(b.raid&&!tgt)tgt=ferryRaidTarget(b);boatAI(b,dt,tgt,.9)});
- parkedTick(dt);trafficTick(dt);pedTick(dt);pirateTick(dt);orcaTick(dt);missionTick(dt);polTick(dt);heliTick(dt);skyGunnery(dt);updateFlak(dt);zedTick(dt);vehicleTargets();SSX.openTick(dt);if(CYN)CYN.openTick(dt);if(DRT)DRT.openTick(dt);
+ parkedTick(dt);trafficTick(dt);pedTick(dt);pirateTick(dt);orcaTick(dt);missionTick(dt);polTick(dt);heliTick(dt);skyGunnery(dt);updateFlak(dt);zedTick(dt);vehicleTargets();SSX.openTick(dt);if(CYN)CYN.openTick(dt);if(DRT)DRT.openTick(dt);if(S23)S23.openTick(dt);
  if(!OPEN.prompt){const pa=polAction();if(pa)OPEN.prompt={t:`${keyE()} · ${pa.t}`}}
  if(!OPEN.prompt&&PCAR&&PCAR.kind==='boat'&&FERRY.hullDist(PCAR.p)<12)OPEN.prompt={t:`${keyE()} · Jump aboard the Eagle`};
  if(heliCallInput){heliCallInput=false;callHeli()}
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&SSX.takeable)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${SSX.unlocked().length?'Restock your weapons':'Take the weapons'}`};
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&CYN&&CYN.takeable)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${SSX.unlocked().length?'Restock from Christian’s stash':'Grab Christian’s weapons'}`};
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&DRT&&DRT.talkable&&DRT.prompt)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${DRT.prompt}`};
+ if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&S23&&S23.talkable)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${S23.prompt}`};
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&CBX.offer)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${CBX.offer.text}`};
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&CBX.talkable){const o=CBX.who[CBX.talkable];OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${CBX.talkable==='sam'?'Order from Bill':CBX.talkable==='packy'?'Grab a soda from Captain':'Talk to '+o.name}`}}
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt){const v=nearestVehicle();if(v)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${v.traffic?'Jack the ':v.pirate?'Steal the ':v.kind==='heli'?'Fly the ':'Drive '}${vehicleName(v)}`}}
