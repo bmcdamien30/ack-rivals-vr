@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 24</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 25</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -887,8 +887,8 @@ for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const x=B.x0+i*cX,z=B.z0+j*cZ,m=maskA
  HG[j*GW+i]=h}
 {const hx=(SITE.chickenbox.x+SITE.stopshop.x)/2,hz=(SITE.chickenbox.z+SITE.stopshop.z)/2;const fx=(hx-B.x0)/cX,fz=(hz-B.z0)/cZ,i0=Math.round(fx),j0=Math.round(fz),H0=HG[j0*GW+i0];
  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const x=B.x0+i*cX,z=B.z0+j*cZ,d=Math.hypot(x-hx,z-hz);if(d<200){const w=1-sm(90,190,d);HG[j*GW+i]=lerp(HG[j*GW+i],H0,w)}}}
-var BLUFF=null;
-function groundH(x,z){if(BLUFF&&BLUFF.on&&x>BLUFF.x0&&x<BLUFF.x1&&z>BLUFF.z0&&z<BLUFF.z1){const v=BLUFF.at(x,z);if(v===v)return v}if(SBEACH&&SBEACH.on&&x>SBEACH.x0&&x<SBEACH.x1&&z>SBEACH.z0&&z<SBEACH.z1){const v=SBEACH.at(x,z);if(v===v)return v}return groundH0(x,z)}
+var BLUFF=null,DEEPH=null,DEEPV=null;
+function groundH(x,z){if(BLUFF&&BLUFF.on&&x>BLUFF.x0&&x<BLUFF.x1&&z>BLUFF.z0&&z<BLUFF.z1){const v=BLUFF.at(x,z);if(v===v)return v}if(SBEACH&&SBEACH.on&&x>SBEACH.x0&&x<SBEACH.x1&&z>SBEACH.z0&&z<SBEACH.z1){const v=SBEACH.at(x,z);if(v===v)return v}if(DEEPH&&DEEPH.on&&x>DEEPH.x0&&x<DEEPH.x1&&z>DEEPH.z0&&z<DEEPH.z1){const v=DEEPH.at(x,z);if(v===v)return v}return groundH0(x,z)}
 function groundH0(x,z){const fx=(x-B.x0)/cX,fz=(z-B.z0)/cZ,i=Math.floor(fx),j=Math.floor(fz);if(i<0||j<0||i>=GW-1||j>=GH-1)return -8;
  const tx=fx-i,tz=fz-j,a=HG[j*GW+i],b=HG[j*GW+i+1],c=HG[(j+1)*GW+i],d=HG[(j+1)*GW+i+1];return lerp(lerp(a,b,tx),lerp(c,d,tx),tz)}
 function groundN(x,z,out){const e=2;const hx=groundH(x+e,z)-groundH(x-e,z),hz=groundH(x,z+e)-groundH(x,z-e);return out.set(-hx,2*e,-hz).normalize()}
@@ -983,6 +983,28 @@ SBEACH=(function(){if(!BLUFF)return null;const D=GFX.q2?4:3,C=[4300,1000],A0=-34
  const X1=x0+(NX-1)*D,Z1=z0+(NZ-1)*D;
  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const x=B.x0+i*cX,z=B.z0+j*cZ;if(x<x0+cX+1||x>X1-cX-1||z<z0+cZ+1||z>Z1-cZ-1)continue;const v=at(x,z),k=cell(x,z);if(!(v===v)||k<0||H[k]<=O[k]+.05)continue;const g=j*GW+i;HG[g]=Math.max(HG[g],v-.8)}
  return{P,S,near,pt,at,cell,H,O,U,SS,WT,NX,NZ,D,x0,z0,x1:X1,z1:Z1,sA,sB,sC,GAPS,W,bw,gap,dune,on:true}})();
+
+/* ---------- Build 25: the deep off 'Sconset (from the Quest version): a fine seabed patch past the beach shelf ----------
+   Flat beds for the five places, a winding canyon that is deepest by the drowned lighthouse, and the coarse ground pushed under it. */
+DEEPH=(function(){const D=GFX.q2?6:4,x0=4780,z0=-720,NX=Math.ceil((5900-x0)/D)+1,NZ=Math.ceil((1820-z0)/D)+1,X1=x0+(NX-1)*D,Z1=z0+(NZ-1)*D;
+ const H=new Float32Array(NX*NZ),O=new Float32Array(NX*NZ);
+ const CAN=[[4930,-560],[5060,-330],[5170,-120],[5260,120],[5330,300],[5470,430],[5640,500],[5900,560]];
+ const PLC={kelp:[4985,1240],town:[5105,880],fleet:[5420,1260],light:[5330,300],fall:[5620,-180]};
+ const segD=(x,z)=>{let bd=1e9,bt=0;for(let i=0;i<CAN.length-1;i++){const a=CAN[i],b=CAN[i+1],vx=b[0]-a[0],vz=b[1]-a[1],L2=vx*vx+vz*vz,t=clamp(((x-a[0])*vx+(z-a[1])*vz)/L2,0,1),d=Math.hypot(x-a[0]-vx*t,z-a[1]-vz*t);if(d<bd){bd=d;bt=i+t}}return[bd,bt]};
+ const canyonW=t=>24+6*vnoise(t*2,1.3);
+ const prof=(x,z)=>{let h=-23-9*sm(5050,5750,x)+3.2*(fbm(x*.006+11,z*.006-4)-.5)+.35*Math.sin(x*.21+z*.07)*Math.sin(z*.17);
+  for(const[c,r,hh]of[[PLC.kelp,95,-15],[PLC.town,92,-19],[PLC.fleet,115,-29],[PLC.fall,75,-36]]){const d=Math.hypot(x-c[0],z-c[1]),k=sm(r+60,r,d);h=lerp(h,hh+.6*(vnoise(x*.05,z*.05)-.5),k)}
+  const[d,t]=segD(x,z),dep=24+10*Math.exp(-Math.pow((t-4)/1.5,2)),w=canyonW(t),cut=1-sm(w*.55,w+10,d+(vnoise(x*.08,z*.08)-.5)*8);
+  h-=dep*cut;if(cut>0&&cut<1)h+=2.4*(vnoise(x*.13,z*.13)-.5)*cut*(1-cut)*4;return h};
+ for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i,x=x0+i*D,z=z0+j*D,o=groundH(x,z);O[k]=o;
+  const w=sm(x0,x0+130,x)*(1-sm(X1-110,X1,x))*sm(z0,z0+120,z)*(1-sm(Z1-120,Z1,z));H[k]=o>-5?o:lerp(o,Math.min(o,prof(x,z)),w)}
+ const at=(x,z)=>{const fx=(x-x0)/D,fz=(z-z0)/D,i=Math.floor(fx),j=Math.floor(fz);if(i<0||j<0||i>=NX-1||j>=NZ-1)return NaN;
+  const tx=fx-i,tz=fz-j,a=H[j*NX+i],b=H[j*NX+i+1],c=H[(j+1)*NX+i],d=H[(j+1)*NX+i+1];return lerp(lerp(a,b,tx),lerp(c,d,tx),tz)};
+ // the coarse ground goes a little under the deepest fine ground around it, so it never pokes through the seabed
+ for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const x=B.x0+i*cX,z=B.z0+j*cZ;if(x<x0+cX+2||x>X1-cX-2||z<z0+cZ+2||z>Z1-cZ-2)continue;let mn=1e9;
+  for(let dz=-cZ;dz<=cZ;dz+=D)for(let dx=-cX;dx<=cX;dx+=D){const v=at(clamp(x+dx,x0,X1-.01),clamp(z+dz,z0,Z1-.01));if(v===v&&v<mn)mn=v}
+  const g=j*GW+i;if(mn<HG[g]-.4)HG[g]=mn-2.5}
+ return{H,O,NX,NZ,D,x0,z0,x1:X1,z1:Z1,at,CAN,PLC,segD,canyonW,on:true}})();
 
 /* ---------- Build 21: the Baxter Road garden houses, the bluff walk and 'Sconset village (map places) ---------- */
 if(BLUFF&&BLUFF.pt){const add=o=>{MAP.sites.push(o);SITE[o.id]=o};BLUFF.EST=BLUFF.SE.map(s=>BLUFF.pt(s,BLUFF.rbAt(s)+16));
@@ -1606,7 +1628,7 @@ const DCULL=(function(){const S={list:[],i:0,t:0,on:true,vr:false,boost:1},bs=ne
    m.count=j;m.instanceMatrix.needsUpdate=true;if(C)m.instanceColor.needsUpdate=true}}
  return{S,tick,build,IM,get boost(){return S.boost||1},set boost(v){S.boost=v},count(){let h=0,t=0;for(const o of S.list){if(o.userData._dc)h++;if(o.userData._ts)t++}return{meshes:S.list.length,hidden:h,noShadow:t}}}})();
 function renderFrame(){try{npcLOD()}catch(e){}realSync();VRG.tick();try{VREAL.tick()}catch(e){}try{DCULL.tick()}catch(e){}const cp=camera.position;if(scene.userData.sky)scene.userData.sky.position.copy(cp);WATER.follow(cp);WATER.U.time.value=SKY_U.time.value=typeof CLOCK!=='undefined'?CLOCK:0;
- if(GRASS)GRASS.update(cp,SKY_U.time.value);treeLOD(cp);scene.updateMatrixWorld();WHEELS.update();if(typeof FX!=='undefined')FX.update();if(VR.on)VR.render();else if(POST)POST.render();else renderer.render(scene,camera)}
+ if(GRASS)GRASS.update(cp,SKY_U.time.value);treeLOD(cp);scene.updateMatrixWorld();WHEELS.update();if(typeof FX!=='undefined')FX.update();let _uw=false;try{_uw=DEEPV?DEEPV.pre(camera.position):false}catch(e){}try{if(VR.on)VR.render();else if(POST)POST.render();else renderer.render(scene,camera)}finally{if(_uw)DEEPV.post()}}
 
 /* ================= vehicle kit: rounded panels, merged per material, instanced wheels ================= */
 function rbox(w,h,d,r,seg){if(seg===undefined)seg=Math.max(w,h,d)<.35||r<.025?1:2;r=Math.min(r,w/2-.001,h/2-.001,d/2-.001);const g=new T.BoxGeometry(w,h,d,seg*2,seg*2,seg*2),p=g.attributes.position,nm=g.attributes.normal,hw=w/2-r,hh=h/2-r,hd=d/2-r,v=new T.Vector3(),c=new T.Vector3(),n=new T.Vector3();
@@ -3354,6 +3376,324 @@ const S24=(function(){if(typeof SBEACH==='undefined'||!SBEACH||!S23)return null;
  return{openTick,openStart,spot,whaleStart,whaleTick,whaleHud,whaleClean,lookout,get talkable(){return API.talkable},get prompt(){return API.prompt},interact(){if(API.act)API.act()},
   HUMP,GL,SGK,FOLK,LG,PG,CS,DG,ST,seatY,onStand,trigger,go,BUOYS,tufts:tufts.length,posts:posts.length}})();
 
+/* ---------- Build 25: the deep off 'Sconset and the Moon Snail sub (brought over from the Quest version) ----------
+   A glass-bubble sub moored off 'Sconset Beach. Under the water: a kelp forest, Drowned 'Sconset, the Lantern Fleet of sunken
+   whaleships, a canyon with a drowned lighthouse and a whale fall, with sharks, orcas, dolphins and jellies, a searchlight and a sonar ping.
+   Everything under the water is only drawn while the camera is under the water. */
+DEEPV=(function(){if(!DEEPH||!SBEACH||typeof S24==='undefined'||!S24)return null;const V3=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);const q2=GFX.q2,L1=GFX.L>=1,rr=mulberry(2525),DH=DEEPH,P=DH.PLC;
+ const G=(x,z)=>groundH(x,z);
+ const SAVE=(()=>{let s={};try{s=JSON.parse(localStorage.getItem('ack-deep')||'{}')||{}}catch(e){}s.found=s.found||{};s.done=s.done||{};return s})();
+ const save=()=>{try{localStorage.setItem('ack-deep',JSON.stringify(SAVE))}catch(e){}};
+ const root=new T.Group();root.visible=false;scene.add(root);
+ /* ---- materials: lit by the scene, tinted darker with depth, caustics on the bed, and the sub's searchlight ---- */
+ const DU={uSLp:{value:V3()},uSLd:{value:V3(0,0,1)},uSLon:{value:0},uT:{value:0},uCau:{value:1}};
+ const patch=(m,fl={})=>{m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,DU);
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vDW;uniform float uT;')
+    .replace('#include <begin_vertex>','#include <begin_vertex>\n'+(fl.sway?'{float ph=0.;\n#ifdef USE_INSTANCING\nph=instanceMatrix[3].x*.21+instanceMatrix[3].z*.17;\n#endif\nfloat yy=max(position.y,0.);transformed.x+=sin(uT*1.05+ph+yy*.25)*yy*yy*.0042;transformed.z+=cos(uT*.83+ph*1.3+yy*.2)*yy*yy*.0033;}\n':''))
+    .replace('#include <project_vertex>','#include <project_vertex>\n#ifdef USE_INSTANCING\nvDW=(modelMatrix*instanceMatrix*vec4(transformed,1.)).xyz;\n#else\nvDW=(modelMatrix*vec4(transformed,1.)).xyz;\n#endif');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vDW;uniform vec3 uSLp,uSLd;uniform float uSLon,uT,uCau;')
+    .replace('#include <fog_fragment>',`{float dk=clamp(1.+vDW.y/50.,0.,1.);gl_FragColor.rgb*=mix(vec3(.2,.33,.4),vec3(.62,.84,.92),dk);
+${fl.caus?'float cs0=sin(vDW.x*.37+uT*1.3)*sin(vDW.z*.33-uT*1.07)+.6*sin((vDW.x-vDW.z)*.21+uT*.8);gl_FragColor.rgb+=diffuseColor.rgb*pow(max(cs0,0.),2.)*.24*uCau*dk*dk;':''}
+vec3 L=uSLp-vDW;float d=length(L);float cs=dot(-L/max(d,.001),uSLd);float cone=smoothstep(.8,.93,cs)+smoothstep(4.,0.,d)*.4;gl_FragColor.rgb+=diffuseColor.rgb*uSLon*cone*(2./(1.+d*d*.003))*smoothstep(75.,8.,d);}
+#include <fog_fragment>`)};
+  m.customProgramCacheKey=()=>'deep25'+(fl.sway?'s':'')+(fl.caus?'c':'');return m};
+ const MC={};const dm=(c,o={})=>{const k=c+JSON.stringify(o);if(MC[k])return MC[k];const fl={sway:o.sway,caus:o.caus};const oo=Object.assign({},o);delete oo.sway;delete oo.caus;
+  return MC[k]=patch(new T.MeshLambertMaterial(Object.assign({color:c},oo)),fl)};
+ const glowM=(c,op=.9)=>new T.SpriteMaterial({map:glowTex(),color:c,blending:T.AdditiveBlending,transparent:true,depthWrite:false,opacity:op,fog:false});
+ /* ---- merge kit: parts of one material become one mesh ---- */
+ const Kit=()=>{const L={};return{add(k,g,x,y,z,ry=0,rx=0,rz=0,s){(L[k]||(L[k]=[])).push({g,x,y,z,ry,rx,rz,s})},
+  build(M,parent){const out=[],m4=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(0,0,0,'YXZ'),nm=new T.Matrix3(),v=new T.Vector3(),pv=new T.Vector3(),sc=new T.Vector3();
+   for(const k in L){const Pp=[],N=[];for(const it of L[k]){const g=it.g.index?it.g.toNonIndexed():it.g;e.set(it.rx,it.ry,it.rz,'YXZ');q.setFromEuler(e);m4.compose(pv.set(it.x,it.y,it.z),q,it.s?sc.set(it.s[0],it.s[1],it.s[2]):sc.set(1,1,1));nm.getNormalMatrix(m4);
+     const pa=g.attributes.position,na=g.attributes.normal;for(let i=0;i<pa.count;i++){v.fromBufferAttribute(pa,i).applyMatrix4(m4);Pp.push(v.x,v.y,v.z);v.fromBufferAttribute(na,i).applyMatrix3(nm).normalize();N.push(v.x,v.y,v.z)}}
+    const bg=new T.BufferGeometry();bg.setAttribute('position',new T.Float32BufferAttribute(Pp,3));bg.setAttribute('normal',new T.Float32BufferAttribute(N,3));bg.computeBoundingSphere();
+    const me=new T.Mesh(bg,M[k]);(parent||root).add(me);out.push(me)}return out}}};
+ const box=(w,h,d)=>new T.BoxGeometry(w,h,d),cyl=(a,b,h,n=8)=>new T.CylinderGeometry(a,b,h,n),sph=(r,a=8,b=6)=>new T.SphereGeometry(r,a,b);
+ const prism=(w,h,d)=>{const g=new T.CylinderGeometry(1,1,d,3,1);g.rotateX(Math.PI/2);g.rotateZ(Math.PI/2);g.scale(w/1.732,h/1.5,1);g.translate(0,h*(1/3),0);return g};
+ const M={sand:dm('#b9aa86'),rock:dm('#6f6b62'),dark:dm('#3e4240'),shingle:dm('#8a857c'),trim:dm('#d9d6cc'),roof:dm('#5f5a54'),brick:dm('#7d4434'),wood:dm('#4b3a2b'),wood2:dm('#6a5440'),
+  bone:dm('#ddd4bf'),rope:dm('#b7a77d'),trap:dm('#c9a53a'),net:dm('#2f4a3a',{transparent:true,opacity:.55,side:T.DoubleSide}),kelp:dm('#7a6a2c',{side:T.DoubleSide,sway:true}),
+  anem:dm('#f0e6da'),anemO:dm('#e8873e'),rose:dm('#e86a8c'),urchin:dm('#4a2b4a'),star:dm('#e07a3a'),iron:dm('#2c2e30'),bronze:dm('#9a7a3e'),red:dm('#b8362e'),white:dm('#e9e6dc'),
+  glass:new T.MeshLambertMaterial({color:'#bfe9ff',transparent:true,opacity:.22,depthWrite:false,side:T.DoubleSide}),mat:dm('#e9e2cf'),matO:dm('#d8843a'),crab:dm('#c4452e'),sign:dm('#d7cfb8')};
+ /* ---- the seabed: chunks of the fine patch, vertex coloured by depth and slope ---- */
+ const CH=[];{const{H,NX,NZ,D,x0,z0}=DH,S=32,cS=new T.Color('#b9aa86'),cR=new T.Color('#6c6960'),cM=new T.Color('#4c4f49'),cK=new T.Color('#8a7f55'),cB=new T.Color('#a39678'),c=new T.Color();
+  const hAt=(i,j)=>H[clamp(j,0,NZ-1)*NX+clamp(i,0,NX-1)];const bm=patch(new T.MeshLambertMaterial({vertexColors:true}),{caus:true});
+  for(let cj=0;cj<NZ-1;cj+=S)for(let ci=0;ci<NX-1;ci+=S){const nx=Math.min(S,NX-1-ci)+1,nz=Math.min(S,NZ-1-cj)+1;let deep=false;
+    for(let j=0;j<nz&&!deep;j+=2)for(let i=0;i<nx;i+=2)if(hAt(ci+i,cj+j)<-8.5){deep=true;break}if(!deep)continue;
+    const pos=new Float32Array(nx*nz*3),nor=new Float32Array(nx*nz*3),col=new Float32Array(nx*nz*3),idx=[];
+    for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const gi=ci+i,gj=cj+j,k=j*nx+i,h=hAt(gi,gj),x=x0+gi*D,z=z0+gj*D;pos[k*3]=x;pos[k*3+1]=h;pos[k*3+2]=z;
+     const hx=hAt(gi+1,gj)-hAt(gi-1,gj),hz=hAt(gi,gj+1)-hAt(gi,gj-1),n=V3(-hx,2*D,-hz).normalize();nor[k*3]=n.x;nor[k*3+1]=n.y;nor[k*3+2]=n.z;
+     const sl=1-n.y,nz2=vnoise(x*.03,z*.03);c.copy(cS).lerp(cB,nz2*.6);if(h<-40)c.lerp(cM,sm(-40,-55,h));c.lerp(cR,sm(.12,.35,sl));
+     const dk=Math.hypot(x-P.kelp[0],z-P.kelp[1]);if(dk<120)c.lerp(cK,(1-sm(60,120,dk))*.5*vnoise(x*.08,z*.08));col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b}
+    for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,cc=a+nx,d=cc+1;idx.push(a,cc,b,b,cc,d)}
+    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));g.setAttribute('color',new T.BufferAttribute(col,3));g.setIndex(idx);g.computeBoundingSphere();
+    const me=new T.Mesh(g,bm);root.add(me);CH.push({me,x:g.boundingSphere.center.x,z:g.boundingSphere.center.z,r:g.boundingSphere.radius})}}
+ /* ---- instanced scatter helper ---- */
+ const inst=(geo,m,list,parent)=>{const im=new T.InstancedMesh(geo,m,list.length),m4=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler();list.forEach((o,i)=>{e.set(o.rx||0,o.ry||0,o.rz||0);q.setFromEuler(e);m4.compose(V3(o.x,o.y,o.z),q,V3(o.s,o.sy||o.s,o.sz||o.s));im.setMatrixAt(i,m4)});
+  im.frustumCulled=false;(parent||root).add(im);return im};
+ const ring=(c,r0,r1,n,f)=>{const out=[];for(let k=0;k<n*6&&out.length<n;k++){const a=rr()*TAU,r=r0+Math.sqrt(rr())*(r1-r0),x=c[0]+Math.cos(a)*r,z=c[1]+Math.sin(a)*r;const o=f(x,z);if(o)out.push(o)}return out};
+ const PLACES=[];const place=(id,name,c,r,fact)=>{const grp=new T.Group();root.add(grp);const o={id,name,x:c[0],z:c[1],r,fact,grp,y:G(c[0],c[1])};PLACES.push(o);return o};
+ const rockGeo=new T.DodecahedronGeometry(1,0);
+ /* ---- 1. the kelp forest: sugar kelp on a rocky bed, boulders and three lost lobster traps ---- */
+ const KELP=place('kelp','Kelp Forest',P.kelp,100,"Sugar kelp grows on rocks in cold, clear New England water, in golden-brown ribbons that sway with the swell. Lobster traps lost in storms are called ghost gear: they keep catching for years, so divers cut them loose and haul them up.");
+ {const n=q2?90:170;inst((()=>{const K=Kit(),parts=[];const g=new T.BufferGeometry();const geo=[];const st=cyl(.05,.07,10,4,1);st.translate(0,5,0);geo.push(st);
+   for(let b=0;b<(q2?6:9);b++){const bl=new T.PlaneGeometry(.32,1.9,1,2);bl.translate(0,.95,0);bl.rotateZ((b%2?1:-1)*.55);bl.rotateY(b*1.9);bl.translate(0,2.2+b*.95,0);geo.push(bl)}
+   const Pp=[],N=[];for(const gg of geo){const g2=gg.index?gg.toNonIndexed():gg,pa=g2.attributes.position,na=g2.attributes.normal;for(let i=0;i<pa.count;i++){Pp.push(pa.getX(i),pa.getY(i),pa.getZ(i));N.push(na.getX(i),na.getY(i),na.getZ(i))}}
+   g.setAttribute('position',new T.Float32BufferAttribute(Pp,3));g.setAttribute('normal',new T.Float32BufferAttribute(N,3));return g})(),M.kelp,ring(P.kelp,4,105,n,(x,z)=>{const y=G(x,z);return y<-9?{x,y:y-.2,z,s:.7+rr()*.55,ry:rr()*TAU}:null}),KELP.grp);
+  inst(rockGeo,M.rock,ring(P.kelp,0,115,q2?30:55,(x,z)=>({x,y:G(x,z)-.3,z,s:.6+rr()*2.2,sy:.4+rr()*1.4,ry:rr()*TAU,rx:rr()})),KELP.grp)}
+ const TRAPS=[];{const tg=(()=>{const K=[],add=(g,x,y,z)=>{g.translate(x,y,z);K.push(g)};[[-.55,-.4],[.55,-.4],[-.55,.4],[.55,.4]].forEach(([x,z])=>add(box(.05,.55,.05),x,.28,z));
+   [-.27,.27].forEach(y=>{add(box(1.15,.04,.05),0,.28+y,-.4);add(box(1.15,.04,.05),0,.28+y,.4);add(box(.05,.04,.85),-.55,.28+y,0);add(box(.05,.04,.85),.55,.28+y,0)});return K})();
+  for(let i=0;i<3;i++){const a=i*2.1+.4,r=38+i*14,x=P.kelp[0]+Math.cos(a)*r,z=P.kelp[1]+Math.sin(a)*r,y=G(x,z);const g=new T.Group();g.position.set(x,y,z);g.rotation.set(.15*(i-1),a,.12);KELP.grp.add(g);
+   const K=Kit();tg.forEach(p=>K.add('trap',p,0,0,0));K.add('net',box(1.08,.5,.78),0,.28,0);K.add('rope',cyl(.02,.02,Math.max(1,-y-1),4),0,(-y-1)/2+.5,0);K.add('rope',new T.TorusGeometry(.7,.04,4,12),.9,.06,.3,0,Math.PI/2);K.build(M,g);
+   const glow=new T.Sprite(glowM('#ffd23f',.5));glow.scale.set(3.4,3.4,1);glow.position.y=.4;g.add(glow);
+   // the trap's buoy still bobs on the surface: painted the way Nantucket lobstermen mark theirs
+   const bu=new T.Group();bu.position.set(x,0,z);scene.add(bu);const bk=Kit(),bM={a:mat(['#e23b2c','#f2c53d','#2f74b8'][i]),b:mat('#f2efe6'),c:mat('#2b2b2e')};bk.add('a',cyl(.2,.2,.42,10),0,.05,0);bk.add('b',cyl(.205,.205,.12,10),0,.05,0);bk.add('c',cyl(.025,.025,.8,5),0,.55,0);bk.build(bM,bu);
+   TRAPS.push({g,glow,x,z,y,buoy:bu,free:false,lift:0})}}
+ /* ---- 2. Drowned 'Sconset: shingled cottages, picket fences, the chapel and the village pump, gone under the sea ---- */
+ const TOWN=place('town',"Drowned ’Sconset",P.town,95,"What ’Sconset might look like if the sea took it: the village sits on a bluff that the ocean wears away a few feet in a bad year. The real cottages are tiny, gray-shingled and covered in climbing roses. Down here the roses are sea anemones.");
+ const BELL={};{const K=Kit(),c=P.town,y0=G(c[0],c[1]);
+  const cot=(x,z,a,w,d,h,tilt)=>{const y=G(x,z)-.15;const Rt=(lx,lz)=>[x+lx*Math.cos(a)+lz*Math.sin(a),z-lx*Math.sin(a)+lz*Math.cos(a)];const put=(k,g,lx,ly,lz,ry=0,rx=0,rz=0,s)=>{const p=Rt(lx,lz);K.add(k,g,p[0],y+ly,p[1],a+ry,rx,rz+tilt,s)};
+   put('shingle',box(w,h,d),0,h/2,0);put('roof',prism(w+.6,h*.55,d+.5),0,h,0);put('trim',box(.14,h,.14),w/2,h/2,d/2);put('trim',box(.14,h,.14),-w/2,h/2,d/2);put('trim',box(.14,h,.14),w/2,h/2,-d/2);put('trim',box(.14,h,.14),-w/2,h/2,-d/2);
+   put('trim',box(w+.1,.14,.14),0,h,d/2+.02);put('dark',box(.9,1.9,.08),-w*.2,.95,d/2+.03);put('trim',box(1.05,.1,.1),-w*.2,1.95,d/2+.05);
+   [[w*.22,1.5],[w*.38,1.5]].forEach(([lx])=>{put('dark',box(.7,.85,.06),lx,1.55,d/2+.03);put('trim',box(.82,.08,.08),lx,1.12,d/2+.05);put('trim',box(.82,.08,.08),lx,2.0,d/2+.05)});
+   put('brick',box(.6,1.4,.6),w*.3,h+.7,-d*.2);
+   // the trellis roses, now anemones
+   for(let r=0;r<7;r++)put('rose',sph(.18+rr()*.12,6,4),(rr()-.5)*w*.9,.4+rr()*h*.8,d/2+.16);for(let r=0;r<4;r++)put('anem',sph(.16,6,4),(rr()-.5)*w*.8,h+.1,(rr()-.5)*d*.6);
+   // picket fence across the front
+   for(let p=-w/2-1.2;p<=w/2+1.2;p+=.32)put('trim',box(.07,.85,.04),p,.42,d/2+2.2,0,0,(rr()-.5)*.25);put('trim',box(w+2.6,.07,.05),0,.62,d/2+2.18)};
+  [[-30,-22,.4,5.2,4.4,2.8,.04],[-14,-30,.1,4.6,4,2.6,-.06],[2,-28,-.1,5.6,4.8,3,.0],[22,-20,-.5,4.8,4.4,2.7,.09],[-36,6,1.2,5,4.2,2.7,-.03],[30,8,-1.4,4.4,4,2.6,.05]].forEach(([dx,dz,a,w,d,h,t])=>cot(c[0]+dx,c[1]+dz,a,w,d,h,t));
+  // Union Chapel with its belfry, and the bell you can ring
+  {const x=c[0]-4,z=c[1]+22,a=Math.PI+.15,y=G(x,z)-.2,Rt=(lx,lz)=>[x+lx*Math.cos(a)+lz*Math.sin(a),z-lx*Math.sin(a)+lz*Math.cos(a)],put=(k,g,lx,ly,lz,ry=0,rx=0,rz=0)=>{const p=Rt(lx,lz);K.add(k,g,p[0],y+ly,p[1],a+ry,rx,rz)};
+   put('shingle',box(7,4.6,11),0,2.3,0);put('roof',prism(7.6,3.4,11.6),0,4.6,0);put('trim',box(7.1,.18,.18),0,4.6,5.6);put('dark',box(1.6,2.6,.1),0,1.3,5.52);put('trim',box(1.9,.15,.15),0,2.7,5.56);
+   [-3,0,3].forEach(lz=>{put('dark',box(.08,1.6,.8),3.52,2.4,lz);put('dark',box(.08,1.6,.8),-3.52,2.4,lz)});
+   put('trim',box(2.4,2.6,2.4),0,7.1,4.3);put('dark',box(1.6,1.4,2.5),0,7.2,4.3);put('dark',box(2.5,1.4,1.6),0,7.2,4.3);put('roof',new T.ConeGeometry(1.9,2.6,4),0,9.7,4.3,Math.PI/4);put('trim',cyl(.05,.05,1.2,4),0,11.4,4.3);
+   for(let r=0;r<9;r++)put(r%3?'anem':'anemO',sph(.2+rr()*.15,6,4),(rr()-.5)*6.6,.3+rr()*3.6,5.62);
+   const bp=Rt(0,4.3);BELL.x=bp[0];BELL.z=bp[1];BELL.y=y+7;const bg=new T.Group();bg.position.set(bp[0],y+7.55,bp[1]);TOWN.grp.add(bg);const bk=Kit();bk.add('bronze',new T.CylinderGeometry(.32,.62,.9,10,1,true),0,-.45,0);bk.add('bronze',sph(.32,8,4),0,0,0);bk.add('iron',sph(.1,5,4),0,-.82,0);bk.build(M,bg);BELL.g=bg;BELL.sw=0}
+  // the village pump under its little roof
+  {const x=c[0]+10,z=c[1]+4,y=G(x,z)-.1;K.add('wood2',box(.36,1.5,.36),x,y+.75,z);K.add('iron',box(.12,.1,.9),x,y+1.35,z+.35,0,-.4);K.add('iron',cyl(.06,.06,.5,6),x,y+.95,z+.24,0,Math.PI/2);K.add('wood2',box(2.6,.2,2.6),x,y+.1,z);
+   [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>K.add('trim',box(.14,2.4,.14),x+a*1.1,y+1.2,z+b*1.1));K.add('roof',new T.ConeGeometry(2.2,1.2,4),x,y+3,z,Math.PI/4);
+   const sg=textTex([{t:'SIASCONSET',f:'bold 64px Anton, Impact, sans-serif',y:70}],512,110,{color:'#2b2b2e',bg:'#d7cfb8'});const s=new T.Mesh(new T.PlaneGeometry(2.6,.56),patch(new T.MeshLambertMaterial({map:sg})));s.position.set(x-6,y+1.6,z+3);s.rotation.y=.4;TOWN.grp.add(s);K.add('wood2',box(.14,1.6,.14),x-7.2,y+.8,z+2.5);K.add('wood2',box(.14,1.6,.14),x-4.8,y+.8,z+3.5)}
+  // the old main street, a line of cobbles and lantern posts
+  for(let s=-40;s<=40;s+=4){const x=c[0]+s,z=c[1]-8+Math.sin(s*.05)*3;K.add('rock',box(3.6,.18,3.4),x,G(x,z)+.02,z,rr()*.2)}
+  for(let s=-36;s<=36;s+=18){const x=c[0]+s,z=c[1]-4.5;K.add('iron',cyl(.07,.09,3.2,6),x,G(x,z)+1.6,z,0,0,(rr()-.5)*.3);K.add('iron',box(.4,.5,.4),x,G(x,z)+3.3,z)}
+  K.build(M,TOWN.grp);inst(rockGeo,M.rock,ring(c,20,110,q2?16:30,(x,z)=>({x,y:G(x,z)-.4,z,s:.5+rr()*1.4,sy:.4+rr(),ry:rr()*TAU})),TOWN.grp);
+  inst(new T.ConeGeometry(.3,.12,5),M.star,ring(c,0,80,q2?20:40,(x,z)=>({x,y:G(x,z)+.03,z,s:.6+rr()*.6,ry:rr()*TAU})),TOWN.grp);
+  inst(new T.IcosahedronGeometry(.22,0),M.urchin,ring(c,0,80,q2?20:40,(x,z)=>({x,y:G(x,z)+.08,z,s:.7+rr()*.7})),TOWN.grp)}
+ /* ---- 3. the Lantern Fleet: three Nantucket whaleships on the bottom, try-works on deck, lanterns waiting to be lit ---- */
+ const FLEET=place('fleet','The Lantern Fleet',P.fleet,120,"Nantucket whaleships sailed for years at a time and boiled whale blubber into oil in brick try-works on deck. The real Two Brothers, captained by George Pollard Jr. after he lost the Essex, sank in 1823; divers found the wreck in 2008. These three are made up.");
+ const LANTERNS=[];{const hull=(Lh,W,Hh)=>{const N=14,Mm=8,pos=[],idx=[];for(let s=0;s<=N;s++){const u=s/N,z=-Lh/2+Lh*u,t=u<.18?.55+.45*Math.sin(u/.18*Math.PI/2):Math.pow(Math.sin(Math.PI*Math.min(1,(1-u)/.82*.5+.5)),.7);
+    for(let k=0;k<=Mm;k++){const an=-Math.PI/2+Math.PI*k/Mm;pos.push(Math.sin(an)*W/2*t,-Math.cos(an)*Hh*(.55+.45*t),z)}}
+   for(let s=0;s<N;s++)for(let k=0;k<Mm;k++){const a=s*(Mm+1)+k,b=a+1,c2=a+Mm+1,d=c2+1;idx.push(a,c2,b,b,c2,d)}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g.toNonIndexed()};
+  const hullM=dm('#4a3b2c',{side:T.DoubleSide}),HM={hull:hullM,wood:M.wood,wood2:M.wood2,brick:M.brick,iron:M.iron,rope:M.rope,anem:M.anem,anemO:M.anemO};
+  [['Two Brothers',[-34,-18],.6,.22],['Catharine',[18,10],2.1,-.3],['Beaver',[-6,44],-1.1,.12]].forEach(([nm,[dx,dz],a,roll],si)=>{const x=P.fleet[0]+dx,z=P.fleet[1]+dz,y=G(x,z)+1.1;
+   const g=new T.Group();g.position.set(x,y,z);g.rotation.set(.03,a,roll);FLEET.grp.add(g);const K=Kit();
+   K.add('hull',hull(30,7.4,4.2),0,.9,0);K.add('wood2',box(6.4,.16,22),0,.85,-1);K.add('wood',box(.3,1.2,26),3.5,1.2,0);K.add('wood',box(.3,1.2,26),-3.5,1.2,0);
+   K.add('brick',box(3,1.4,2.6),0,1.6,4);K.add('iron',cyl(.7,.6,.6,10),-.7,2.5,4);K.add('iron',cyl(.7,.6,.6,10),.7,2.5,4);
+   K.add('wood',cyl(.28,.34,14,8),0,7.8,7);K.add('wood',cyl(.25,.3,9,8),0,5.3,-5,0,.2*(si-1),.35);K.add('wood',cyl(.15,.15,10,6),0,12,7,0,0,Math.PI/2+.1*(si-1));
+   K.add('wood',cyl(.2,.25,6,6),.4,3.5,-10,0,.9,.4);K.add('hull',hull(8,1.8,.9),5.2,.4,-2,.1,0,.6);K.add('wood2',box(5.8,.6,1.4),0,2.1,-12.2);
+   for(let r=0;r<10;r++)K.add(r%2?'anem':'anemO',sph(.16+rr()*.14,6,4),(rr()-.5)*7,.4+rr()*1.5,(rr()-.5)*26);K.build(HM,g);
+   const sgn=new T.Mesh(new T.PlaneGeometry(3.4,.62),patch(new T.MeshLambertMaterial({map:textTex([{t:nm.toUpperCase(),f:'bold 56px Anton, Impact, sans-serif',y:58},{t:'NANTUCKET',f:'bold 30px Barlow Condensed, sans-serif',y:96}],512,110,{color:'#e9d9a8',bg:'#3a2c20'})})));
+   sgn.position.set(0,1.8,-15.05);sgn.rotation.y=Math.PI;g.add(sgn);
+   [[2.6,3.2,-9],[-2.6,3.2,8.5]].forEach(([lx,ly,lz])=>{const lg=new T.Group();lg.position.set(lx,ly,lz);g.add(lg);const lk=Kit();lk.add('iron',box(.42,.06,.42),0,.3,0);lk.add('iron',box(.42,.06,.42),0,-.3,0);
+     [[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]].forEach(([a,b])=>lk.add('iron',box(.04,.6,.04),a,0,b));lk.add('iron',cyl(.02,.02,1.2,4),0,.9,0);lk.build({iron:M.iron},lg);
+     const core=new T.Mesh(sph(.13,8,6),new T.MeshBasicMaterial({color:'#3a3428'}));lg.add(core);const gl=new T.Sprite(glowM('#ffb347',.95));gl.scale.set(5,5,1);gl.visible=false;lg.add(gl);
+     LANTERNS.push({g:lg,core,gl,lit:false,ship:nm})})});
+  inst(rockGeo,M.rock,ring(P.fleet,10,125,q2?16:30,(x,z)=>({x,y:G(x,z)-.4,z,s:.6+rr()*1.8,sy:.4+rr(),ry:rr()*TAU})),FLEET.grp)}
+ /* ---- 4. the canyon and the drowned lighthouse: a white tower with a red band lying on the canyon floor ---- */
+ const LIGHT=place('light','Drowned Lighthouse',P.light,90,"Sankaty Head Light, up on the bluff above ’Sconset, stood so close to the eroding edge that in 2007 it was moved 405 feet back on rails. This one in the canyon is what could have happened if nobody had moved it.");
+ const LAMP={};{const c=P.light,y=G(c[0],c[1]),g=new T.Group();g.position.set(c[0],y+3,c[1]);g.rotation.set(0,.95,.06);LIGHT.grp.add(g);const K=Kit();
+  const tw=cyl(2.2,3,24,14);tw.rotateZ(Math.PI/2);K.add('white',tw,0,0,0);const band=cyl(2.65,2.72,4.5,14);band.rotateZ(Math.PI/2);K.add('red',band,-1,0,0);
+  const gal=new T.CylinderGeometry(2.9,2.9,.25,16);gal.rotateZ(Math.PI/2);K.add('iron',gal,-12.2,0,0);const lr=new T.CylinderGeometry(1.6,1.6,3,12,1,true);lr.rotateZ(Math.PI/2);K.add('glass',lr,-14,0,0);
+  const cap=new T.SphereGeometry(1.7,12,6,0,TAU,0,Math.PI/2);cap.rotateZ(Math.PI/2);K.add('iron',cap,-15.5,0,0);for(let k=0;k<8;k++){const a=k/8*TAU;K.add('iron',box(3,.08,.08),-14,Math.cos(a)*1.6,Math.sin(a)*1.6)}
+  for(let r=0;r<16;r++)K.add('rock',box(1+rr()*1.6,.8+rr(),1+rr()*1.4),13+rr()*4,-2.6+rr()*1.5,(rr()-.5)*8,rr(),rr()*.4,rr()*.4);
+  for(let r=0;r<14;r++)K.add(r%2?'anem':'anemO',sph(.2+rr()*.16,6,4),(rr()-.5)*22,1.8+rr()*.8,(rr()-.5)*3);K.build(Object.assign({},M),g);
+  const lamp=new T.Mesh(sph(.6,10,8),new T.MeshBasicMaterial({color:'#4a4436'}));lamp.position.set(-14,0,0);g.add(lamp);const lg=new T.Sprite(glowM('#fff1c8',1));lg.scale.set(9,9,1);lg.visible=false;lamp.add(lg);
+  const bm=new T.MeshBasicMaterial({color:'#fff1c8',transparent:true,opacity:.07,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false}),beam=new T.Group();beam.position.copy(lamp.position);beam.visible=false;g.add(beam);
+  [-1,1].forEach(s=>{const cg=new T.CylinderGeometry(4.5,.3,46,14,1,true);cg.translate(0,23,0);const m=new T.Mesh(cg,bm);m.rotation.x=s*Math.PI/2;beam.add(m)});
+  g.updateMatrixWorld(true);const wp=new T.Vector3();lamp.getWorldPosition(wp);Object.assign(LAMP,{g,lamp,lg,beam,x:wp.x,y:wp.y,z:wp.z,lit:false});
+  // frilled anemones down the canyon walls
+  const an=[];for(let k=0;k<(q2?60:120);k++){const t=rr()*(DH.CAN.length-1.2)+.1,i=Math.floor(t),f=t-i,a0=DH.CAN[i],a1=DH.CAN[i+1],cx=lerp(a0[0],a1[0],f),cz=lerp(a0[1],a1[1],f),dx=a1[0]-a0[0],dz=a1[1]-a0[1],l=Math.hypot(dx,dz),nx=-dz/l,nz=dx/l,s=rr()<.5?-1:1,w=DH.canyonW(t)*(.55+rr()*.5);
+   const x=cx+nx*s*w,z=cz+nz*s*w;an.push({x,y:G(x,z)+.1,z,s:.25+rr()*.35,sy:.5+rr()*.6})}
+  const ag=new T.CylinderGeometry(.35,.22,1,7,1);ag.translate(0,.5,0);const half=an.length>>1;inst(ag,M.anem,an.slice(0,half),LIGHT.grp);inst(ag,M.anemO,an.slice(half),LIGHT.grp)}
+ /* ---- 5. the whale fall: a humpback skeleton feeding the deep, bacterial mats, crabs and worms ---- */
+ const FALL=place('fall','Whale Fall',P.fall,80,"When a whale dies and sinks, its body feeds the deep for decades: sharks and hagfish first, then crabs and bone-eating worms, then bacteria that grow in mats on the bones. Scientists call it a whale fall.");
+ const CRABS=[];{const c=P.fall,y=G(c[0],c[1]),g=new T.Group();g.position.set(c[0],y,c[1]);g.rotation.y=.6;FALL.grp.add(g);const K=Kit();
+  for(let v=0;v<26;v++){const z=-7+v*.55,s=1-Math.abs(v-8)/24;K.add('bone',box(.5*s+.15,.42*s+.12,.34),Math.sin(v*.25)*.3,.32,z,0,0,.05*v)}
+  for(let r=0;r<12;r++){const z=-4.6+r*.55,R=1.6-Math.abs(r-4)*.12;[-1,1].forEach(s=>{const t=new T.TorusGeometry(R,.07,4,10,Math.PI*.62);K.add('bone',t,s*.15,.35,z,s>0?0:Math.PI,0,s>0?-.25:-.25+Math.PI)})}
+  K.add('bone',sph(1,10,6),0,.55,-9.2,0,0,0,[1.1,.45,1.9]);[-1,1].forEach(s=>K.add('bone',box(.18,.2,5.2),s*.8,.2,-10.6,s*.12,0,s*.1));[-1,1].forEach(s=>K.add('bone',box(.2,.12,3.6),s*2.4,.15,-3.2,s*.9));
+  for(let k=0;k<18;k++){const a=rr()*TAU,r=1+rr()*6;K.add(k%3?'mat':'matO',cyl(.6+rr()*1.4,.6+rr()*1.4,.05,10),Math.cos(a)*r*.6,.03,Math.sin(a)*r-2)}
+  for(let k=0;k<24;k++)K.add('crab',cyl(.02,.05,.35+rr()*.3,4),(rr()-.5)*1.2,.55+rr()*.2,-6+rr()*9,0,(rr()-.5)*.5,(rr()-.5)*.5);K.build(M,g);
+  const cg=(()=>{const K2=[],b=box(.5,.16,.36);K2.push(b);for(let s=-1;s<=1;s+=2)for(let l=0;l<3;l++){const lg=box(.34,.04,.04);lg.translate(s*.3,-.05,-.1+l*.1);K2.push(lg)}return K2})();
+  for(let k=0;k<(q2?5:9);k++){const cr=new T.Group();cg.forEach(p=>cr.add(new T.Mesh(p,M.crab)));const a=rr()*TAU,r=2+rr()*7;cr.position.set(c[0]+Math.cos(a)*r,0,c[1]+Math.sin(a)*r);cr.position.y=G(cr.position.x,cr.position.z)+.1;FALL.grp.add(cr);CRABS.push({g:cr,a:rr()*TAU,ph:rr()*TAU})}
+  inst(rockGeo,M.rock,ring(c,8,80,q2?12:22,(x,z)=>({x,y:G(x,z)-.4,z,s:.5+rr()*1.5,sy:.4+rr(),ry:rr()*TAU})),FALL.grp)}
+ /* ---- the glow pearls for Kingston's Deep Sea Sparkle job: one at each place, marked by pink light ---- */
+ const PEARLS=[{at:'kelp',x:P.kelp[0]+18,z:P.kelp[1]-30},{at:'town',x:BELL.x+4,z:BELL.z+2},{at:'fleet',x:P.fleet[0]-6,z:P.fleet[1]+44},{at:'light',x:LAMP.x,z:LAMP.z,y:LAMP.y-.4},{at:'fall',x:P.fall[0]+1,z:P.fall[1]+1}].map(o=>{
+  const y=o.y!==undefined?o.y:G(o.x,o.z)+.7,g=new T.Group();g.position.set(o.x,y,o.z);g.visible=false;root.add(g);
+  const pm=new T.Mesh(sph(.28,12,8),new T.MeshBasicMaterial({color:'#ffd6ec'}));g.add(pm);const sh=new T.Mesh(new T.SphereGeometry(.6,10,6,0,TAU,0,Math.PI/2),dm('#d8cfc4',{side:T.DoubleSide}));sh.position.y=-.25;g.add(sh);
+  const gl=new T.Sprite(glowM('#ff5fb0',.95));gl.scale.set(6,6,1);g.add(gl);const beam=new T.Sprite(glowM('#ff8fc8',.35));beam.scale.set(2.2,16,1);beam.position.y=7;g.add(beam);
+  return Object.assign(o,{g,gl,beam,y,got:false})});
+ /* ---- sea life: sharks, orcas, dolphins and lion's mane jellies ---- */
+ const fish=(kind)=>{const g=new T.Group(),body=new T.Group();g.add(body);const tail=new T.Group();body.add(tail);const K=Kit(),Kt=Kit();let len;
+  if(kind==='shark'){len=4.4;const top=mat('#6f777d'),bel=mat('#e4e4de');K.add('t',sph(1,12,8),0,0,0,0,0,0,[.62,.62,2.2]);K.add('b',sph(1,12,8),0,-.14,.05,0,0,0,[.56,.46,2.0]);K.add('t',new T.ConeGeometry(.12,.95,4),0,.85,.1,0,-.35);
+   [-1,1].forEach(s=>K.add('t',box(.95,.06,.4),s*.8,-.25,.45,0,0,s*-.35));K.add('t',sph(.06,5,4),.35,.15,1.6);K.add('t',sph(.06,5,4),-.35,.15,1.6);Kt.add('t',box(.08,1.3,.42),0,.42,-.35,0,.55);Kt.add('t',box(.08,.85,.36),0,-.32,-.25,0,-.6);K.build({t:top,b:bel},body);Kt.build({t:top},tail);tail.position.z=-2}
+  else if(kind==='orca'){len=6.5;const blk=mat('#17181b'),wht=mat('#f0f0ea');K.add('k',sph(1,12,8),0,0,0,0,0,0,[.95,1,3.3]);K.add('w',sph(1,10,6),0,-.32,.6,0,0,0,[.7,.6,2.2]);[-1,1].forEach(s=>{K.add('w',sph(.3,6,4),s*.62,.32,2.0,0,0,0,[.5,.5,1.3]);K.add('k',box(1.3,.08,.6),s*1.1,-.5,1,0,0,s*-.4)});
+   K.add('k',box(.12,1.7,.8),0,1.45,0,0,-.2);Kt.add('k',box(2.2,.08,.7),0,0,-.4);K.build({k:blk,w:wht},body);Kt.build({k:blk},tail);tail.position.z=-3.2}
+  else{len=2.3;const gr=mat('#7d8790'),lt=mat('#d3d6d6');K.add('g',sph(1,10,6),0,0,0,0,0,0,[.36,.4,1.15]);K.add('l',sph(1,8,6),0,-.1,.1,0,0,0,[.3,.28,.95]);K.add('g',new T.ConeGeometry(.12,.45,6),0,-.04,1.3,0,Math.PI/2);K.add('g',box(.06,.42,.32),0,.42,-.05,0,-.4);
+   [-1,1].forEach(s=>K.add('g',box(.45,.04,.2),s*.35,-.18,.4,0,0,s*-.4));Kt.add('g',box(.85,.05,.3),0,0,-.15);K.build({g:gr,l:lt},body);Kt.build({g:gr},tail);tail.position.z=-1.1}
+  root.add(g);return{g,body,tail,len,kind}};
+ const LIFE=[];const swim=(kind,c,r,y,spd,ph,wob)=>{const f=fish(kind);LIFE.push(Object.assign(f,{c,r,y,spd,ph,wob:wob||0,dir:rr()<.5?-1:1}));return f};
+ swim('shark',P.fall,22,-27,.16,0,2);swim('shark',P.fall,34,-24,.12,2.2,3);if(!q2)swim('shark',P.light,40,-34,.1,4,4);
+ swim('orca',[(P.town[0]+P.fleet[0])/2,(P.town[1]+P.fleet[1])/2],70,-9,.07,0,3);swim('orca',[(P.town[0]+P.fleet[0])/2,(P.town[1]+P.fleet[1])/2],78,-11,.065,.6,3);
+ for(let k=0;k<(q2?4:6);k++)swim('dolphin',[P.kelp[0]+40,P.kelp[1]-60],46+k*3,-2.5-(k%3),.22,k*.35,1.6);
+ const JEL=(()=>{const n=q2?22:40,geo=(()=>{const parts=[new T.SphereGeometry(.55,10,5,0,TAU,0,Math.PI/2)];for(let k=0;k<7;k++){const t=new T.CylinderGeometry(.03,.005,2.2+rr()*1.2,3);t.translate(Math.cos(k)*.32,-1.2,Math.sin(k)*.32);parts.push(t)}
+   const Pp=[],N=[];parts.forEach(p=>{const g2=p.index?p.toNonIndexed():p;for(let i=0;i<g2.attributes.position.count;i++){Pp.push(g2.attributes.position.getX(i),g2.attributes.position.getY(i),g2.attributes.position.getZ(i));N.push(g2.attributes.normal.getX(i),g2.attributes.normal.getY(i),g2.attributes.normal.getZ(i))}});
+   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(Pp,3));g.setAttribute('normal',new T.Float32BufferAttribute(N,3));return g})();
+  const m=new T.MeshLambertMaterial({color:'#f0a070',emissive:'#5a2414',transparent:true,opacity:.78,side:T.DoubleSide,depthWrite:false});const im=new T.InstancedMesh(geo,m,n);im.frustumCulled=false;root.add(im);
+  const J=[];for(let k=0;k<n;k++){const c=k%2?P.fleet:P.kelp,a=rr()*TAU,r=rr()*110;J.push({x:c[0]+Math.cos(a)*r,z:c[1]+Math.sin(a)*r,y:-4-rr()*9,ph:rr()*TAU,s:.6+rr()*.8})}return{im,J}})();
+ /* ---- the surface: a mooring float and a pontoon walkway out from the beach ---- */
+ const SK=S24.ST&&S24.ST.skiff?S24.ST.skiff:null;let MOOR=null,PONT=null;
+ {let sx=4690,sz=1005;if(SK&&SK.home){sx=SK.home.x;sz=SK.home.z}const out=V3(1,0,0);if(SK&&SK.home)out.set(Math.sin(SK.home.h),0,Math.cos(SK.home.h));
+  // walk straight out from the skiff until the water is deep enough to dive
+  let d=6,mx=sx+out.x*d,mz=sz+out.z*d;for(;d<120&&G(mx,mz)>-3.4;d+=2){mx=sx+out.x*d+out.z*9;mz=sz+out.z*d-out.x*9}
+  MOOR={x:mx,z:mz,h:Math.atan2(out.x,out.z)};
+  // the pontoon from the water's edge to the sub
+  let ex=sx+out.z*9,ez=sz-out.x*9;for(let k=0;k<30&&G(ex,ez)>.25;k++){ex+=out.x;ez+=out.z}const len=Math.hypot(mx-ex,mz-ez)-2.6,a=Math.atan2(mx-ex,mz-ez),cx=ex+Math.sin(a)*len/2,cz=ez+Math.cos(a)*len/2;
+  PONT={x:cx,z:cz,a,len,c:Math.cos(a),s:Math.sin(a),top:.32};const pg=new T.Group();scene.add(pg);const K=Kit(),PM={deck:mat('#b9a27c'),float:mat('#e9e6dc'),post:mat('#6a5440'),sign:mat('#25365a')};
+  for(let s=-len/2;s<len/2;s+=2.2){K.add('deck',box(2,.14,2.1),cx+Math.sin(a)*s,PONT.top-.07,cz+Math.cos(a)*s,a);K.add('float',box(1.8,.3,1.8),cx+Math.sin(a)*s,-.05,cz+Math.cos(a)*s,a)}
+  const e2=[cx+Math.sin(a)*len/2,cz+Math.cos(a)*len/2];K.add('post',cyl(.12,.12,2.6,6),e2[0]+Math.cos(a)*1.3,.6,e2[1]-Math.sin(a)*1.3);K.add('post',cyl(.12,.12,2.6,6),e2[0]-Math.cos(a)*1.3,.6,e2[1]+Math.sin(a)*1.3);
+  K.build(PM,pg);const st=new T.Mesh(new T.PlaneGeometry(2.4,.9),new T.MeshLambertMaterial({map:textTex([{t:'MOON SNAIL',f:'bold 64px Anton, Impact, sans-serif',y:62},{t:'SUB TOURS · THE DEEP',f:'bold 30px Barlow Condensed, sans-serif',y:100}],512,128,{color:'#f2efe6',bg:'#25365a'}),side:T.DoubleSide}));
+  st.position.set(e2[0]+Math.cos(a)*1.3,1.7,e2[1]-Math.sin(a)*1.3);st.rotation.y=a+Math.PI;pg.add(st);
+  PLATS.push({fn:(x,z,y)=>{if(y===undefined||y<PONT.top-1.5||y>PONT.top+1.2)return -1e9;const dx=x-PONT.x,dz=z-PONT.z,lx=dx*PONT.c-dz*PONT.s,lz=dx*PONT.s+dz*PONT.c;return Math.abs(lx)<1.05&&Math.abs(lz)<PONT.len/2+.1?PONT.top:-1e9}})}
+ const onPontoon=(x,z)=>{if(!PONT)return false;const dx=x-PONT.x,dz=z-PONT.z,lx=dx*PONT.c-dz*PONT.s,lz=dx*PONT.s+dz*PONT.c;return Math.abs(lx)<1&&Math.abs(lz)<PONT.len/2};
+ /* ---- the underwater look: blue-green fog, no sky, the surface seen from below ---- */
+ const UWC=new T.Color(),UW1=new T.Color('#1f7f8e'),UW2=new T.Color('#06222e'),SAVEF={c:new T.Color(),n:0,f:0,bg:null,sky:true,hi:0,si:0};
+ const under=new T.Mesh(new T.PlaneGeometry(900,900),new T.MeshBasicMaterial({color:'#7fd6dc',side:T.BackSide,transparent:true,opacity:.85}));under.rotation.x=-Math.PI/2;under.visible=false;scene.add(under);
+ const BEAMM=new T.MeshBasicMaterial({color:'#e9fbff',transparent:true,opacity:.1,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false});
+ const rays=new T.Group();for(let k=0;k<(q2?5:9);k++){const m=new T.Mesh(new T.PlaneGeometry(3+rr()*4,40),BEAMM);m.position.set((rr()-.5)*50,-20,(rr()-.5)*50);m.rotation.set(0,rr()*TAU,(rr()-.5)*.3);m.userData.ph=rr()*TAU;rays.add(m)}rays.visible=false;scene.add(rays);
+ let UW=false;
+ function pre(cp){const t=typeof CLOCK!=='undefined'?CLOCK:0;DU.uT.value=t;UW=MODE!=='menu'&&cp.y<-.45&&isWater(cp.x,cp.z,-1);
+  const deepOn=UW&&cp.x>DH.x0-60&&cp.x<DH.x1+60&&cp.z>DH.z0-60&&cp.z<DH.z1+60;root.visible=deepOn;
+  if(deepOn){const lim=q2?115:150;for(const c of CH)c.me.visible=Math.hypot(c.x-cp.x,c.z-cp.z)-c.r<lim*.75;for(const p of PLACES)p.grp.visible=Math.hypot(p.x-cp.x,p.z-cp.z)<p.r+(q2?90:120);
+   for(const f of LIFE)f.g.visible=Math.hypot(f.g.position.x-cp.x,f.g.position.z-cp.z)<(q2?80:110)}
+  if(!UW){under.visible=rays.visible=false;return false}
+  const f=scene.fog;SAVEF.c.copy(f.color);SAVEF.n=f.near;SAVEF.f=f.far;SAVEF.bg=scene.background;const sky=scene.userData.sky;SAVEF.sky=sky?sky.visible:true;SAVEF.hi=HEMI.intensity;SAVEF.si=sun.intensity;
+  const dk=clamp(-cp.y/55,0,1),night=typeof NIGHT_ON!=='undefined'&&NIGHT_ON;UWC.copy(UW1).lerp(UW2,dk);if(night)UWC.multiplyScalar(.35);
+  f.color.copy(UWC);f.near=1.5;f.far=(q2?52:72)*(1-dk*.25)*(DU.uSLon.value>0?1.08:1);scene.background=UWC;if(sky)sky.visible=false;HEMI.intensity=SAVEF.hi*(.75-dk*.3);sun.intensity=SAVEF.si*(.55-dk*.35);
+  under.visible=true;under.position.set(cp.x,-.08,cp.z);under.material.color.copy(UWC).lerp(new T.Color(night?'#2a4a5a':'#bff4f2'),.65);
+  rays.visible=!night&&cp.y>-35;if(rays.visible){rays.position.set(cp.x,0,cp.z);rays.children.forEach(m=>{m.material.opacity=.1;m.rotation.y+=.0006})}BEAMM.opacity=.07*(1-dk);
+  return true}
+ function post(){if(!UW)return;const f=scene.fog;f.color.copy(SAVEF.c);f.near=SAVEF.n;f.far=SAVEF.f;scene.background=SAVEF.bg;const sky=scene.userData.sky;if(sky)sky.visible=SAVEF.sky;HEMI.intensity=SAVEF.hi;sun.intensity=SAVEF.si}
+ /* ---- the Moon Snail: a glass bubble on a cream hull, a moon snail shell on its back, thrusters and a searchlight ---- */
+ function makeSubModel(){const g=new T.Group(),body=new T.Group();g.add(body);const K=Kit(),SM={hull:mat('#efe3c4'),band:mat('#f2c53d'),dark:mat('#2b2e33'),shell:mat('#cdb08a'),shell2:mat('#a8865e'),metal:mat('#8a8f97'),lamp:new T.MeshBasicMaterial({color:'#fff6dc'})};
+  K.add('hull',new T.SphereGeometry(1.38,16,8,0,TAU,Math.PI*.55,Math.PI*.45),0,0,0);K.add('band',new T.TorusGeometry(1.36,.12,6,24),0,-.2,0,0,Math.PI/2);
+  K.add('dark',box(.9,.3,.5),0,-1.32,.2);[-1,1].forEach(s=>{K.add('metal',box(.12,.5,.12),s*.7,-1.35,.6);K.add('metal',box(.12,.5,.12),s*.7,-1.35,-.6);K.add('dark',box(.14,.12,2.2),s*.7,-1.6,0)});
+  [-1,1].forEach(s=>{const th=cyl(.32,.32,1,10);th.rotateX(Math.PI/2);K.add('band',th,s*1.55,-.45,-.1);const rim=new T.TorusGeometry(.33,.05,4,12);K.add('dark',rim,s*1.55,-.45,-.62);K.add('dark',box(.5,.12,.2),s*1.15,-.45,-.1)});
+  // the moon snail shell: a fat spiral whorl on the stern
+  K.add('shell',sph(.72,12,8),0,.2,-1.45,0,0,0,[1,.86,1]);K.add('shell2',new T.TorusGeometry(.5,.16,6,16),0,.32,-1.45,0,.25,0);K.add('shell2',new T.TorusGeometry(.3,.13,6,14),.06,.5,-1.45,0,.25,0);K.add('shell',sph(.16,8,6),.1,.66,-1.45);
+  K.add('metal',cyl(.2,.26,.3,10),0,-.95,1.12,0,Math.PI/2.4);K.add('lamp',cyl(.17,.17,.05,10),0,-1.0,1.28,0,Math.PI/2.4);K.add('dark',box(.5,.06,.06),0,-.62,.95);K.add('metal',box(.1,.5,.1),.3,-.75,.55,0,-.4);
+  K.build(SM,body);const glass=new T.Mesh(new T.SphereGeometry(1.35,20,12,0,TAU,0,Math.PI*.56),new T.MeshLambertMaterial({color:'#cdeeff',transparent:true,opacity:.2,depthWrite:false,side:T.DoubleSide}));body.add(glass);
+  const rimT=new T.Mesh(new T.TorusGeometry(1.33,.06,4,24),SM.dark);rimT.rotation.x=Math.PI/2;rimT.position.y=-.24;body.add(rimT);
+  const props=[-1,1].map(s=>{const p=new T.Mesh(box(.5,.06,.05),SM.dark);p.position.set(s*1.55,-.45,-.6);body.add(p);return p});
+  const beam=new T.Mesh((()=>{const cg=new T.CylinderGeometry(.18,4.2,24,16,1,true);cg.translate(0,-12,0);cg.rotateX(-Math.PI/2);return cg})(),new T.MeshBasicMaterial({color:'#fff3d6',transparent:true,opacity:.07,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false}));
+  beam.position.set(0,-1.0,1.3);beam.rotation.x=.28;beam.visible=false;body.add(beam);
+  const lampG=new T.Sprite(glowM('#fff3d6',.9));lampG.scale.set(1.6,1.6,1);lampG.position.set(0,-1.0,1.36);lampG.visible=false;body.add(lampG);
+  return{g,body,seat:V3(0,-1.08,0),seatY:-1.08,ws:[],glass,props,beam,lampG}}
+ /* ---- the sub itself ---- */
+ class Sub{constructor(home){this.kind='sub';this.spec={name:'Moon Snail',paint:'#f2c53d',jeep:'#efe3c4',key:'sub'};this.j=makeSubModel();scene.add(this.j.g);this.c=null;this.player=false;this.home=home;
+   this.p=V3();this.vx=this.vz=this.vy=0;this.h=0;this.st=0;this.si=0;this.pitch=0;this.roll=0;this.dead=0;this.capsized=0;this.boostT=0;this.ammo=0;this.reload=0;this.surface='water';this.air=false;this.light=false;this.pingCool=0;this.prop=0}
+  get vf(){return this.vx*Math.sin(this.h)+this.vz*Math.cos(this.h)}
+  get depth(){return Math.max(0,-.55-this.p.y)}
+  floor(x=this.p.x,z=this.p.z){return G(x,z)+1.62}
+  top(){return -.55+waveH(this.p.x,this.p.z,CLOCK)*.45}
+  seat(c){if(this.c&&this.c.g.parent===this.j.body)this.j.body.remove(this.c.g);this.c=c;if(!c)return;this.j.body.add(c.g);c.g.position.copy(this.j.seat);c.g.rotation.set(0,0,0);c.g.visible=true}
+  place(x,z,h){this.p.set(x,0,z);this.p.y=this.top();this.h=h;this.vx=this.vz=this.vy=0;this.j.g.visible=true;this.sync(0)}
+  respawn(){if(this.home)this.place(this.home.x,this.home.z,this.home.h);if(this.player)toast('Back at the Moon Snail mooring off ’Sconset Beach')}
+  canExit(){return this.p.y>this.top()-.6}
+  update(dt,inp){const pl=this===PCAR,gas=+inp.gas||0,brk=+inp.brake||0,touchDive=IS_TOUCH&&!inp.tp&&brk>0&&!gas,up=inp.hand?1:0,down=(inp.down||touchDive)?1:0;
+   const sh=Math.sin(this.h),ch=Math.cos(this.h);let vf=this.vx*sh+this.vz*ch,vl=this.vx*ch-this.vz*sh;const st=clamp(inp.steer||0,-1,1);this.si=lerp(this.si,st,1-Math.exp(-6*dt));this.st=this.si*.4;
+   if(this.c){vf+=(gas*5.2-(touchDive?0:brk)*(vf>0?6:3.2))*dt;this.h+=this.si*(1.05-Math.min(.45,Math.abs(vf)*.03))*dt}vf-=vf*(gas?.32:.9)*dt;vf=clamp(vf,-3.5,11);vl*=Math.exp(-2.2*dt);
+   const top=this.top(),fl=this.floor();let wantVy=this.c?(up-down)*3.4:(this.p.y<top-.2?1.1:0);if(!this.c&&this.p.y>=top-.2)wantVy=(top-this.p.y)*3;
+   this.vy=lerp(this.vy,wantVy,1-Math.exp(-2.5*dt));
+   const nx=this.p.x+(sh*vf+ch*vl)*dt,nz=this.p.z+(ch*vf-sh*vl)*dt,nf=this.floor(nx,nz);
+   // the bubble can't climb onto the beach; on the bottom it rides up small slopes and stops at walls
+   if(nf>top+.2||nf>this.p.y+1.4){vf*=-.25;vl*=.2;if(gas&&nf<=top+.2)this.vy=Math.max(this.vy,2.6);if(pl&&Math.abs(vf)>1.5){shake=.18;sfx('land',.25)}}else{this.p.x=nx;this.p.z=nz;if(nf>this.p.y){this.p.y=lerp(this.p.y,nf,1-Math.exp(-6*dt));this.vy=Math.max(this.vy,0)}}
+   this.vx=sh*vf+ch*vl;this.vz=ch*vf-sh*vl;this.p.y+=this.vy*dt;if(this.p.y>top){this.p.y=lerp(this.p.y,top,1-Math.exp(-8*dt));this.vy=Math.min(this.vy,0)}
+   const f2=this.floor();if(this.p.y<f2){this.p.y=f2;this.vy=Math.max(0,this.vy)}
+   if(this.p.y>top-1.5){const hit=collide(this.p,1.6,this.p.y+.5);if(hit){const vn=this.vx*hit.x+this.vz*hit.z;if(vn<0){this.vx-=hit.x*vn*1.4;this.vz-=hit.z*vn*1.4}}}
+   this.pitch=lerp(this.pitch,clamp(-this.vy*.06+(gas-brk)*.04,-.22,.22),1-Math.exp(-3*dt));this.roll=lerp(this.roll,-this.si*.12*clamp(Math.abs(vf)/6,.2,1),1-Math.exp(-3*dt));
+   this.prop+=dt*(2+Math.abs(vf)*3+(up||down?6:0));this.pingCool-=dt;
+   if(this.p.y<top-1&&rnd()<.25+Math.abs(vf)*.03)puff(this.p.x-sh*1.9+(rnd()-.5),this.p.y-.3,this.p.z-ch*1.9+(rnd()-.5),'#e9fbff',.35,1.6,.9);
+   this.sync(dt)}
+  sync(dt){const g=this.j.g;g.position.copy(this.p);g.rotation.order='YXZ';g.rotation.set(this.pitch,this.h,this.roll);this.j.props.forEach((p,i)=>p.rotation.z=this.prop*(i?1:-1));
+   this.j.beam.visible=this.j.lampG.visible=this.light&&this===PCAR;if(this.c){if(this.c.npc)poseNPCSeated(this.c);else{poseSeated(this.c,this.si||0,CLOCK);this.c.aR.sh.rotation.set(-1.0+(this.si||0)*.25,0,-.15);this.c.aL.sh.rotation.set(-.8,0,.1)}}}
+  shoot(){if(this.pingCool>0)return;this.pingCool=1.6;ping(this)}
+  toggleLight(){this.light=!this.light;sfx('beep',.35);toast(this.light?'Searchlight on':'Searchlight off')}
+  damage(){}}
+ /* ---- sonar: a ring of sound that lights up the places and any pearls around you ---- */
+ const SON={t:-1,m:new T.Mesh(new T.SphereGeometry(1,20,12),new T.MeshBasicMaterial({color:'#7ff3ff',transparent:true,opacity:.3,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false,wireframe:true})),reveal:0,tags:[]};SON.m.visible=false;scene.add(SON.m);
+ const tagSprite=(t,col)=>{const s=new T.Sprite(new T.SpriteMaterial({map:textTex([{t,f:'bold 52px Anton, Impact, sans-serif',y:56}],768,84,{color:col}),depthTest:false,depthWrite:false,transparent:true,fog:false}));s.scale.set(16,1.75,1);s.renderOrder=9990;s.visible=false;scene.add(s);return s};
+ PLACES.forEach(p=>{p.tag=tagSprite(p.name.toUpperCase(),'#bff6ff')});PEARLS.forEach(q=>{q.tag=tagSprite('GLOW PEARL','#ffb3dc')});
+ function pingSound(){const c=AU.ctx;if(!c)return;const t=c.currentTime;[0,.38,.7].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(1320-i*40,t+d);o.frequency.exponentialRampToValueAtTime(1180,t+d+.6);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.16/(i+1),t+d+.01);g.gain.exponentialRampToValueAtTime(.0005,t+d+.9);o.connect(g);g.connect(AU.master);o.start(t+d);o.stop(t+d+1)})}
+ function ping(s){SON.t=0;SON.m.position.copy(s.p);SON.m.visible=true;pingSound();SON.reveal=9;
+  const near=PLACES.map(p=>({p,d:Math.hypot(p.x-s.p.x,p.z-s.p.z)})).sort((a,b)=>a.d-b.d)[0];
+  if(near&&near.d<p.fallScan&&near.p.id==='fall')scanFall();
+  const left=PEARLS.filter(q=>q.g.visible&&!q.got).length;toast(near?`Sonar: ${near.p.name} ${near.d<near.p.r?'all around you':Math.round(near.d*REAL*3.28)+' ft '+dirWord(s,near.p)}${left?` · ${left} pearl${left>1?'s':''} pinging pink`:''}`:'Sonar ping')}
+ const p={fallScan:45};
+ function dirWord(s,o){const a=angWrap(Math.atan2(o.x-s.p.x,o.z-s.p.z)-s.h);return Math.abs(a)<.5?'ahead':Math.abs(a)>2.6?'behind you':a>0?'to your left':'to your right'}
+ /* ---- what there is to do at each place ---- */
+ const ST={lanterns:0,trapsFreed:0,rang:0,lamp:false,scan:false};
+ function pay(id,n,why){if(SAVE.done[id]){if(n>40)addCash(25,why+' (again)');return}SAVE.done[id]=1;save();addCash(n,why)}
+ function freeTrap(T_){T_.free=true;T_.lift=0;sfx('pop',.6);ST.trapsFreed++;toast(`Lobster trap cut loose · ${ST.trapsFreed}/3`);pay('trap'+TRAPS.indexOf(T_),75,'Ghost trap cleared');
+  if(ST.trapsFreed===3){showMissionCard('Kelp forest cleaned up','All three ghost traps are cut loose and floating up to their buoys');pay('traps',150,'Kelp forest cleanup')}}
+ function ringBell(){if(BELL.sw>0)return;BELL.sw=3;ST.rang++;const c=AU.ctx;if(c){const t=c.currentTime;[220,440,553,659].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(.12/(i+1),t);g.gain.exponentialRampToValueAtTime(.0005,t+3.2);o.connect(g);g.connect(AU.master);o.start(t);o.stop(t+3.3)})}
+  if(ST.rang===1){showMissionCard('The chapel bell','It still rings under the sea. The fish don’t mind.');pay('bell',100,'Rang the chapel bell')}}
+ function lightLantern(L){L.lit=true;L.gl.visible=true;L.core.material.color.set('#ffd28a');sfx('cp',.5);ST.lanterns++;toast(`Lantern lit on the ${L.ship} · ${ST.lanterns}/${LANTERNS.length}`);
+  if(ST.lanterns===LANTERNS.length){showMissionCard('The Lantern Fleet is lit','All six lanterns glow over the old whaleships');pay('lanterns',250,'Lit the Lantern Fleet')}}
+ function lightLamp(){LAMP.lit=true;ST.lamp=true;LAMP.lg.visible=true;LAMP.beam.visible=true;LAMP.lamp.material.color.set('#fff6dc');sfx('win',.5);showMissionCard('The lighthouse is lit','Its beam sweeps the canyon again');pay('lamp',200,'Relit the drowned lighthouse')}
+ function scanFall(){if(ST.scan)return;ST.scan=true;showMissionCard('Whale fall scanned','Your sonar mapped every bone. Good science.');pay('scan',150,'Scanned the whale fall')}
+ function resetPlaces(){TRAPS.forEach(T_=>{T_.free=false;T_.lift=0;T_.g.position.y=T_.y;T_.glow.visible=true;T_.g.visible=true});LANTERNS.forEach(L=>{L.lit=false;L.gl.visible=false;L.core.material.color.set('#3a3428')});
+  LAMP.lit=false;LAMP.lg.visible=false;LAMP.beam.visible=false;LAMP.lamp.material.color.set('#4a4436');Object.assign(ST,{lanterns:0,trapsFreed:0,rang:0,lamp:false,scan:false})}
+ /* ---- Kingston's Deep Sea Sparkle job ---- */
+ const JOB={bcn:null};
+ function pearlStart(A){A.got=0;A.count=PEARLS.length;A.stage=1;PEARLS.forEach(q=>{q.got=false;q.g.visible=true});const s=SUB;if(s){JOB.bcn=beacon(s.home.x,s.home.z,'#f26d9a','MOON SNAIL SUB');}}
+ function pearlClean(A){PEARLS.forEach(q=>{q.g.visible=false});if(JOB.bcn){drop(JOB.bcn.g);JOB.bcn=null}if(A&&A.ice){drop(A.ice.g);A.ice=null}}
+ function pearlHud(A){return A.stage===2?'All 5 glow pearls · bring them to Kingston’s ice cream stand':`Glow pearls ${A.got}/5 · take the Moon Snail sub from ’Sconset Beach and follow the pink lights`}
+ function pearlTick(A,dt){const me=ME();if(!me)return;if(JOB.bcn){JOB.bcn.cyl.rotation.y+=dt;JOB.bcn.g.visible=!(PCAR&&PCAR.kind==='sub')}
+  if(A.stage===1){for(const q of PEARLS){if(q.got)continue;q.gl.material.opacity=.7+.3*Math.sin(CLOCK*3+q.x);q.g.rotation.y+=dt;
+    const d=Math.hypot(me.p.x-q.x,me.p.z-q.z),dy=Math.abs(me.p.y-q.y);if(d<(PCAR?3.6:2.2)&&dy<3.2){q.got=true;q.g.visible=false;A.got++;sfx('score',.7);toast(`Glow pearl ${A.got} of 5`);missionHud();
+     if(A.got>=PEARLS.length){A.stage=2;if(JOB.bcn){drop(JOB.bcn.g);JOB.bcn=null}if(ICE)A.ice=beacon(ICE.x,ICE.z,'#f26d9a','KINGSTON’S STAND');showMissionCard('All five pearls!','Bring them back to Kingston’s ice cream stand by the harbor');missionHud()}}}}
+  else if(A.stage===2&&ICE){if(A.ice)A.ice.cyl.rotation.y+=dt;if(Math.hypot(me.p.x-ICE.x,me.p.z-ICE.z)<(PCAR?8:4.5)){SAVE.ice=1;save();missionDone();crewSay('Kingston','Whoa, they glow! Free ice cream for you from now on. Forever!','#f26d9a',true)}}}
+ /* ---- the sub, spawned with the open world ---- */
+ let SUB=null;
+ function openStart(){resetPlaces();if(!MOOR)return;SUB=new Sub({x:MOOR.x,z:MOOR.z,h:MOOR.h});SUB.place(MOOR.x,MOOR.z,MOOR.h);OPEN.veh.push(SUB)}
+ function openTick(dt){const me=ME();if(!me)return;const s=PCAR&&PCAR.kind==='sub'?PCAR:null;
+  if(s){if(nadeInput){nadeInput=false;s.toggleLight()}const lp=V3(0,-1.0,1.3).applyEuler(s.j.g.rotation).add(s.p),ld=V3(0,-.25,1).normalize().applyEuler(s.j.g.rotation);DU.uSLp.value.copy(lp);DU.uSLd.value.copy(ld);DU.uSLon.value=s.light?1:0}else DU.uSLon.value=0;
+  // sonar ring and tags
+  if(SON.t>=0){SON.t+=dt;const r=SON.t*48;SON.m.scale.setScalar(r);SON.m.material.opacity=.32*(1-SON.t/1.4);if(SON.t>1.4){SON.t=-1;SON.m.visible=false}}
+  if(SON.reveal>0)SON.reveal-=dt;const showTags=SON.reveal>0&&UW;PLACES.forEach(p=>{p.tag.visible=showTags&&Math.hypot(p.x-me.p.x,p.z-me.p.z)<600;if(p.tag.visible)p.tag.position.set(p.x,Math.min(-3,p.y+14),p.z)});
+  PEARLS.forEach(q=>{q.tag.visible=showTags&&q.g.visible;if(q.tag.visible)q.tag.position.set(q.x,q.y+3,q.z)});
+  if(!UW&&!s)return;
+  // places: found on the first visit, with the island fact and a finder's fee
+  for(const p of PLACES){const d=Math.hypot(p.x-me.p.x,p.z-me.p.z);if(d<p.r*.8&&me.p.y<-3){if(!p.seen){p.seen=true;factCard('The deep off ’Sconset',p.name,p.fact,9000);sfx('go',.5);if(!SAVE.found[p.id]){SAVE.found[p.id]=1;save();addCash(150,'Found '+p.name)}}}else if(d>p.r*1.6)p.seen=false}
+  const near=(x,y,z,r)=>Math.hypot(me.p.x-x,me.p.z-z)<r&&Math.abs(me.p.y-y)<r+1.5;
+  TRAPS.forEach(T_=>{if(T_.free){T_.lift+=dt;T_.g.position.y=Math.min(-1.2,T_.y+T_.lift*1.8);T_.glow.visible=false;if(T_.g.position.y>=-1.2)T_.g.visible=false;return}T_.glow.material.opacity=.35+.2*Math.sin(CLOCK*3);
+   if(near(T_.x,T_.y,T_.z,3.6))freeTrap(T_);else if(near(T_.x,T_.y,T_.z,14)&&!OPEN.prompt)OPEN.prompt={t:'Bump the glowing lobster trap to cut it loose'}});
+  if(BELL.g){if(BELL.sw>0){BELL.sw-=dt;BELL.g.rotation.z=Math.sin(BELL.sw*7)*.5*BELL.sw/3}if(near(BELL.x,BELL.y+.5,BELL.z,3))ringBell();else if(near(BELL.x,BELL.y,BELL.z,16)&&!OPEN.prompt&&!ST.rang)OPEN.prompt={t:'Nudge the chapel bell in the belfry'}}
+  LANTERNS.forEach(L=>{if(L.lit){L.gl.material.opacity=.8+.15*Math.sin(CLOCK*5+L.g.position.x);return}const w=new T.Vector3();L.g.getWorldPosition(w);if(near(w.x,w.y,w.z,4))lightLantern(L);else if(near(w.x,w.y,w.z,18)&&!OPEN.prompt)OPEN.prompt={t:`Get close to the ${L.ship}’s lantern to light it`}});
+  if(!LAMP.lit){if(near(LAMP.x,LAMP.y,LAMP.z,4.5))lightLamp();else if(near(LAMP.x,LAMP.y,LAMP.z,22)&&!OPEN.prompt)OPEN.prompt={t:'Steer into the lantern room to relight the lighthouse'}}else LAMP.beam.rotation.x+=dt*.8;
+  if(!ST.scan&&Math.hypot(me.p.x-P.fall[0],me.p.z-P.fall[1])<p.fallScan&&me.p.y<-8&&!OPEN.prompt)OPEN.prompt={t:s?`${IS_TOUCH?'FIRE':GP.on?(VR.on?'Right grip':GP.rt):'Click'} · sonar ping to scan the whale fall`:'Ping it with the sub’s sonar to scan the whale fall'};
+  // sea life
+  const t=CLOCK;for(const f of LIFE){if(!f.g.visible&&f.r>0){}const a=f.ph+t*f.spd*f.dir,x=f.c[0]+Math.cos(a)*f.r,z=f.c[1]+Math.sin(a)*f.r;let y=f.y+Math.sin(t*.3+f.ph)*f.wob;
+   if(f.kind==='dolphin')y=Math.min(-.6,f.y+Math.sin(t*1.4+f.ph)*1.8);const fl=G(x,z)+2;if(y<fl)y=fl;f.g.position.set(x,y,z);const hd=Math.atan2(-Math.sin(a)*f.dir,Math.cos(a)*f.dir);f.g.rotation.set(f.kind==='dolphin'?-Math.cos(t*1.4+f.ph)*.35:0,hd,0);
+   f.tail.rotation.y=Math.sin(t*(f.kind==='dolphin'?6:f.kind==='orca'?2.2:2.8)+f.ph)*.35;if(f.kind==='dolphin')f.tail.rotation.x=Math.sin(t*6+f.ph)*.3}
+  {const m4=new T.Matrix4(),q=new T.Quaternion(),v=V3(),sc=V3();JEL.J.forEach((j,i)=>{const pu=Math.sin(t*1.6+j.ph);v.set(j.x+Math.sin(t*.1+j.ph)*3,j.y+Math.sin(t*.4+j.ph)*.8,j.z+Math.cos(t*.1+j.ph)*3);sc.set(j.s*(1+pu*.12),j.s*(1-pu*.15),j.s*(1+pu*.12));m4.compose(v,q,sc);JEL.im.setMatrixAt(i,m4)});JEL.im.instanceMatrix.needsUpdate=true}
+  CRABS.forEach(c=>{c.a+=Math.sin(t*.4+c.ph)*dt*.6;const sp=Math.sin(t*2+c.ph)>.3?.6:0;c.g.position.x+=Math.sin(c.a)*sp*dt;c.g.position.z+=Math.cos(c.a)*sp*dt;c.g.rotation.y=c.a+Math.PI/2;
+   if(Math.hypot(c.g.position.x-P.fall[0],c.g.position.z-P.fall[1])>9)c.a+=Math.PI*.5;c.g.position.y=G(c.g.position.x,c.g.position.z)+.1})}
+ function hud(c){const dft=Math.round(c.depth*REAL*3.28),where=PLACES.find(p=>Math.hypot(p.x-c.p.x,p.z-c.p.z)<p.r);$('surf').textContent=c.depth<.4?'On the surface':`Depth ${dft} ft${where?' · '+where.name:''}`;
+  $('ammo').textContent=`${c.pingCool>0?'Sonar charging':'Sonar ready'} · Light ${c.light?'on':'off'}`}
+ function enterToast(){toast(IS_TOUCH?'Moon Snail · GO to move · wheel turns · UP rise · DIVE down · FIRE sonar · LIGHT searchlight':GP.on?(VR.on?'Right trigger go · left trigger back · right stick up rise, down dive · right grip sonar · left grip searchlight · B out at the surface':`${GP.rt} go · ${GP.lt} back · right stick up rise, down dive · RB sonar · LB searchlight`):TPK()?'Slide up to go · sideways to turn · ↑ rise · ↓ dive · ← sonar':'Moon Snail · W go · S back · A/D turn · Space rise · Shift dive · click sonar · G searchlight · E out at the surface')}
+ function surfaceToast(){toast(IS_TOUCH?'Come up to the surface first: hold UP':GP.on?(VR.on?'Come up to the surface first: right stick up':'Come up to the surface first: right stick up'):'Come up to the surface first: hold Space')}
+ return{pre,post,openStart,openTick,hud,enterToast,surfaceToast,pearlStart,pearlClean,pearlHud,pearlTick,onPontoon,makeSubModel,Sub,iceFree:()=>!!SAVE.ice,
+  get under(){return UW},get sub(){return SUB},PLACES,PEARLS,TRAPS,LANTERNS,LAMP,BELL,LIFE,MOOR,PONT,CH,root,SAVE,ST,DU}})();
+
 
 
 
@@ -4447,7 +4787,7 @@ function sfx(type,v=1){const c=AU.ctx;if(!c)return;const t=c.currentTime,out=AU.
 /* ---------- input ---------- */
 let resetInput=false,nadeInput=false,enterInput=false,camInput=false,wpnInput=null,heliCallInput=false;
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[e.code]=true;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
- if(e.code==='KeyC'&&!FOOT()&&(MODE==='race'||MODE==='free'||OPENISH()))cycleCam(1);if((e.code==='KeyE'||e.code==='KeyF'&&OPENISH())&&!e.repeat)enterInput=true;if(e.code==='KeyV'&&FOOT())PL.fp=!PL.fp,toast(PL.fp?'First person':'Third person');
+ if(e.code==='KeyC'&&!FOOT()&&(MODE==='race'||MODE==='free'||OPENISH()))cycleCam(1);if((e.code==='KeyE'||e.code==='KeyF'&&OPENISH())&&!e.repeat)enterInput=true;if(e.code==='KeyV'&&!e.repeat&&(FOOT()&&PL||PCAR&&(MODE==='race'||MODE==='free'||OPENISH())))toggleView();
  if(e.code==='KeyM')$('bigmap').hidden=!$('bigmap').hidden,drawBigMap();if((e.code==='Escape'||e.code==='KeyP')&&MODE!=='menu'){if(ARMS.open)shopClose();else togglePause()}if(e.code==='KeyR')resetInput=true;
  if(e.code==='KeyG'||e.code==='KeyQ')nadeInput=true;if(e.code==='KeyX')wpnInput='next';if(e.code==='KeyH'&&!e.repeat)heliCallInput=true;if(/^Digit[1-9]$/.test(e.code))wpnInput=+e.code.slice(5)-1;if(e.code==='KeyN'&&typeof toggleMusic==='function')toggleMusic()});
 addEventListener('keyup',e=>keys[e.code]=false);
@@ -4463,7 +4803,7 @@ $('t-enter').addEventListener('pointerdown',e=>{e.preventDefault();enterInput=tr
  pad.addEventListener('pointerdown',e=>{e.preventDefault();id=e.pointerId;x0=e.clientX;pad.setPointerCapture(id);set(0)});
  pad.addEventListener('pointermove',e=>{if(e.pointerId!==id)return;set(clamp((x0-e.clientX)/70,-1,1))});
  const up=e=>{if(e.pointerId!==id)return;id=null;set(null)};pad.addEventListener('pointerup',up);pad.addEventListener('pointercancel',up)})();
-$('t-cam').addEventListener('pointerdown',e=>{e.preventDefault();if(FOOT()){PL.fp=!PL.fp}else cycleCam(1)});
+$('t-cam').addEventListener('pointerdown',e=>{e.preventDefault();if(FOOT()){toggleView()}else cycleCam(1)});
 $('t-map').addEventListener('pointerdown',e=>{e.preventDefault();$('bigmap').hidden=!$('bigmap').hidden;drawBigMap()});
 (function(){const st=$('stick'),kn=$('knob');let sid=null,cx=0,cy=0;st.addEventListener('pointerdown',e=>{sid=e.pointerId;const r=st.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;st.setPointerCapture(sid);mv(e)});
  const mv=e=>{if(e.pointerId!==sid)return;let dx=e.clientX-cx,dy=e.clientY-cy;const L=Math.hypot(dx,dy),R=48;if(L>R){dx*=R/L;dy*=R/L}TOUCH.mx=dx/R;TOUCH.my=dy/R;kn.style.transform=`translate(${dx}px,${dy}px)`};
@@ -4800,8 +5140,14 @@ const ME=()=>FOOT()||MODE==='battleover'?PL:PCAR;
 const TEAMS=[{name:'Team Box',short:'The Box',col:'#ff9a1f'},{name:'Team Shop and Stop',short:'Shop and Stop',col:'#2fa4ff'}];
 const ARENA={x:HUB.center[0],z:HUB.center[1],r:125};
 const CAMNAMES=['Chase cam','Far chase','Driver’s eyes','Hood cam','God’s eye','Cinematic'];
-function camVis(){if(!PCAR)return;if(PCAR.c&&PCAR.c.head)PCAR.c.head.visible=CAM!==2;PCAR.j.ws.forEach(m=>m.visible=CAM!==2)}
-function cycleCam(d){CAM=(CAM+d+6)%6;toast(CAMNAMES[CAM]);camVis()}
+function camVis(){if(!PCAR)return;const hd=CAM===2||CAM===3&&(PCAR.kind==='heli'||PCAR.kind==='sub');if(PCAR.c&&PCAR.c.head)PCAR.c.head.visible=!hd;PCAR.j.ws.forEach(m=>m.visible=CAM!==2)}
+function cycleCam(d){CAM=(CAM+d+6)%6;toast(CAMNAMES[CAM]);camVis();VIEWP.noteCam()}
+/* Build 25: first or third person, the same choice on foot and in every vehicle (like the Quest version), remembered between games */
+const VIEWP=(function(){const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},put=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+ return{footFp(def){const v=get('ack-view-foot');return v==='1'?true:v==='3'?false:def},setFoot(fp){put('ack-view-foot',fp?'1':'3')},
+  vehCam(){return get('ack-view-veh')==='1'?2:0},noteCam(){if(CAM===2||CAM===3)put('ack-view-veh','1');else if(CAM===0||CAM===1)put('ack-view-veh','3')},
+  vrVehFirst(v){const s=get('ack-vr-veh');return s==='1'?true:s==='3'?false:!(v&&(v.kind==='heli'||v.kind==='sub'))},setVrVeh(fp){put('ack-vr-veh',fp?'1':'3')}}})();
+function toggleView(){if(FOOT()&&PL){PL.fp=!PL.fp;VIEWP.setFoot(PL.fp);toast(PL.fp?'First person':'Third person')}else if(PCAR){CAM=CAM===2||CAM===3?0:2;camVis();VIEWP.noteCam();toast(CAM===2?'First person · '+CAMNAMES[2]:'Third person · '+CAMNAMES[0])}}
 const ARENAVIS=(function(){const m=new T.Mesh(new T.CylinderGeometry(ARENA.r,ARENA.r,6,90,1,true),new T.MeshBasicMaterial({color:'#ff5fa2',transparent:true,opacity:.16,side:T.DoubleSide,depthWrite:false}));m.position.set(ARENA.x,groundH(ARENA.x,ARENA.z)+2,ARENA.z);m.visible=false;scene.add(m);return m})();
 const VM=(function(){const g=new T.Group();g.visible=false;return g})();
 function buildVM(spec){VM.clear();const m=makeBlaster(spec.paint,WPNS[PL&&PL.wpn||'marker'].kind);m.position.set(.24,-.23,-.6);m.scale.setScalar(.8);m.rotation.y=Math.PI;VM.add(m);const hg=new T.SphereGeometry(.036,10,8).scale(1,.8,1.3);const glove='#2a2c30';mk(hg,glove,.24,-.3,-.57,VM,false);mk(hg,glove,.24,-.25,-.76,VM,false);mk(new T.CylinderGeometry(.045,.055,.34,10).rotateX(Math.PI/2.4),spec.shirt,.25,-.35,-.4,VM,false);
@@ -4892,7 +5238,7 @@ function updateFoot(dt){footInput(dt);FIGHTERS.forEach(f=>{if(f===PL||f.remote)r
 function startBattle(){clearWorld();MODE='battle';ARENAVIS.visible=true;const humans=typeof onlinePeers==='function'?onlinePeers('battle').length:0;const others=humans?[]:[0,1,2,3].filter(i=>i!==SEL);
  [SEL,...others].forEach((di,k)=>{const f=new Fighter(DRIVERS[di],k===0);FIGHTERS.push(f);if(k===0)PL=f;f.spawn(spawnPoint());f.yaw=Math.atan2(ARENA.x-f.p.x,ARENA.z-f.p.z);TARGETS.push(fighterTarget(f))});
  FIGHTERS.forEach(f=>{if(f!==PL){f.wpn=['marker','smg','shotgun','rifle','minigun'][(rnd()*5)|0];f.ammo=WPNS[f.wpn].ammo}});PL.picked=[];PL.res={};PL.inv=invList();padsSetup();
- PL.fp=!IS_TOUCH;buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('battle');toast(humans?`Online war · ${humans} friend${humans>1?'s':''} here`:IS_TOUCH?'Left stick moves · drag right side to aim':TPK()?'Slide on the trackpad to move · ← shoots · first to 10 splats':'Click to aim with the mouse · first to 10 splats')}
+ PL.fp=VIEWP.footFp(!IS_TOUCH);buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('battle');toast(humans?`Online war · ${humans} friend${humans>1?'s':''} here`:IS_TOUCH?'Left stick moves · drag right side to aim':TPK()?'Slide on the trackpad to move · ← shoots · first to 10 splats':'Click to aim with the mouse · first to 10 splats')}
 function endBattle(w,online){if(MODE!=='battle')return;MODE='battleover';document.exitPointerLock&&document.exitPointerLock();
  const list=online?online:[...FIGHTERS].map(f=>({name:f.spec.name,col:f.spec.paint,me:f===PL,score:f.score}));list.sort((a,b)=>b.score-a.score);
  const rows=list.map((f,i)=>`<tr><td>${i+1}</td><td><span class="dot" style="background:${f.col}"></span>${esc(f.name)}${f.me?' (you)':''}</td><td>${f.score}</td></tr>`).join('');
@@ -4908,7 +5254,7 @@ function startCTF(){clearWorld();MODE='ctf';ARENAVIS.visible=true;const others=[
  CTF.vis=CTF.bases.map((b,t)=>{const r=new T.Mesh(new T.RingGeometry(2.6,3.4,40),new T.MeshBasicMaterial({color:TEAMS[t].col,transparent:true,opacity:.6,side:T.DoubleSide,depthWrite:false}));r.rotation.x=-Math.PI/2;r.position.set(b.x,surfaceY(b.x,b.z)+.1,b.z);scene.add(r);return r});
  const roster=[[SEL,0,'att'],[others[0],0,'def'],[others[1],1,'att'],[others[2],1,'def']];
  roster.forEach(([di,team,role],k)=>{const f=new Fighter(DRIVERS[di],k===0,team);f.role=role;FIGHTERS.push(f);if(k===0)PL=f;f.spawn(spawnPoint(team));const e=CTF.bases[1-team];f.yaw=Math.atan2(e.x-f.p.x,e.z-f.p.z);TARGETS.push(fighterTarget(f))});
- PL.fp=!IS_TOUCH;buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('ctf');toast('Grab the Shop and Stop flag · bring it to The Box deck');updateCTFHud()}
+ PL.fp=VIEWP.footFp(!IS_TOUCH);buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('ctf');toast('Grab the Shop and Stop flag · bring it to The Box deck');updateCTFHud()}
 function ctfClear(){CTF.flags.forEach(f=>scene.remove(f.g));CTF.vis.forEach(v=>scene.remove(v));CTF.flags=[];CTF.vis=[]}
 function returnFlag(fl){fl.state='home';fl.pos={...CTF.bases[fl.team]};fl.carrier=null;fl.dropT=0}
 function ctfDrop(f){const fl=f.flag;if(!fl)return;fl.state='dropped';fl.pos={x:f.p.x,z:f.p.z};fl.carrier=null;fl.dropT=0;f.flag=null;feed(`${esc(f.spec.name)} dropped the ${TEAMS[fl.team].short} flag`,TEAMS[fl.team].col,true);updateCTFHud()}
@@ -4947,7 +5293,7 @@ function updateCamera(dt){const k=1-Math.exp(-6*dt);if(MODE==='open'&&POL.arrest
    const want=piv.clone().addScaledVector(back,dist).addScaledVector(rt,-footCam.sh*.5).add(V3(0,(.45-f.pitch*1.2)*dist/footCam.d-(f.anim_land||0),0));const gy=surfaceY(want.x,want.z,f.p.y+.3)+.35;if(want.y<gy)want.y=gy;if(inSS){const cap=SSX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inCY){const cap=CYN.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inPD){const cap=PD.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inHO){const cap=HOSP.ceilFor();if(want.y>cap)want.y=cap}if(inFE){const cap=FERRY.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inES){const cap=ESSEX.ceilFor(f.p.y);if(want.y>cap)want.y=cap}if(inSC){const cap=S23.ceilFor();if(want.y>cap)want.y=cap}
    camera.position.lerp(want,f.dead>0?.05:1-Math.exp(-18*dt));camera.lookAt(e.clone().addScaledVector(d,20));
    const fovT=(camera.aspect<1?72:60)+(spd>5.5&&!aiming?6:0)-(aiming&&OPENISH()?4:0);if(Math.abs(camera.fov-lerp(camera.fov,fovT,.1))>.02){camera.fov=lerp(camera.fov,fovT,1-Math.exp(-6*dt));camera.updateProjectionMatrix()}}sunFollow(f.p);return}
- const c=PCAR;if(!c)return;if(c.kind==='heli'){heliCam(dt,c);return}
+ const c=PCAR;if(!c)return;if(c.kind==='heli'){heliCam(dt,c);return}if(c.kind==='sub'){subCam(dt,c);return}
  if(look.dx||look.dy){ORB.yaw-=look.dx*.0035;ORB.pitch=clamp(ORB.pitch-look.dy*.0025,-.25,.7);ORB.t=1.8;look.dx=look.dy=0}else if((ORB.t-=dt)<=0){ORB.yaw*=Math.exp(-3*dt);ORB.pitch*=Math.exp(-3*dt)}
  const oh=c.h+ORB.yaw,f=V3(Math.sin(oh),0,Math.cos(oh)),p=c.p,boat=c.kind==='boat';let want,lk;
  const baseFov=camera.aspect<1?72:60;fovKick=lerp(fovKick,c.boostT>0?10:0,1-Math.exp(-4*dt));if(Math.abs(camera.fov-(baseFov+fovKick))>.05){camera.fov=baseFov+fovKick;camera.updateProjectionMatrix()}
@@ -4958,7 +5304,7 @@ function updateCamera(dt){const k=1-Math.exp(-6*dt);if(MODE==='open'&&POL.arrest
  else if(CAM===3){camera.position.copy(p).addScaledVector(f,1.9).add(V3(0,1.55,0));camera.lookAt(p.clone().addScaledVector(f,30).add(V3(0,.8,0)));sunFollow(p);return}
  else if(CAM===4){const ah=p.clone().add(V3(c.vx*.7,0,c.vz*.7));want=ah.clone().add(V3(0,36+Math.abs(c.vf)*.65,.1));lk=ah}
  else{cinA+=dt*.25;want=p.clone().add(V3(Math.sin(cinA)*13,3+Math.sin(cinA*.7)*1.5,Math.cos(cinA)*13));lk=p.clone().add(V3(0,1,0))}
- {const sy=surfaceY(want.x,want.z,Math.max(want.y,p.y+.5));if(want.y<sy+1.2&&!boat)want.y=sy+1.2}camPos.lerp(want,CAM===4?.2:k*1.6>1?1:k*1.6);camLook.lerp(lk,.35);camera.position.copy(camPos);if(shake>0){shake-=dt;camera.position.x+=(rnd()-.5)*shake;camera.position.y+=(rnd()-.5)*shake}camera.lookAt(camLook);sunFollow(p)}
+ {const sy=surfaceY(want.x,want.z,Math.max(want.y,p.y+.5));if(want.y<sy+1.2&&!boat)want.y=sy+1.2}camPos.lerp(want,VR.on&&CAM<2?1-Math.exp(-3.5*dt):CAM===4?.2:k*1.6>1?1:k*1.6);camLook.lerp(lk,VR.on&&CAM<2?1-Math.exp(-4*dt):.35);camera.position.copy(camPos);if(shake>0){shake-=dt;camera.position.x+=(rnd()-.5)*shake;camera.position.y+=(rnd()-.5)*shake}camera.lookAt(camLook);sunFollow(p)}
 function sunFollow(p){sun.position.set(p.x,p.y||0,p.z).addScaledVector(SUN_DIR,300);sun.target.position.set(p.x,p.y||0,p.z)}
 function menuCam(dt){cinA+=dt;const P=PREVIEW,c=P.center,sw=Math.sin(cinA*.12)*.16,port=camera.aspect<1,th=Math.atan2(-Math.sin(P.a),-Math.cos(P.a))+sw+.18,D=port?10.5:9.5;
  camera.position.set(c.x+Math.sin(th)*D,c.y+(port?3.4:2.1),c.z+Math.cos(th)*D);const rx=Math.cos(th),rz=-Math.sin(th),k=port?.6:-3.3;camera.lookAt(c.x+rx*k,c.y+(port?-3.6:1.3),c.z+rz*k);sunFollow(c)}
@@ -5000,7 +5346,7 @@ function drawBigMapOld(){const cv=$('bigmapc'),x=cv.getContext('2d');x.drawImage
  x.font='bold 17px Barlow Condensed, sans-serif';MAP.sites.forEach(st=>{const q=MM.tm(st.x,st.z);x.fillStyle='#b8322a';x.beginPath();x.arc(q[0],q[1],6,0,TAU);x.fill();x.fillStyle='#fff';if(st.id!=='stopshop')x.fillText(st.name,q[0]+9,q[1]-6)});
  (CARS.length?CARS:FIGHTERS).forEach(o=>{const q=MM.tm(o.p.x,o.p.z);x.fillStyle=o.spec.paint;x.beginPath();x.arc(q[0],q[1],7,0,TAU);x.fill();x.strokeStyle='#fff';x.lineWidth=2;x.stroke()});if(MODE==='open'&&typeof pirBigMap==='function')pirBigMap(x);x.restore()}
 function updateHUD(){if(PCAR&&(MODE==='race'||MODE==='free'||OPENISH())){const c=PCAR,mph=Math.max(0,Math.round(c.vf*2.237*1.25));$('spd').textContent=mph;if(MODE==='open'){const L=$('limit'),lim=c.kind==='car'?POL.lim:null;if(lim){if(L.hidden)L.hidden=false;const b=L.querySelector('b');if(b.textContent!=String(lim))b.textContent=lim;L.classList.toggle('over',mph>lim+25)}else if(!L.hidden)L.hidden=true}$('ammo').textContent=(c.reload>0?'Reloading…':`Paint ${c.ammo}/${c.kind==="boat"?24:20}`)+(c.kind==='car'&&OPENISH()?` · Oil ${OIL.cool>0?Math.ceil(OIL.cool)+'s':OIL.left}`:'');
-  $('surf').textContent=c.kind==='boat'?(c.capsized>0?'Capsized!':'On the water'):c.air?'Airborne!':c.boostT>0?'Boost!':({road:'Paved',cobble:'Cobblestones',sand:'Sand track',beach:'Beach',moor:'Moors',water:'In the water!',lot:'Parking lot'})[c.surface];$('hud').classList.toggle('boosting',c.boostT>0);if(c.kind==='heli')heliHud(c);
+  $('surf').textContent=c.kind==='boat'?(c.capsized>0?'Capsized!':'On the water'):c.air?'Airborne!':c.boostT>0?'Boost!':({road:'Paved',cobble:'Cobblestones',sand:'Sand track',beach:'Beach',moor:'Moors',water:'In the water!',lot:'Parking lot'})[c.surface];$('hud').classList.toggle('boosting',c.boostT>0);if(c.kind==='heli')heliHud(c);if(c.kind==='sub'&&DEEPV)DEEPV.hud(c);
   if(MODE==='race'){const all=[...CARS.map(q=>({pos:racePos(q),me:q===c})),...(typeof remoteRacers==='function'?remoteRacers():[])].sort((a,b)=>b.pos-a.pos),pos=all.findIndex(q=>q.me)+1;$('pos').innerHTML=`${pos}<sup>${['','st','nd','rd'][pos]||'th'}</sup><small>/ ${all.length}</small>`;
    const cp=CPS[Math.min(c.cp,CPS.length-1)],d=Math.hypot(c.p.x-cp.x,c.p.z-cp.z)*REAL;$('next').innerHTML=c.done?'Finished':`<small>${cp.finish?'Finish':'Next · '+Math.min(c.cp+1,CPS.length)+'/'+CPS.length}</small>${esc(cp.site.name)}<em>${d>1000?(d/1609).toFixed(1)+' mi':Math.round(d*3.28)+' ft'}</em>`;
    const m=Math.floor(raceT/60),s=(raceT%60).toFixed(1).padStart(4,'0');$('timer').textContent=`${m}:${s}`;
@@ -5253,15 +5599,17 @@ try{lockersBuild()}catch(e){console.warn('lockers',e)}
 const KID={i:0,L:[
  {id:'kid-ice',name:'Ice Cream Rush',type:'deliver',repeat:true,kid:true},
  {id:'kid-race',name:'Kingston’s Harbor Race',type:'kidrace',kid:true,desc:'Hit all the pink flags around the harbor before time runs out. Car, boat, helicopter or your own two feet.'},
- {id:'kid-prank',name:'Paint Chad’s Land Rover',type:'prank',kid:true,count:15,desc:'Chad parked his Land Rover nearby. Cover it in paint, then get ready: he and Brad will be mad.'}]};
+ {id:'kid-prank',name:'Paint Chad’s Land Rover',type:'prank',kid:true,count:15,desc:'Chad parked his Land Rover nearby. Cover it in paint, then get ready: he and Brad will be mad.'},
+ {id:'kid-pearls',name:'Deep Sea Sparkle',type:'pearls',kid:true,desc:'Kingston wants five glow pearls for a new flavor. Take the Moon Snail sub from ’Sconset Beach and find one at each place in the deep. Pink lights mark them. No fighting, no timer.'}]};
 function crewAction(){if(!PL||PCAR||PL.dead>0)return null;
  for(const L of LOCKERS)if(Math.hypot(PL.p.x-L.x,PL.p.z-L.z)<2.4)return{t:`Crew Locker · take the ${LOADOUTS[(KIT.i+1)%LOADOUTS.length].name} loadout`,act:kitPick};
+ if(ICE&&DEEPV&&DEEPV.iceFree()&&OPEN.hp<4&&Math.hypot(PL.p.x-ICE.x,PL.p.z-ICE.z)<3.2)return{t:'Free Deep Sea Sparkle cone from Kingston',act:()=>{OPEN.hp=4;sfx('pop',.6);toast('Deep Sea Sparkle cone · on the house · health full')}};
  if(ICE&&!OPEN.active&&Math.hypot(PL.p.x-ICE.x,PL.p.z-ICE.z)<3.2){const M=KID.L[KID.i%KID.L.length];return{t:`Kingston has a job · ${M.name}`,act:()=>{KID.i++;missionStart(M)}}}
  return null}
 function prankHit(v){const A=OPEN.active;if(!A||A.type!=='prank'||A.car!==v||A.stage!==1)return;A.hits++;missionHud();if(A.hits<A.count)return;
  A.stage=2;if(A.bcn){drop(A.bcn.g);A.bcn=null}const s=Math.sin(v.h),co=Math.cos(v.h);let n=0;['chad','brad','tucker'].forEach((look,i)=>{if(spawnPirate(v.p.x+co*(5+i*2),v.p.z-s*(5+i*2),{prep:look,nades:i<2,mission:A.id}))n++});
  A.got=0;A.count=n;showMissionCard('Uh oh','Chad and Brad saw the paint job. Splat them!');ALLY.cool=0;ALLY.wake=1;missionHud()}
-function missionCleanup(A){if(!A)return;if(A.ring){drop(A.ring);A.ring=null}if(A.bcn){drop(A.bcn.g);A.bcn=null}if(A.cps){A.cps.forEach(b=>drop(b.g));A.cps=null}if(A.type==='heist'){FERRY.heist=false;bossHud(null)}if(A.type==='chase'&&S23)S23.chaseClean(A);if(A.type==='whale'&&S24)S24.whaleClean(A);
+function missionCleanup(A){if(!A)return;if(A.ring){drop(A.ring);A.ring=null}if(A.bcn){drop(A.bcn.g);A.bcn=null}if(A.cps){A.cps.forEach(b=>drop(b.g));A.cps=null}if(A.type==='heist'){FERRY.heist=false;bossHud(null)}if(A.type==='chase'&&S23)S23.chaseClean(A);if(A.type==='whale'&&S24)S24.whaleClean(A);if(A.type==='pearls'&&DEEPV)DEEPV.pearlClean(A);
  OPEN.pirates.forEach(e=>{if(e.mission===A.id)e.mission=null})}
 /* the Ferry Heist: Captain Seaweed's wild crew take the Eagle; catch her by boat, climb the stern ladder and clear the decks */
 const HEIST_SPOTS=[[-4,-30,1],[4,-27,1],[0,-33,1],[-3,25,1],[3,22,1],[0,28,1],[-5,-19,2],[5,-18,2],[0,14,2]];
@@ -5316,19 +5664,19 @@ function orcaTick(dt){const boats=OPEN.veh.filter(v=>v.kind==='boat').concat(OPE
 
 /* ---------- getting in and out ---------- */
 function nearestVehicle(){if(!PL)return null;let best=null,bd=1e9;
- for(const v of worldVehicles().concat(OPEN.pboats,[HELI,FERRY.heli].filter((h,i,a)=>h&&a.indexOf(h)===i&&h.j.g.visible&&h.dead<=0))){if(v.capsized>0||v.cop||v.prepAI)continue;const d=Math.hypot(v.p.x-PL.p.x,v.p.z-PL.p.z),reach=v.kind==='boat'?(PL.swim?4.5:6):v.kind==='heli'?5.5:4.2;if(d<reach&&d<bd){bd=d;best=v}}return best}
-function vehicleName(v){if(v.kind==='heli')return v.ferry?'Eagle’s patrol helicopter':'MedFlight helicopter';if(v.kind==='boat')return v.pirate?'pirate boat':'boat';if(v.model==='jeep')return v.spec.key===DRIVERS[SEL].key?'your jeep':`${v.spec.name}’s jeep`;return{sedan:'sedan',suv:'SUV',pickup:'pickup',van:'van',defender:'Land Rover',wagoneer:'Wagoneer'}[v.model]||'car'}
+ for(const v of worldVehicles().concat(OPEN.pboats,[HELI,FERRY.heli].filter((h,i,a)=>h&&a.indexOf(h)===i&&h.j.g.visible&&h.dead<=0))){if(v.capsized>0||v.cop||v.prepAI)continue;const d=Math.hypot(v.p.x-PL.p.x,v.p.z-PL.p.z),reach=v.kind==='boat'||v.kind==='sub'?(PL.swim?4.5:6):v.kind==='heli'?5.5:4.2;if(d<reach&&d<bd){bd=d;best=v}}return best}
+function vehicleName(v){if(v.kind==='sub')return'Moon Snail sub';if(v.kind==='heli')return v.ferry?'Eagle’s patrol helicopter':'MedFlight helicopter';if(v.kind==='boat')return v.pirate?'pirate boat':'boat';if(v.model==='jeep')return v.spec.key===DRIVERS[SEL].key?'your jeep':`${v.spec.name}’s jeep`;return{sedan:'sedan',suv:'SUV',pickup:'pickup',van:'van',defender:'Land Rover',wagoneer:'Wagoneer'}[v.model]||'car'}
 function enterVehicle(v){if(!v||!PL)return;
  if(v.traffic){polCrime('jack');const T_=v.traffic,i=OPEN.traffic.indexOf(T_);if(i>=0)OPEN.traffic.splice(i,1);v.traffic=null;OPEN.veh.push(v);const npc=v.c;v.seat(null);if(npc){scene.add(npc.g);const s=Math.sin(v.h),c=Math.cos(v.h);const P={n:npc,p:V3(v.p.x+c*2,groundH(v.p.x,v.p.z),v.p.z-s*2),h:v.h+Math.PI/2,state:'flee',t:5,ph:0,spd:1.3,from:v.p.clone()};
    P.tgt={owner:P,r:.7,pos:()=>P.p.clone().add(V3(0,1.1,0)),hit:b=>{if(b.dart)stuckDart(P.n.torso,b.col,(Math.random()-.5)*.2,.3,.2);else pedSplat(P,b.col);P.state='flee';P.t=6}};TARGETS.push(P.tgt);OPEN.peds.push(P);feed('Hey! That’s my car!','#999',true)}}
  if(v.pirate){const i=OPEN.pboats.indexOf(v);if(i>=0)OPEN.pboats.splice(i,1);v.pirate=false;OPEN.veh.push(v);const n=v.c;v.seat(null);toast('You stole a pirate boat!')}
  if(PARKED.includes(v)&&!OPEN.veh.includes(v))OPEN.veh.push(v);
- if(v.kind==='heli'&&v!==HELI)HELI=v;PCAR=v;v.player=true;scene.remove(PL.c.g);v.seat(PL.c);PL.c.g.visible=true;VM.visible=false;v.spinT=0;CAM=0;camVis();setSub(v.kind==='boat'?'boat':'drive');sfx('beep',.5);
- toast(TPK()?(v.kind==='heli'?'Slide up to take off and fly · sideways to turn · ↑ climb · ↓ land · ← guns · right ⌥ rockets':'Hold ↑ for gas · ↓ brake · slide sideways to steer · ← shoot · → get out'):v.kind==='heli'?(IS_TOUCH?'GAS fly · wheel turn · UP climb · BRAKE land · FIRE guns · ROCKET · ENTER parachute out':GP.on?(VR.on?'Right trigger fly · left trigger reverse · A or right stick up climb · right stick down land · left grip rockets · B parachute out':'RT fly · LT reverse · A climb · right stick down to land · LB rockets · '+GP.y+' parachute out'):'W fly · S reverse · A/D turn · Space up · Shift down · click guns · G rockets · E parachute out'):IS_TOUCH?(v.kind==='boat'?'GAS to go · tap ENTER to jump out':'Tap ENTER to get out'):GP.on?(v.kind==='boat'?GP.rt+' throttle · '+GP.y+' to jump out':GP.y+' to get out'):(v.kind==='boat'?'W / S throttle · A / D steer · E to jump out':'Driving · E to get out'));if(!IS_TOUCH&&canvas.requestPointerLock&&!document.pointerLockElement)try{const p=canvas.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+ if(v.kind==='heli'&&v!==HELI)HELI=v;PCAR=v;v.player=true;scene.remove(PL.c.g);v.seat(PL.c);PL.c.g.visible=true;VM.visible=false;v.spinT=0;CAM=VIEWP.vehCam();camVis();setSub(v.kind==='boat'?'boat':'drive');sfx('beep',.5);
+ if(v.kind==='sub')DEEPV.enterToast();else toast(TPK()?(v.kind==='heli'?'Slide up to take off and fly · sideways to turn · ↑ climb · ↓ land · ← guns · right ⌥ rockets':'Hold ↑ for gas · ↓ brake · slide sideways to steer · ← shoot · → get out'):v.kind==='heli'?(IS_TOUCH?'GAS fly · wheel turn · UP climb · BRAKE land · FIRE guns · ROCKET · ENTER parachute out':GP.on?(VR.on?'Right trigger fly · left trigger reverse · A or right stick up climb · right stick down land · left grip rockets · B parachute out':'RT fly · LT reverse · A climb · right stick down to land · LB rockets · '+GP.y+' parachute out'):'W fly · S reverse · A/D turn · Space up · Shift down · click guns · G rockets · E parachute out'):IS_TOUCH?(v.kind==='boat'?'GAS to go · tap ENTER to jump out':'Tap ENTER to get out'):GP.on?(v.kind==='boat'?GP.rt+' throttle · '+GP.y+' to jump out':GP.y+' to get out'):(v.kind==='boat'?'W / S throttle · A / D steer · E to jump out':'Driving · E to get out'));if(!IS_TOUCH&&canvas.requestPointerLock&&!document.pointerLockElement)try{const p=canvas.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
 function exitVehicle(forced){const v=PCAR;if(!v)return;const s=Math.sin(v.h),c=Math.cos(v.h);v.seat(null);v.player=false;PCAR=null;scene.add(PL.c.g);
  // the in-car head view hides your head and the steering wheel; put both back when you step out
  if(PL.c.head)PL.c.head.visible=true;if(v.j&&v.j.ws)v.j.ws.forEach(m=>m.visible=true);
- let x=v.p.x+c*2.4,z=v.p.z-s*2.4;if(v.kind==='boat'){let best=null;for(let r=2;r<14;r+=1.5)for(let a=0;a<TAU;a+=.4){const px=v.p.x+Math.cos(a)*r,pz=v.p.z+Math.sin(a)*r;if(onDock(px,pz)||!isWater(px,pz,-.4)){best=[px,pz];break}}if(best){x=best[0];z=best[1]}else{x=v.p.x+c*3;z=v.p.z-s*3}}
+ let x=v.p.x+c*2.4,z=v.p.z-s*2.4;if(v.kind==='boat'||v.kind==='sub'){let best=null;for(let r=2;r<14;r+=1.5)for(let a=0;a<TAU;a+=.4){const px=v.p.x+Math.cos(a)*r,pz=v.p.z+Math.sin(a)*r;if(onDock(px,pz)||(DEEPV&&DEEPV.onPontoon(px,pz))||!isWater(px,pz,-.4)){best=[px,pz];break}}if(best){x=best[0];z=best[1]}else{x=v.p.x+c*3;z=v.p.z-s*3}}
  else if(pointInCollider(x,z,v.p.y+.8)){x=v.p.x-c*2.4;z=v.p.z+s*2.4}
  const jump=v.kind==='heli'&&v.dead<=0&&v.agl>=3.5;if(jump){x=v.p.x;z=v.p.z}PL.p.set(x,jump?v.p.y-1.6:surfaceY(x,z,v.p.y+1.2),z);PL.yaw=v.h;PL.pitch=0;PL.vx=v.vx*(jump?.6:forced?.4:.1);PL.vz=v.vz*(jump?.6:forced?.4:.1);PL.c.g.visible=true;setSub('foot');
  if(jump){PL.vy=-1;PL.ground=false;chuteOn(PL);toast('Parachute open · steer with the stick, it lands you softly')}if(v.kind==='car')v.awake=3}
@@ -5397,6 +5745,7 @@ function missionStart(M){if(coopGuest()){toast('Your friend starts the missions 
  const A_=OPEN.active;
  if(M.type==='chase'&&S23)S23.chaseStart(A_,M);
  if(M.type==='whale'&&S24)S24.whaleStart(A_,M);
+ if(M.type==='pearls'&&DEEPV)DEEPV.pearlStart(A_);
  if(M.type==='hold'){A_.sea=M.sea;A_.zx=mk2.x;A_.zz=mk2.z;A_.secs=M.secs;A_.held=0;A_.out=0;A_.spawnT=1.5;const rg=new T.Mesh(new T.RingGeometry(17.3,18,72),new T.MeshBasicMaterial({color:'#ffcf5a',transparent:true,opacity:.6,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(A_.zx,surfaceY(A_.zx,A_.zz)+.2,A_.zz);scene.add(rg);A_.ring=rg;ALLY.cool=0;ALLY.wake=1}
  if(M.type==='heist')heistStart(A_,M);
  if(M.type==='kidrace'){const c=[ICE?ICE.x:mk2.x,ICE?ICE.z:mk2.z],P=[];for(let k=0;k<400&&P.length<5;k++){const s=SPOTS[(rnd()*SPOTS.length)|0],d=Math.hypot(s.x-c[0],s.z-c[1]);if(d<60||d>240||isWater(s.x,s.z,-.2)||P.some(q=>Math.hypot(q.x-s.x,q.z-s.z)<55))continue;P.push({x:s.x,z:s.z,a:Math.atan2(s.x-c[0],s.z-c[1])})}
@@ -5420,7 +5769,7 @@ function missionHud(){const el=$('obj');if(!el)return;const A=OPEN.active,list=M
  const goal=OWNER?`<small>${money(CASH)} · you own The Box</small>`:`<small>${money(CASH)} / ${money(PRICE)} · buy The Box</small>`,bar=OWNER?'':`<i class="bar"><u style="width:${Math.min(100,CASH/PRICE*100).toFixed(1)}%"></u></i>`;
  if(!A&&ZED.state==='wave'){el.innerHTML=`${goal}<b>Hospital outbreak</b><span>Wave ${ZED.wave+1} of 3 · ${ZED.list.filter(z=>z.dead<=0).length} zombies left</span>`;return}
  if(!A){el.innerHTML=`${goal}<b>Free roam</b><span>${!OWNER&&CASH>=PRICE?'You can afford it · go buy the Box!':`${done}/${list.length} missions · Box deliveries`}</span>${bar}`;return}
- const prog=A.type==='drive'?`Checkpoint ${Math.min(A.cp+1,CPS.length)}/${CPS.length} · ${fmtT(Math.max(0,A.limit-A.t)).replace(/\.\d+$/,'')} left`:A.type==='boats'?`Pirate boats sunk ${A.got}/${A.count}`:A.type==='deliver'?`${esc(A.addr)} · ${clockStr(A.limit-A.t)} left`:A.type==='hold'?`Hold the pier ${Math.floor(A.held)}/${A.secs}s${A.out>0?' · get back in the ring!':''}`:A.type==='heist'?(A.stage===2?'Take down Captain Seaweed and his crew':`Seaweed crew splatted ${A.got}/${A.count}${A.boarded?'':' · catch the Eagle by boat'}`):A.type==='kidrace'?`Flag ${Math.min(A.cp+1,A.cps.length)}/${A.cps.length} · ${clockStr(Math.max(0,A.limit-A.t))} left`:A.type==='whale'&&S24?S24.whaleHud(A):A.type==='chase'?`Chad and Brad splatted ${A.got}/2 · ${Math.round(A.left||0)} m from their Land Rover`:A.type==='prank'?(A.stage===1?`Paint on Chad’s Land Rover ${A.hits}/${A.count}`:`Preps splatted ${A.got}/${A.count}`):`${OPEN.pirates.some(e=>e.mission===A.id&&e.prep)?'Preps':'Pirates'} splatted ${A.got}/${A.count}`;
+ const prog=A.type==='drive'?`Checkpoint ${Math.min(A.cp+1,CPS.length)}/${CPS.length} · ${fmtT(Math.max(0,A.limit-A.t)).replace(/\.\d+$/,'')} left`:A.type==='boats'?`Pirate boats sunk ${A.got}/${A.count}`:A.type==='deliver'?`${esc(A.addr)} · ${clockStr(A.limit-A.t)} left`:A.type==='hold'?`Hold the pier ${Math.floor(A.held)}/${A.secs}s${A.out>0?' · get back in the ring!':''}`:A.type==='heist'?(A.stage===2?'Take down Captain Seaweed and his crew':`Seaweed crew splatted ${A.got}/${A.count}${A.boarded?'':' · catch the Eagle by boat'}`):A.type==='kidrace'?`Flag ${Math.min(A.cp+1,A.cps.length)}/${A.cps.length} · ${clockStr(Math.max(0,A.limit-A.t))} left`:A.type==='whale'&&S24?S24.whaleHud(A):A.type==='pearls'&&DEEPV?DEEPV.pearlHud(A):A.type==='chase'?`Chad and Brad splatted ${A.got}/2 · ${Math.round(A.left||0)} m from their Land Rover`:A.type==='prank'?(A.stage===1?`Paint on Chad’s Land Rover ${A.hits}/${A.count}`:`Preps splatted ${A.got}/${A.count}`):`${OPEN.pirates.some(e=>e.mission===A.id&&e.prep)?'Preps':'Pirates'} splatted ${A.got}/${A.count}`;
  el.innerHTML=`${goal}<b>${esc(A.name)}</b><span>${prog}</span>`}
 function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
  if(!A){if(OPEN.markerCool>0)OPEN.markerCool-=dt;for(const m of OPEN.markers){m.cyl.rotation.y+=dt;const d=Math.hypot(me.p.x-m.x,me.p.z-m.z),dc=Math.hypot(camera.position.x-m.x,camera.position.z-m.z);m.g.children[1].material.opacity=.12*clamp((dc-3)/14,0,1);m.g.children[2].visible=dc>12;m.cyl.material.opacity=clamp((dc-3)/9,0,1)*.35;
@@ -5442,6 +5791,7 @@ function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
  if(A.type==='kidrace'){const b=A.cps[A.cp];b.cyl.rotation.y+=dt;const dc=Math.hypot(camera.position.x-b.x,camera.position.z-b.z);b.lbl.visible=dc>12;if(Math.hypot(me.p.x-b.x,me.p.z-b.z)<(PCAR?9:5)&&me.p.y<surfaceY(b.x,b.z)+12){sfx('cp');b.g.visible=false;A.cp++;if(A.cp>=A.cps.length){missionDone();return}A.cps[A.cp].g.visible=true;missionHud()}
   if(A.t>A.limit){missionFail('Too slow! Kingston says try again.');return}tick2()}
  if(A.type==='whale'&&S24){S24.whaleTick(A,dt);return}
+ if(A.type==='pearls'&&DEEPV){DEEPV.pearlTick(A,dt);return}
  if(A.type==='chase'&&S23){if(A.bcn)A.bcn.cyl.rotation.y+=dt;S23.chaseTick(A,dt);return}
  if(A.type==='prank'){if(A.bcn)A.bcn.cyl.rotation.y+=dt;if(Math.hypot(me.p.x-A.car.p.x,me.p.z-A.car.p.z)>700){missionFail('You left Chad’s Land Rover behind.');return}
   if(A.stage===2){const left=OPEN.pirates.filter(e=>e.mission===A.id&&e.dead<=0).length;if(left===0&&A.t>1){missionDone();return}}}
@@ -5455,7 +5805,7 @@ function openClear(){polClear();skyClear();zedClear();ZED.state='idle';shopClose
  PARKED.forEach(c=>{if(c.c)c.seat(null);c.player=false});ferryClear();const el=$('obj');if(el)el.hidden=true;const w=$('orca-warn');if(w)w.hidden=true}
 function makeCrewJeep(di,x,z,h){const sp=DRIVERS[di],c=new Car(sp,false,{driver:false});c.place(x,z,h);OPEN.veh.push(c);return c}
 function startOpen(){clearWorld();resetParked();CBX.spawnStaff();MODE='open';OPEN.hp=4;OPEN.wasted=0;OPEN.ambushT=70;OPEN.markerCool=3;
- PL=new Fighter(DRIVERS[SEL],true);FIGHTERS=[PL];const f=HUB.cb.front;PL.spawn({x:f[0],z:f[1]});PL.yaw=HUB.cb.rot;PL.fp=false;PL.wpn='marker';PL.ammoW={};PL.inv=invList();SSX.reset();
+ PL=new Fighter(DRIVERS[SEL],true);FIGHTERS=[PL];const f=HUB.cb.front;PL.spawn({x:f[0],z:f[1]});PL.yaw=HUB.cb.rot;PL.fp=VIEWP.footFp(false);PL.wpn='marker';PL.ammoW={};PL.inv=invList();SSX.reset();
  PL.tgt={owner:PL,r:.75,dead:()=>PL.dead>0||!!PCAR||!!POL.arrest,pos:()=>PL.p.clone().add(V3(0,1.15,0)),hit:b=>playerHit(b)};TARGETS.push(PL.tgt);
  // the crew's jeeps parked out on the street by The Box
  const s=HUB.spawn,h2=s.h+Math.PI,fx=Math.sin(h2),fz=Math.cos(h2),rx=Math.cos(h2),rz=-Math.sin(h2);[SEL,...[0,1,2,3].filter(i=>i!==SEL)].forEach((di,k)=>makeCrewJeep(di,s.x+fx*(10-k*6.5)+rx*2.6,s.z+fz*(10-k*6.5)+rz*2.6,h2));
@@ -5463,7 +5813,7 @@ function startOpen(){clearWorld();resetParked();CBX.spawnStaff();MODE='open';OPE
  const j0=OPEN.veh[0];OPEN.home={x:j0.p.x-rx*2.3-fx*1.2,z:j0.p.z-rz*2.3-fz*1.2,yaw:h2};PL.spawn({x:OPEN.home.x,z:OPEN.home.z});PL.yaw=h2;
  // boats in the slips at the town pier
  HARBOR.slips.forEach((sl,i)=>{const di=i<4?[SEL,...[0,1,2,3].filter(q=>q!==SEL)][i]:(i%4);const b=new Boat(DRIVERS[di],{color:i<4?DRIVERS[di].paint:['#3a86c8','#f2d24a'][i%2],home:sl});b.place(sl.x,sl.z,sl.h);OPEN.veh.push(b)});
- if(S24)S24.openStart();
+ if(S24)S24.openStart();if(DEEPV)DEEPV.openStart();
  for(let i=0;i<2;i++)spawnOrca(HARBOR.center[0],HARBOR.center[1],800);spawnOrca(...LL(41.305,-70.13),900);
  buildMarkers();vehicleTargets();polStart();heliStart();skyStart();ferryStart();ZED.state='idle';ZED.cool=0;armsVan();buildVM(PL.spec);scene.add(camera);camera.add(VM);showHUD('open');setSub('foot');missionHud();CAM=0;wmStartSpawn();
  toast(IS_TOUCH?'Walk to your jeep and tap ENTER':TPK()?'Slide on the trackpad to walk to your jeep · → gets in · ← shoots':'Walk to your jeep · E to get in · click to aim')}
@@ -5473,17 +5823,17 @@ function playerHit(b){if(b.owner&&b.owner.crew)return;if(ESSEX.plankOn())return;
 function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  // health comes back if you stay out of the paint for a while
  OPEN.sinceHit=(OPEN.sinceHit||0)+dt;if(OPEN.hp<4&&OPEN.wasted<=0&&OPEN.sinceHit>7){OPEN.hp++;OPEN.sinceHit=3.5}
- if(enterInput){enterInput=false;const pa=polAction();if(ARMS.open)shopClose();else if(POL.arrest){if(pa)pa.act()}else if(PCAR){if(PCAR.kind==='heli'&&!PCAR.canExit())toast(IS_TOUCH?'Land first: hold BRAKE to come down':TPK()?'Land first: hold ↓ to come down':'Land first: hold Shift to come down');else{const fb=PCAR.kind==='boat'&&FERRY.hullDist(PCAR.p)<12,eb=!fb&&PCAR.kind==='boat'&&ESSEX.hullDist(PCAR.p)<10;exitVehicle();if(eb&&PL&&!PCAR)ESSEX.climb();if(fb&&PL&&!PCAR){FERRY.climb();if(OPEN.active&&OPEN.active.type==='heist')toast('You jumped aboard the Eagle!')}}}else if(pa)pa.act();else if(PL.dead<=0&&CBX.offer){CBX.takeOffer()}else if(PL.dead<=0&&CBX.talkable){CBX.talk(CBX.talkable)}else if(PL.dead<=0&&SSX.takeable){SSX.take()}else if(PL.dead<=0&&CYN&&CYN.takeable){CYN.take()}else if(PL.dead<=0&&DRT&&DRT.talkable){DRT.interact()}else if(PL.dead<=0&&S23&&S23.talkable){S23.interact()}else if(PL.dead<=0&&S24&&S24.talkable){S24.interact()}else if(PL.dead<=0){const v=nearestVehicle();if(v)enterVehicle(v);else{const m=OPEN.markers.find(q=>Math.hypot(PL.p.x-q.x,PL.p.z-q.z)<5.5);if(m&&!OPEN.active)missionStart(m.M)}}}
+ if(enterInput){enterInput=false;const pa=polAction();if(ARMS.open)shopClose();else if(POL.arrest){if(pa)pa.act()}else if(PCAR){if(PCAR.kind==='sub'&&!PCAR.canExit())DEEPV.surfaceToast();else if(PCAR.kind==='heli'&&!PCAR.canExit())toast(IS_TOUCH?'Land first: hold BRAKE to come down':TPK()?'Land first: hold ↓ to come down':'Land first: hold Shift to come down');else{const fb=PCAR.kind==='boat'&&FERRY.hullDist(PCAR.p)<12,eb=!fb&&PCAR.kind==='boat'&&ESSEX.hullDist(PCAR.p)<10;exitVehicle();if(eb&&PL&&!PCAR)ESSEX.climb();if(fb&&PL&&!PCAR){FERRY.climb();if(OPEN.active&&OPEN.active.type==='heist')toast('You jumped aboard the Eagle!')}}}else if(pa)pa.act();else if(PL.dead<=0&&CBX.offer){CBX.takeOffer()}else if(PL.dead<=0&&CBX.talkable){CBX.talk(CBX.talkable)}else if(PL.dead<=0&&SSX.takeable){SSX.take()}else if(PL.dead<=0&&CYN&&CYN.takeable){CYN.take()}else if(PL.dead<=0&&DRT&&DRT.talkable){DRT.interact()}else if(PL.dead<=0&&S23&&S23.talkable){S23.interact()}else if(PL.dead<=0&&S24&&S24.talkable){S24.interact()}else if(PL.dead<=0){const v=nearestVehicle();if(v)enterVehicle(v);else{const m=OPEN.markers.find(q=>Math.hypot(PL.p.x-q.x,PL.p.z-q.z)<5.5);if(m&&!OPEN.active)missionStart(m.M)}}}
  if(OPEN.wasted>0){OPEN.wasted-=dt;PL.dead=OPEN.wasted;if(OPEN.wasted<=0){$('wasted').hidden=true;OPEN.hp=4;PL.dead=0;const f=OPEN.home||{x:HUB.cb.front[0],z:HUB.cb.front[1]};PL.spawn({x:f.x,z:f.z});if(f.yaw!==undefined)PL.yaw=f.yaw;toast(/^near /i.test(OPEN.homeName||'')?'Back '+OPEN.homeName.replace(/^Near/,'near'):'Back at '+(OPEN.homeName||'The Box'))}}
- if(PCAR){const inp=POL.arrest?STOP(PCAR):PCAR.kind==='heli'?heliInput():driveInput();if(resetInput){PCAR.respawn();resetInput=false;TP.vyaw=null}PCAR.update(dt,inp);
-  if(!PCAR){}else if(PCAR.kind==='heli'){if(inp.fire)PCAR.shoot();if(nadeInput){nadeInput=false;PCAR.rocket()}}else if(inp.fire){const cands=OPEN.pirates.filter(e=>e.dead<=0).concat(OPEN.preps.map(P=>P.car),OPEN.pboats,OPEN.traffic.map(t=>t.car),typeof remoteCars==='function'?remoteCars():[]);PCAR.shoot(aimTarget(PCAR,cands,.35,80))}
+ if(PCAR){const inp=POL.arrest?STOP(PCAR):(PCAR.kind==='heli'||PCAR.kind==='sub')?heliInput():driveInput();if(resetInput){PCAR.respawn();resetInput=false;TP.vyaw=null}PCAR.update(dt,inp);
+  if(!PCAR){}else if(PCAR.kind==='sub'){if(inp.fire)PCAR.shoot()}else if(PCAR.kind==='heli'){if(inp.fire)PCAR.shoot();if(nadeInput){nadeInput=false;PCAR.rocket()}}else if(inp.fire){const cands=OPEN.pirates.filter(e=>e.dead<=0).concat(OPEN.preps.map(P=>P.car),OPEN.pboats,OPEN.traffic.map(t=>t.car),typeof remoteCars==='function'?remoteCars():[]);PCAR.shoot(aimTarget(PCAR,cands,.35,80))}
   if(PCAR&&PCAR.kind==='car'&&nadeInput){nadeInput=false;oilDrop(PCAR)}
   if(PCAR&&PCAR.kind==='car'){const bl=[PCAR,...OPEN.veh.filter(v=>v.kind==='car'&&v!==PCAR),...OPEN.preps.map(P=>P.car),...OPEN.traffic.map(t=>t.car),...POL.cops.map(C=>C.car)];carPush(bl)}
   if(PCAR)PL.p.copy(PCAR.p)}
  else{if(AA.man)aaManTick(dt);else if(ESSEX.plankOn())ESSEX.plankTick(dt);else if(ESSEX.helmOn())ESSEX.helmInput(dt);else if(OPEN.wasted<=0&&!POL.arrest&&!ARMS.open)footInput(dt);if(!POL.arrest)PL.sync(dt)}
- OPEN.veh.forEach(v=>{if(v===PCAR)return;if(v.kind==='boat'){v.update(dt,{gas:0,brake:0,steer:0})}else if(Math.abs(v.vf)>.3||v.awake>0){v.update(dt,STOP(v));v.awake=(v.awake||0)-dt}});
+ OPEN.veh.forEach(v=>{if(v===PCAR)return;if(v.kind==='boat'||v.kind==='sub'){v.update(dt,{gas:0,brake:0,steer:0})}else if(Math.abs(v.vf)>.3||v.awake>0){v.update(dt,STOP(v));v.awake=(v.awake||0)-dt}});
  OPEN.pboats.forEach(b=>{if(b.capsized>0){b.update(dt,{});return}let tgt=PCAR&&PCAR.kind==='boat'&&Math.hypot(PCAR.p.x-b.p.x,PCAR.p.z-b.p.z)<260?PCAR:null;if(b.raid&&!tgt)tgt=ferryRaidTarget(b);boatAI(b,dt,tgt,.9)});
- parkedTick(dt);trafficTick(dt);pedTick(dt);pirateTick(dt);orcaTick(dt);missionTick(dt);polTick(dt);heliTick(dt);skyGunnery(dt);updateFlak(dt);zedTick(dt);vehicleTargets();SSX.openTick(dt);if(CYN)CYN.openTick(dt);if(DRT)DRT.openTick(dt);if(S23)S23.openTick(dt);if(S24)S24.openTick(dt);
+ parkedTick(dt);trafficTick(dt);pedTick(dt);pirateTick(dt);orcaTick(dt);missionTick(dt);polTick(dt);heliTick(dt);skyGunnery(dt);updateFlak(dt);zedTick(dt);vehicleTargets();SSX.openTick(dt);if(CYN)CYN.openTick(dt);if(DRT)DRT.openTick(dt);if(S23)S23.openTick(dt);if(S24)S24.openTick(dt);if(DEEPV)DEEPV.openTick(dt);
  if(!OPEN.prompt){const pa=polAction();if(pa)OPEN.prompt={t:`${keyE()} · ${pa.t}`}}
  if(!OPEN.prompt&&PCAR&&PCAR.kind==='boat'&&FERRY.hullDist(PCAR.p)<12)OPEN.prompt={t:`${keyE()} · Jump aboard the Eagle`};
  if(heliCallInput){heliCallInput=false;callHeli()}
@@ -5494,7 +5844,7 @@ function updateOpen(dt){OPEN.prompt=null;ferryTick(dt);
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&S24&&S24.talkable)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${S24.prompt}`};
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&CBX.offer)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${CBX.offer.text}`};
  if(!PCAR&&PL.dead<=0&&!OPEN.prompt&&CBX.talkable){const o=CBX.who[CBX.talkable];OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${CBX.talkable==='sam'?'Order from Bill':CBX.talkable==='packy'?'Grab a soda from Captain':'Talk to '+o.name}`}}
- if(!PCAR&&PL.dead<=0&&!OPEN.prompt){const v=nearestVehicle();if(v)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${v.traffic?'Jack the ':v.pirate?'Steal the ':v.kind==='heli'?'Fly the ':'Drive '}${vehicleName(v)}`}}
+ if(!PCAR&&PL.dead<=0&&!OPEN.prompt){const v=nearestVehicle();if(v)OPEN.prompt={t:`${IS_TOUCH?'ENTER':GP.on?GP.y:'E'} · ${v.traffic?'Jack the ':v.pirate?'Steal the ':v.kind==='heli'?'Fly the ':v.kind==='sub'?'Pilot the ':'Drive '}${vehicleName(v)}`}}
  const pr=$('prompt');if(OPEN.prompt){pr.hidden=false;pr.textContent=tpPrompt(OPEN.prompt.t.replace(/^Start/,(IS_TOUCH?'ENTER':GP.on?GP.y:'E')+' · Start'))}else pr.hidden=true;
  const me=ME(),ss=!PCAR&&SSX.inRoom(me.p.x,me.p.z,-.1)?SSX.where(me.p):!PCAR&&CYN&&CYN.inRoom(me.p.x,me.p.z,-.1)?CYN.where(me.p):!PCAR&&PD&&PD.inRoom(me.p.x,me.p.z,-.1)?PD.where(me.p):!PCAR&&HOSP&&HOSP.inRoom(me.p.x,me.p.z,-.1)?HOSP.where(me.p):FERRY.aboard(me.p)?FERRY.where(me.p):ESSEX.aboard(me.p)?ESSEX.where(me.p):null,ar=CBX.inRoom(me.p.x,me.p.z,-.1)?'The Box':ss?ss.area:areaAt(me.p.x,me.p.z);if(ar!==OPEN.area){OPEN.area=ar;const el=$('area');el.textContent=ar;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
  $('street').textContent=ss?ss.spot:ferryStreet(me.p)||essexStreet(me.p)||streetAt(me.p.x,me.p.z);$('hp').innerHTML=PCAR?'':Array.from({length:4},(_,i)=>`<i class="${i<OPEN.hp?'on':''}"></i>`).join('')}
@@ -5655,10 +6005,19 @@ function heliTick(dt){if(!HELI||HELI===PCAR)return;HELI.update(dt,{gas:0,brake:0
 function heliInput(){const k=keys,inp=driveInput();inp.down=(k.ShiftLeft||(!TP.on&&k.ShiftRight)||k.ControlRight||(TPK()&&k.ArrowDown)||(GP.on&&GP.ry>.5))?1:0;if(GP.on&&GP.ry<-.5)inp.hand=1;if(GP.on&&Math.abs(GP.ry)>.5)look.dy=0;return inp}
 function heliHud(c){$('surf').textContent=c.dead>0?'Going down!':c.landed?(c.hp<c.max&&c.home&&Math.hypot(c.p.x-c.home.x,c.p.z-c.home.z)<6?'Repairing on the pad':'Landed'):`Altitude ${Math.round(c.agl*REAL*3.28)} ft`;
  $('ammo').innerHTML=`Armor ${Math.max(0,c.hp)}/${c.max} · ${c.reload>0?'Gun reloading':'Gun '+c.ammo}${c.rkReload>0?' · Rockets reloading':' · Rockets '+c.rk}${typeof aaNearestTxt==='function'?aaNearestTxt(c):''}`}
-function heliCam(dt,c){const f=V3(Math.sin(c.h),0,Math.cos(c.h)),far=CAM%2===1,dist=far?22:14,hgt=far?9:5.2;if(look.dx||look.dy){ORB.yaw-=look.dx*.0035;ORB.pitch=clamp(ORB.pitch-look.dy*.0025,-.3,.8);ORB.t=1.8;look.dx=look.dy=0}else if((ORB.t-=dt)<=0){ORB.yaw*=Math.exp(-3*dt);ORB.pitch*=Math.exp(-3*dt)}
+function seatCam(c,dn){const f=V3(Math.sin(c.h),0,Math.cos(c.h)),hp=new T.Vector3();if(c.c&&c.c.head)c.c.head.getWorldPosition(hp);else hp.copy(c.p).add(V3(0,1.4,0));
+ camera.position.copy(hp).add(V3(0,.1,0)).addScaledVector(f,.22);camera.up.set(0,1,0);camera.lookAt(hp.clone().addScaledVector(f,20).add(V3(0,-(dn||.5),0)));if(shake>0){shake-=dt0;camera.position.x+=(rnd()-.5)*shake*.5}sunFollow(c.p)}
+let dt0=0;
+/* Build 25: the Moon Snail's cameras: from your seat inside the bubble, or a smooth follow cam that stays under the water and above the bottom */
+function subCam(dt,c){dt0=dt;if(CAM===2||CAM===3){const f=V3(Math.sin(c.h),0,Math.cos(c.h));const hp=new T.Vector3();c.c.head.getWorldPosition(hp);camera.position.copy(hp).add(V3(0,.3,0)).addScaledVector(f,.12);camera.up.set(0,1,0);camera.lookAt(hp.clone().addScaledVector(f,20).add(V3(0,-c.vy*1.2-1,0)));sunFollow(c.p);return}
+ if(look.dx||look.dy){ORB.yaw-=look.dx*.0035;ORB.pitch=clamp(ORB.pitch-look.dy*.0025,-.5,.7);ORB.t=1.8;look.dx=look.dy=0}else if((ORB.t-=dt)<=0){ORB.yaw*=Math.exp(-3*dt);ORB.pitch*=Math.exp(-3*dt)}
+ const far=CAM%2===1||CAM>=4,oh=c.h+ORB.yaw,fo=V3(Math.sin(oh),0,Math.cos(oh)),dist=far?13:7.5,want=c.p.clone().addScaledVector(fo,-dist).add(V3(0,(far?4:2.2)+ORB.pitch*6,0)),lk=c.p.clone().addScaledVector(fo,5).add(V3(0,.2,0));
+ const under=c.p.y<-1.2,fl=groundH(want.x,want.z)+1.2;if(want.y<fl)want.y=fl;if(under&&want.y>-.7)want.y=-.7;
+ const sm1=VR.on?3.5:5,sm2=VR.on?4:6;camPos.lerp(want,1-Math.exp(-sm1*dt));camLook.lerp(lk,1-Math.exp(-sm2*dt));camera.position.copy(camPos);if(shake>0){shake-=dt;camera.position.x+=(rnd()-.5)*shake;camera.position.y+=(rnd()-.5)*shake}camera.lookAt(camLook);sunFollow(c.p)}
+function heliCam(dt,c){dt0=dt;if(CAM===2||CAM===3){seatCam(c,.9);return}const f=V3(Math.sin(c.h),0,Math.cos(c.h)),far=CAM%2===1,dist=far?22:14,hgt=far?9:5.2;if(look.dx||look.dy){ORB.yaw-=look.dx*.0035;ORB.pitch=clamp(ORB.pitch-look.dy*.0025,-.3,.8);ORB.t=1.8;look.dx=look.dy=0}else if((ORB.t-=dt)<=0){ORB.yaw*=Math.exp(-3*dt);ORB.pitch*=Math.exp(-3*dt)}
  const oh=c.h+ORB.yaw,fo=V3(Math.sin(oh),0,Math.cos(oh));const want=c.p.clone().addScaledVector(fo,-dist).add(V3(0,hgt+ORB.pitch*10,0)),lk=c.p.clone().addScaledVector(f,7).add(V3(0,-clamp(c.agl*.1,0,3.5)+1,0));
  const gy=Math.max(groundH(want.x,want.z),0)+2;if(want.y<gy)want.y=gy;camPos.lerp(want,1-Math.exp(-5*dt));camLook.lerp(lk,1-Math.exp(-6*dt));camera.position.copy(camPos);if(shake>0){shake-=dt;camera.position.x+=(rnd()-.5)*shake;camera.position.y+=(rnd()-.5)*shake}camera.lookAt(camLook);sunFollow(c.p)}
-let _tl=null;function touchLabels(){const k=PCAR&&PCAR.kind==='heli'?'heli':'car';if(_tl===k)return;_tl=k;const h=k==='heli';$('t-hand').textContent=h?'UP':'DRIFT';$('t-gas').textContent=h?'FLY':'GAS';$('t-brake').textContent=h?'DOWN':'BRAKE';$('t-rkt').hidden=!h}
+let _tl=null;function touchLabels(){const k=PCAR&&PCAR.kind==='heli'?'heli':PCAR&&PCAR.kind==='sub'?'sub':'car';if(_tl===k)return;_tl=k;const h=k==='heli',u=k==='sub';$('t-hand').textContent=h||u?'UP':'DRIFT';$('t-gas').textContent=h?'FLY':u?'GO':'GAS';$('t-brake').textContent=h?'DOWN':u?'DIVE':'BRAKE';$('t-rkt').hidden=!(h||u);$('t-rkt').textContent=u?'LIGHT':'ROCKET'}
 // anything hostile in front of the nose (any angle down), nearest and most dead-ahead first
 function heliTarget(H,o,range){let best=null,bs=1e9;for(const t of TARGETS){if(!t.foe)continue;if(typeof t.foe==='function'&&!t.foe())continue;if(t.dead&&t.dead())continue;const c=t.pos(),dx=c.x-o.x,dz=c.z-o.z,dh=Math.hypot(dx,dz),d=Math.hypot(dh,c.y-o.y);
   if(d>range)continue;const a=Math.abs(angWrap(Math.atan2(dx,dz)-H.h));if(a>(dh<25?1.6:.85))continue;const sc=a*40+d*.25;if(sc<bs&&!losBlocked(o.x,o.z,c.x,c.z,Math.max(c.y,o.y-2))){bs=sc;best=t}}return best}
@@ -6007,7 +6366,7 @@ function pmKey(e){const c=e.code,it=pmItems();if(!it.length)return;
  else if(c==='ShiftRight'){e.preventDefault()}}
 $('b-resume').addEventListener('click',()=>setTimeout(tpRelock,0));
 $('b-pmap').addEventListener('click',()=>{togglePause();$('bigmap').hidden=false;drawBigMap();setTimeout(tpRelock,0)});
-$('b-pcam').addEventListener('click',()=>{if(FOOT()&&PL)PL.fp=!PL.fp;else if(PCAR)cycleCam(1);pmLabels();pmDraw()});
+$('b-pcam').addEventListener('click',()=>{if(FOOT()&&PL)toggleView();else if(PCAR)cycleCam(1);pmLabels();pmDraw()});
 $('b-pmus').addEventListener('click',()=>{if(typeof toggleMusic==='function')toggleMusic();pmLabels();pmDraw()});
 $('b-ptp').addEventListener('click',()=>{TP.on=!TP.on;tpReset();tpSave();pmLabels();pmDraw()});
 $('b-pkg').addEventListener('click',()=>{TP.guide=!TP.guide;tpSave();pmLabels();pmDraw()});
@@ -7870,6 +8229,7 @@ function specFor(p){const base=DRIVERS.find(d=>d.key===p.d)||DRIVERS[0];return O
 function makeRemote(peer,p,kind){const spec=specFor(p),R={peer,kind,key:kind+(p.md||'')+(p.cl||''),spec,p:V3(p.x||0,p.y||0,p.z||0),h:p.h||0,vx:0,vz:0,remote:true,remoteT:true,splats:0,score:0,shotN:p.sh?p.sh[0]:0,nadeN:p.gr?p.gr[0]:0};
  if(kind==='car'||kind==='boat'){R.j=kind==='boat'?makeBoat(spec.paint):p.md&&p.md!=='jeep'?makeCarModel(p.md,p.cl||'#c9ccd1'):makeJeep(p.cl||spec.jeep);R.c=makeChar(spec);R.j.body.add(R.c.g);R.c.g.position.set(R.j.seat.x,kind==='boat'?R.j.seat.y-.4:(R.j.seatY||0),R.j.seat.z);R.g=R.j.g;const t=nameSprite(spec.name,spec.paint);t.position.y=3.3;R.g.add(t);
   R.target={owner:R,remoteT:true,r:2.3,pos:()=>R.p.clone().add(V3(0,.9,0)),hit:b=>{carSplatVisual(R,b.col)}}}
+ else if(kind==='sub'){R.j=DEEPV.makeSubModel();R.g=R.j.g;R.c=makeChar(spec);R.j.body.add(R.c.g);R.c.g.position.copy(R.j.seat);const t=nameSprite(spec.name,spec.paint);t.position.y=3;R.g.add(t);R.target={owner:R,remoteT:true,r:1.8,pos:()=>R.p.clone(),hit:b=>{}}}
  else if(kind==='heli'){R.j=makeHeliModel();R.g=R.j.g;R.c=makeChar(spec);R.j.body.add(R.c.g);R.c.g.position.copy(R.j.seat);const t=nameSprite(spec.name,spec.paint);t.position.y=4.2;R.g.add(t);
   R.target={owner:R,remoteT:true,r:3,pos:()=>R.p.clone().add(V3(0,1.6,0)),hit:b=>{}}}
  else{R.c=makeChar(spec);R.g=R.c.g;const gun=makeMarker(spec.paint);R.c.aR.el.add(gun);gun.position.set(0,-.3,.06);gun.rotation.x=Math.PI/2;const t=nameSprite(spec.name,spec.paint);t.position.y=2.35;R.g.add(t);R.ph=0;
@@ -7877,11 +8237,12 @@ function makeRemote(peer,p,kind){const spec=specFor(p),R={peer,kind,key:kind+(p.
  scene.add(R.g);NET.remotes.set(peer,R);return R}
 function updateRemotes(dt){if(!NET.room){return}const mine=(MODE==='race'||MODE==='free'||MODE==='raceover')?'drive':(MODE==='battle'||MODE==='battleover')?'foot':MODE==='open'?'open':null;const seen=new Set();let invite=null,footN=0;
  for(const peer of remoteList()){const p=peer.presence;if(p.lob&&p.lob.t>Date.now()&&p.lob.id!==NET.jn)invite={peer,lob:p.lob,name:specFor(p).name};
-  const grp=(p.m==='race'||p.m==='free')?'drive':(p.m==='battle'||p.m==='over')?'foot':p.m==='open'?'open':null,kind=grp==='drive'?'car':grp==='foot'?'foot':grp==='open'?(p.k==='boat'?'boat':p.k==='car'?'car':p.k==='heli'?'heli':'foot'):null;if(grp==='foot'&&p.m==='battle')footN++;
+  const grp=(p.m==='race'||p.m==='free')?'drive':(p.m==='battle'||p.m==='over')?'foot':p.m==='open'?'open':null,kind=grp==='drive'?'car':grp==='foot'?'foot':grp==='open'?(p.k==='boat'?'boat':p.k==='car'?'car':p.k==='heli'?'heli':p.k==='sub'&&DEEPV?'sub':'foot'):null;if(grp==='foot'&&p.m==='battle')footN++;
   if(!kind||grp!==mine||p.x==null)continue;seen.add(peer.peer);let R=NET.remotes.get(peer.peer);if(R&&(R.key!==kind+(p.md||'')+(p.cl||'')||R.spec.key!==p.d||R.spec.name!==p.n)){dropRemote(peer.peer);R=null}if(!R)R=makeRemote(peer.peer,p,kind);R.pres=p;
   if(!TARGETS.includes(R.target))TARGETS.push(R.target);
   const k=1-Math.exp(-14*dt),tp=V3(p.x,p.y,p.z);if(R.p.distanceTo(tp)>25)R.p.copy(tp);else R.p.lerp(tp,k);R.h=R.h+angWrap((p.h||0)-R.h)*k;R.vx=Math.sin(R.h)*(p.s||0);R.vz=Math.cos(R.h)*(p.s||0);R.cp=p.cp||0;
   if(kind==='car'||kind==='boat'){const g=R.g;g.position.copy(R.p);g.rotation.order='YXZ';g.rotation.set(-(p.pi||0),R.h,p.rl||0);R.j.wheels.forEach((w,i)=>{w.w.rotation.x+=(p.s||0)/.43*dt;if(i<2)w.piv.rotation.y=p.st||0});R.j.sw.rotation.z=-(p.st||0)*2.4;if(kind==='boat')poseHelm(R.c,p.st||0,CLOCK);else poseSeated(R.c,p.st||0,CLOCK);if(kind==='boat'&&Math.abs(p.s||0)>3&&rnd()<.6)puff(R.p.x-Math.sin(R.h)*3.3,.12,R.p.z-Math.cos(R.h)*3.3,'#ffffff',1.4,1.6,.08)}
+  else if(kind==='sub'){const g=R.g;g.position.copy(R.p);g.rotation.order='YXZ';g.rotation.set(-(p.pi||0),R.h,p.rl||0);poseSeated(R.c,0,CLOCK)}
   else if(kind==='heli'){const g=R.g;g.position.copy(R.p);g.rotation.order='YXZ';g.rotation.set(-(p.pi||0),R.h,p.rl||0);if(R.j.rotor)R.j.rotor.rotation.y+=dt*28;if(R.j.tail)R.j.tail.rotation.x+=dt*40;poseSeated(R.c,0,CLOCK)}
   else{R.g.position.copy(R.p);R.g.rotation.y=R.h;if(p.dd)poseDown(R.c);else if(p.sw)poseSwim(R.c,CLOCK);else{const lp=R.lp||(R.lp=R.p.clone()),d=Math.max(dt,1e-3),vx=(R.p.x-lp.x)/d,vz=(R.p.z-lp.z)/d;R.vs=R.vs||{x:0,z:0,y:R.p.y};R.vs.x=lerp(R.vs.x,vx,.25);R.vs.z=lerp(R.vs.z,vz,.25);const gy=groundH(R.p.x,R.p.z);
    const sb=Math.sin(R.h),cb=Math.cos(R.h),sp=Math.min(9,Math.hypot(R.vs.x,R.vs.z));animChar(R.c,{spd:sp,fwd:R.vs.x*sb+R.vs.z*cb,side:R.vs.x*cb-R.vs.z*sb,ground:R.p.y<gy+.25,vy:(R.p.y-lp.y)/d,aim:1,pitch:p.pi||0,t:CLOCK},dt);lp.copy(R.p)}}
@@ -8142,7 +8503,7 @@ function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);c
 addEventListener('resize',resize);resize();
 let last=performance.now();
 function frame(now){if(VR.on){requestAnimationFrame(frame);return}const raw=now-last,dt=Math.min(.05,raw/1000);last=now;if(raw<100)PERF.tick(raw);if(!PAUSED&&!WM.open){CLOCK+=dt;step(dt)}else{updateRemotes(0);netTick(.1)}if(!WM.open)renderFrame();requestAnimationFrame(frame)}
-function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.fp;else if(PCAR)cycleCam(1)}
+function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)toggleView();else if(PCAR)cycleCam(1)}
  if(MODE==='race')updateRace(dt);else if(MODE==='free')updateFree(dt);else if(MODE==='open')updateOpen(dt);else if(MODE==='harbor')updateHarbor(dt);else if(FOOT())updateFoot(dt);else if(MODE==='menu')updatePreview();
  if(MODE!=='open'&&MODE!=='menu'){parkedTick(dt);vehicleTargets()}if(MODE==='battleover'&&PCAR&&PCAR.kind==='boat')PCAR.update(dt,{gas:0,brake:0,steer:0});
  if(MODE==='raceover'&&PCAR){CARS.forEach(c=>c.update(dt,STOP(c)));poseCheer(PCAR.c,CLOCK)}
@@ -8174,7 +8535,8 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
  // first or third person on foot (first person unless you switch it in the menu); the darts game keeps you in first person
  let view3=false;try{view3=localStorage.getItem('ack-vr-view')==='3'}catch(e){}
  const drtOn=()=>{try{return typeof DRT!=='undefined'&&!!DRT&&!!DRT.active()}catch(e){return false}};
- function setView(v){view3=!!v;try{localStorage.setItem('ack-vr-view',view3?'3':'1')}catch(e){}st.prevAimYaw=null;st.aimYaw=null;if(FOOT()&&PL&&!drtOn())PL.fp=!view3;bigDirty=true;hudT=0;toast(view3?'Third-person view':'First-person view')}
+ const vw3=()=>PCAR&&!FOOT()?!VIEWP.vrVehFirst(PCAR):view3;
+ function setView(v){if(PCAR&&!FOOT()){VIEWP.setVrVeh(!v);bigDirty=true;hudT=0;toast(v?'Third-person view':'First-person view');return}view3=!!v;try{localStorage.setItem('ack-vr-view',view3?'3':'1')}catch(e){}st.prevAimYaw=null;st.aimYaw=null;if(FOOT()&&PL&&!drtOn())PL.fp=!view3;bigDirty=true;hudT=0;toast(view3?'Third-person view':'First-person view')}
  const st={snapArmed:true,navArmed:true,prev:{},prevYaw:0,headYaw:0,headPitch:0,headY:0,aimYaw:null,prevAimYaw:null,rigYaw:0,fwd:0,L:null,R:null,Lsrc:null,Rsrc:null,
   mute:false,lastResume:0,sel:0,ctl:'',err:'',errN:0,sig:'',showUntil:0,saveRefl:null,saveShadow:null,camBefore:null,hint:0,noted:{},vis:'visible',
   hp:{left:null,right:null},hand:'right',menuPos:null,menuYaw:0,frameN:0,ui:'',uiWas:'',uiYaw:0,uiY:0,menuRig:null};
@@ -8198,7 +8560,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
    ...(PCAR?[{t:'Back on the road',go:()=>{resetInput=true;resume()}}]:[]),
    {t:'Music: '+(SETTINGS.music?'on':'off'),go:()=>{if(typeof toggleMusic==='function')toggleMusic()}},
    {t:'Turning: '+(snap?'snap':'smooth'),go:()=>{snap=!snap;try{localStorage.setItem('ack-vr-turn',snap?'snap':'smooth')}catch(e){}turnLbl()}},
-   {t:'View: '+(view3?'third person':'first person'),go:()=>setView(!view3)},
+   {t:'View: '+(vw3()?'third person':'first person'),go:()=>setView(!vw3())},
    {t:'Recenter view',go:recenter},
    {t:'Quit to main menu',go:()=>{toMenu()}},
    ...(STORE_APP?[]:[{t:'Leave VR',go:exitVR}])];
@@ -8351,7 +8713,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   const f24={font:'700 24px Barlow, Arial, sans-serif'};
   button(440,y,150,64,'Music: '+(SETTINGS.music?'on':'off'),'mus',()=>{audioStart();toggleMusic()},f24);
   button(600,y,190,64,'Turning: '+(snap?'snap':'smooth'),'turn',()=>{snap=!snap;try{localStorage.setItem('ack-vr-turn',snap?'snap':'smooth')}catch(e){}turnLbl()},f24);
-  button(800,y,170,64,'View: '+(view3?'3rd':'1st'),'view',()=>setView(!view3),f24);
+  button(800,y,170,64,'View: '+(vw3()?'3rd':'1st'),'view',()=>setView(!vw3()),f24);
   const gl=gfxPref();button(980,y,210,64,'Graphics: '+gl,'gfx',()=>{const nx=gl==='Low'?'medium':'low';try{localStorage.setItem('ack-gfx',nx)}catch(e){}toast('Graphics '+nx+' from the next time you start the game')},f24);
   button(1200,y,140,64,'Recenter','rec',recenter,f24);
   if(!STORE_APP)button(1350,y,150,64,'Leave VR','leave',exitVR,f24);
@@ -8514,7 +8876,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   A[0]=ax(L,2);A[1]=ax(L,3);
   // right stick: on foot it turns you (snap by default); in a vehicle your head does the looking
   const rx=ax(R,2);if(foot){if(snap){if(Math.abs(rx)>.7&&st.snapArmed){st.snapArmed=false;look.dx+=Math.sign(rx)*(Math.PI/6)/(IS_TOUCH?.0035:.0024)}else if(Math.abs(rx)<.3)st.snapArmed=true}else A[2]=rx}
-  else if(PCAR&&PCAR.kind==='heli')A[3]=ax(R,3);                 // helicopter: right stick up climbs, down lands
+  else if(PCAR&&(PCAR.kind==='heli'||PCAR.kind==='sub'))A[3]=ax(R,3);                 // helicopter: right stick up climbs, down lands
   if(foot)set(7,tR>.2||tL>.2||p(R,1),Math.max(tR,tL,p(R,1)?1:0)); // on foot: either trigger (or right grip) shoots
   else{set(7,tR>.05,tR);set(6,tL>.05,tL);set(5,p(R,1))}       // vehicle: triggers gas / brake, right grip shoots
   set(4,p(L,1));set(0,bA);set(1,bB||(!foot&&bY));set(10,p(L,3));
@@ -8534,7 +8896,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)PL.fp=!PL.
   if(st.ui!==ui0&&st.ui&&st.ui!=='pause')uiPlace();
   // the headset keeps you in first person on foot and in the driver's seat in a car
   if(FOOT()&&PL){const want=drtOn()||!view3;if(PL.fp!==want){PL.fp=want;st.prevAimYaw=null;st.aimYaw=null}}
-  if(PCAR&&!FOOT()&&PCAR.kind!=='heli'&&CAM!==2){if(st.camBefore===null)st.camBefore=CAM;CAM=2;camVis()}
+  if(PCAR&&!FOOT()){const w=VIEWP.vrVehFirst(PCAR)?2:0;if(CAM!==w){if(st.camBefore===null)st.camBefore=CAM;CAM=w;camVis()}}
   // on foot you aim with the right controller (your head if it isn't tracked); while a panel is up the aim holds still
   const fp=FOOT()&&PL&&PL.fp&&PL.dead<=0&&!menuOn()&&!st.ui&&st.vis==='visible';const aim0=st.hp.right;let aim=null;
   if(aim0){_e.setFromQuaternion(aim0.q,'YXZ');aim={yaw:_e.y,pitch:_e.x};ray.position.copy(aim0.o);ray.quaternion.copy(aim0.q)}
