@@ -3567,7 +3567,7 @@ vec3 L=uSLp-vDW;float d=length(L);float cs=dot(-L/max(d,.001),uSLd);float cone=s
   const nq=new Int8Array(buf,L.nrm[0],nv*3),nr=new Float32Array(nv*3);for(let i=0;i<nv*3;i++)nr[i]=nq[i]/127;
   const uq=new Uint16Array(buf,L.uv[0],nv*2),uv=new Float32Array(nv*2);for(let i=0;i<nv*2;i++)uv[i]=M.umin[i%2]+uq[i]*M.uscale[i%2];
   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nr,3));g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setIndex(new T.BufferAttribute(new Uint16Array(buf,L.idx[0],M.ni),1));
-  if(k==='squid')g.rotateY(Math.PI);if(k==='manta'){g.rotateX(-Math.PI/2);g.rotateY(Math.PI)}
+  if(k==='squid')g.rotateY(Math.PI);if(k==='manta'){g.rotateX(-Math.PI/2);g.rotateY(Math.PI);g.rotateZ(Math.PI)}
   g.computeBoundingBox();const c=V3(),sz=V3();g.boundingBox.getCenter(c);g.boundingBox.getSize(sz);g.translate(-c.x,-c.y,-c.z);
   const s=SEA[k][1]/(k==='manta'?sz.x:k==='octopus'?Math.max(sz.x,sz.y,sz.z):sz.z);g.scale(s,s,s);g.computeBoundingBox();g.computeBoundingSphere();g.userData.keep=true;return{g,L:sz.z*s,W:sz.x*s,H:sz.y*s}};
  const seaTex=(src,cb)=>{const im=new Image();im.onload=()=>{let t;if(q2){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(im,0,0,512,512);t=new T.CanvasTexture(c)}else{t=new T.Texture(im)}
