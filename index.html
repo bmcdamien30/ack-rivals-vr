@@ -562,7 +562,7 @@ body.kgon #area{bottom:calc(178px + env(safe-area-inset-bottom,0px))}
   <div id="wm-list"></div>
   <p class="wm-foot">Spawning somewhere also makes it where you come back after a wipeout.</p></aside></div></div>
 
-<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 26</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
+<section id="pause" class="overlay" hidden><div class="card"><p class="eyebrow">Paused · Build 27</p><h2>Take a breather</h2><p class="pause-keys" id="pause-keys">C or CAM changes the camera. M opens the island map. R puts you back on the road. N turns the music on or off.</p><div class="pm"><button id="b-resume" class="btn primary">Resume</button><button id="b-pmap" class="btn">Island map</button><button id="b-pcam" class="btn">Camera</button><button id="b-pmus" class="btn">Music</button><button id="b-ptp" class="btn">Trackpad controls</button><button id="b-pkg" class="btn">Key guide</button><button id="b-preal" class="btn">Realistic characters</button><button id="b-menu2" class="btn">Quit to main menu</button></div></div></section>
 <section id="results" class="overlay" hidden><div class="card"><p class="eyebrow">Results</p><h2 id="res-title"></h2><div id="res-body"></div><div class="row"><button id="b-again" class="btn primary">Go again</button><button id="b-menu" class="btn">Menu</button></div></div></section>
 
 <script>
@@ -3392,11 +3392,11 @@ DEEPV=(function(){if(!DEEPH||!SBEACH||typeof S24==='undefined'||!S24)return null
     .replace('#include <begin_vertex>','#include <begin_vertex>\n'+(fl.sway?'{float ph=0.;\n#ifdef USE_INSTANCING\nph=instanceMatrix[3].x*.21+instanceMatrix[3].z*.17;\n#endif\nfloat yy=max(position.y,0.);transformed.x+=sin(uT*1.05+ph+yy*.25)*yy*yy*.0042;transformed.z+=cos(uT*.83+ph*1.3+yy*.2)*yy*yy*.0033;}\n':''))
     .replace('#include <project_vertex>','#include <project_vertex>\n#ifdef USE_INSTANCING\nvDW=(modelMatrix*instanceMatrix*vec4(transformed,1.)).xyz;\n#else\nvDW=(modelMatrix*vec4(transformed,1.)).xyz;\n#endif');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vDW;uniform vec3 uSLp,uSLd;uniform float uSLon,uT,uCau;')
-    .replace('#include <fog_fragment>',`{float dk=clamp(1.+vDW.y/50.,0.,1.);gl_FragColor.rgb*=mix(vec3(.2,.33,.4),vec3(.62,.84,.92),dk);
+    .replace('#include <fog_fragment>',`{float dk=clamp(1.+vDW.y/50.,0.,1.);gl_FragColor.rgb*=${fl.kr?'mix(mix(vec3(.2,.33,.4),vec3(.62,.84,.92),dk),vec3(1.),.5)':'mix(vec3(.2,.33,.4),vec3(.62,.84,.92),dk)'};
 ${fl.caus?'float cs0=sin(vDW.x*.37+uT*1.3)*sin(vDW.z*.33-uT*1.07)+.6*sin((vDW.x-vDW.z)*.21+uT*.8);gl_FragColor.rgb+=diffuseColor.rgb*pow(max(cs0,0.),2.)*.24*uCau*dk*dk;':''}
 vec3 L=uSLp-vDW;float d=length(L);float cs=dot(-L/max(d,.001),uSLd);float cone=smoothstep(.8,.93,cs)+smoothstep(4.,0.,d)*.4;gl_FragColor.rgb+=diffuseColor.rgb*uSLon*cone*(2./(1.+d*d*.003))*smoothstep(75.,8.,d);}
 #include <fog_fragment>`)};
-  m.customProgramCacheKey=()=>'deep25'+(fl.sway?'s':'')+(fl.caus?'c':'');return m};
+  m.customProgramCacheKey=()=>'deep25'+(fl.sway?'s':'')+(fl.caus?'c':'')+(fl.kr?'k':'');return m};
  const MC={};const dm=(c,o={})=>{const k=c+JSON.stringify(o);if(MC[k])return MC[k];const fl={sway:o.sway,caus:o.caus};const oo=Object.assign({},o);delete oo.sway;delete oo.caus;
   return MC[k]=patch(new T.MeshLambertMaterial(Object.assign({color:c},oo)),fl)};
  const glowM=(c,op=.9)=>new T.SpriteMaterial({map:glowTex(),color:c,blending:T.AdditiveBlending,transparent:true,depthWrite:false,opacity:op,fog:false});
@@ -3557,11 +3557,11 @@ vec3 L=uSLp-vDW;float d=length(L);float cs=dot(-L/max(d,.001),uSLd);float cone=s
   wing:'{float ax=abs(position.x)/uBW*2.;transformed.y+=sin(uT*uBF+ph-ax*1.2)*ax*ax*uBA*uBW;transformed.y+=sin(uT*uBF*.5-zt*3.+ph)*zt*zt*uBA*.3*uBL;}',
   flip:'{float ax=max(abs(position.x)/uBW*2.-.35,0.);transformed.y+=sin(uT*uBF+ph)*ax*uBA*uBW;transformed.z+=cos(uT*uBF+ph)*ax*uBA*.5*uBW;}',
   octo:'{float w=clamp(.55-position.y/uBH,0.,1.);w*=w;transformed.x+=sin(uT*uBF+ph+position.z*2.5)*w*uBA*uBH;transformed.z+=cos(uT*uBF*.8+ph+position.x*2.5)*w*uBA*uBH;transformed.y+=sin(uT*uBF*.5+ph)*.04*uBH;}'};
- const seaMat=(k,tex)=>{const s=SEA[k],U={uBA:{value:s[4]},uBF:{value:s[3]},uBK:{value:s[5]},uBL:{value:1},uBW:{value:1},uBH:{value:1}};
-  const m=q2?new T.MeshLambertMaterial({map:tex,side:T.DoubleSide}):new T.MeshStandardMaterial({map:tex,roughness:.55,metalness:0,side:T.DoubleSide});patch(m);const ob=m.onBeforeCompile;
+ const seaMat=(k,tex,fl)=>{const s=SEA[k],U={uBA:{value:s[4]},uBF:{value:s[3]},uBK:{value:s[5]},uBL:{value:1},uBW:{value:1},uBH:{value:1}};
+  const m=q2?new T.MeshLambertMaterial({map:tex,side:T.DoubleSide}):new T.MeshStandardMaterial({map:tex,roughness:.55,metalness:0,side:T.DoubleSide});patch(m,fl);const ob=m.onBeforeCompile;
   m.onBeforeCompile=sh=>{ob(sh);Object.assign(sh.uniforms,U);sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uBA,uBF,uBK,uBL,uBW,uBH;')
    .replace('#include <begin_vertex>','#include <begin_vertex>\n{float ph=modelMatrix[3].x*.13+modelMatrix[3].z*.11;float zt=clamp(.5-position.z/uBL,0.,1.);'+BEND[s[2]]+'}')};
-  m.customProgramCacheKey=()=>'deep26'+s[2];m.userData.U=U;return m};
+  m.customProgramCacheKey=()=>'deep26'+s[2]+(fl&&fl.kr?'k':'');m.userData.U=U;return m};
  const seaGeo=(D,k)=>{const M=D.meta,L=M.layout,raw=atob(D.bin),u8=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u8[i]=raw.charCodeAt(i);const buf=u8.buffer,nv=M.nv;
   const pq=new Uint16Array(buf,L.pos[0],nv*3),pos=new Float32Array(nv*3);for(let i=0;i<nv*3;i++)pos[i]=M.pmin[i%3]+pq[i]*M.pscale[i%3];
   const nq=new Int8Array(buf,L.nrm[0],nv*3),nr=new Float32Array(nv*3);for(let i=0;i<nv*3;i++)nr[i]=nq[i]/127;
@@ -3655,11 +3655,11 @@ gl_FragColor=vec4(c,a);
  function pre(cp){const t=typeof CLOCK!=='undefined'?CLOCK:0;DU.uT.value=t;UW=MODE!=='menu'&&cp.y<-.45&&isWater(cp.x,cp.z,-1);
   const deepOn=UW&&cp.x>DH.x0-60&&cp.x<DH.x1+60&&cp.z>DH.z0-60&&cp.z<DH.z1+60;root.visible=deepOn;if(deepOn&&!SEAM.started)seaLoad();
   if(deepOn){const lim=q2?115:150;for(const c of CH)c.me.visible=Math.hypot(c.x-cp.x,c.z-cp.z)-c.r<lim*.75;for(const p of PLACES)p.grp.visible=Math.hypot(p.x-cp.x,p.z-cp.z)<p.r+(q2?90:120);
-   for(const f of LIFE)f.g.visible=Math.hypot(f.g.position.x-cp.x,f.g.position.z-cp.z)<(q2?80:110)}
+   for(const f of LIFE)f.g.visible=!f.off&&Math.hypot(f.g.position.x-cp.x,f.g.position.z-cp.z)<(q2?80:110)}
   if(!UW){under.visible=rays.visible=false;return false}
   const f=scene.fog;SAVEF.c.copy(f.color);SAVEF.n=f.near;SAVEF.f=f.far;SAVEF.bg=scene.background;const sky=scene.userData.sky;SAVEF.sky=sky?sky.visible:true;SAVEF.hi=HEMI.intensity;SAVEF.si=sun.intensity;
   const dk=clamp(-cp.y/55,0,1),night=typeof NIGHT_ON!=='undefined'&&NIGHT_ON;UWC.copy(UW1).lerp(UW2,dk);if(night)UWC.multiplyScalar(.35);
-  f.color.copy(UWC);f.near=1.5;f.far=(q2?52:72)*(1-dk*.25)*(DU.uSLon.value>0?1.08:1);scene.background=UWC;if(sky)sky.visible=false;HEMI.intensity=SAVEF.hi*(.75-dk*.3);sun.intensity=SAVEF.si*(.55-dk*.35);
+  f.color.copy(UWC);f.near=1.5;f.far=(q2?52:72)*(1-dk*.25)*(DU.uSLon.value>0?1.08:1)*KR.fog;scene.background=UWC;if(sky)sky.visible=false;HEMI.intensity=SAVEF.hi*(.75-dk*.3);sun.intensity=SAVEF.si*(.55-dk*.35);
   under.visible=true;under.position.set(cp.x,-.08,cp.z);under.material.color.copy(UWC).lerp(new T.Color(night?'#2a4a5a':'#bff4f2'),.65);
   rays.visible=!night&&cp.y>-35;if(rays.visible){rays.position.set(cp.x,0,cp.z);rays.children.forEach(m=>{m.material.opacity=.1;m.rotation.y+=.0006})}BEAMM.opacity=.07*(1-dk);
   return true}
@@ -3690,7 +3690,8 @@ gl_FragColor=vec4(c,a);
   place(x,z,h){this.p.set(x,0,z);this.p.y=this.top();this.h=h;this.vx=this.vz=this.vy=0;this.j.g.visible=true;this.sync(0)}
   respawn(){if(this.home)this.place(this.home.x,this.home.z,this.home.h);if(this.player)toast('Back at the Moon Snail mooring off ’Sconset Beach')}
   canExit(){return this.p.y>this.top()-.6}
-  update(dt,inp){const pl=this===PCAR,gas=+inp.gas||0,brk=+inp.brake||0,touchDive=IS_TOUCH&&!inp.tp&&brk>0&&!gas,up=inp.hand?1:0,down=(inp.down||touchDive)?1:0;
+  holdStill(dt,inp){this.vx=this.vz=this.vy=0;this.si=lerp(this.si,clamp(inp.steer||0,-1,1),1-Math.exp(-6*dt));this.h+=this.si*.45*dt;this.pitch=lerp(this.pitch,0,1-Math.exp(-3*dt));this.roll=lerp(this.roll,0,1-Math.exp(-3*dt));this.prop+=dt*8;this.pingCool-=dt;this.sync(dt)}
+  update(dt,inp){if(this.held){this.holdStill(dt,inp);return}const pl=this===PCAR,gas=+inp.gas||0,brk=+inp.brake||0,touchDive=IS_TOUCH&&!inp.tp&&brk>0&&!gas,up=inp.hand?1:0,down=(inp.down||touchDive)?1:0;
    const sh=Math.sin(this.h),ch=Math.cos(this.h);let vf=this.vx*sh+this.vz*ch,vl=this.vx*ch-this.vz*sh;const st=clamp(inp.steer||0,-1,1);this.si=lerp(this.si,st,1-Math.exp(-6*dt));this.st=this.si*.4;
    if(this.c){vf+=(gas*5.2-(touchDive?0:brk)*(vf>0?6:3.2))*dt;this.h+=this.si*(1.05-Math.min(.45,Math.abs(vf)*.03))*dt}vf-=vf*(gas?.32:.9)*dt;vf=clamp(vf,-3.5,11);vl*=Math.exp(-2.2*dt);
    const top=this.top(),fl=this.floor();let wantVy=this.c?(up-down)*3.4:(this.p.y<top-.2?1.1:0);if(!this.c&&this.p.y>=top-.2)wantVy=(top-this.p.y)*3;
@@ -3707,7 +3708,7 @@ gl_FragColor=vec4(c,a);
    this.sync(dt)}
   sync(dt){const g=this.j.g;g.position.copy(this.p);g.rotation.order='YXZ';g.rotation.set(this.pitch,this.h,this.roll);this.j.props.forEach((p,i)=>p.rotation.z=this.prop*(i?1:-1));
    this.j.beam.visible=this.j.lampG.visible=this.light&&this===PCAR;if(this.c){if(this.c.npc)poseNPCSeated(this.c);else{poseSeated(this.c,this.si||0,CLOCK);this.c.aR.sh.rotation.set(-1.0+(this.si||0)*.25,0,-.15);this.c.aL.sh.rotation.set(-.8,0,.1)}}}
-  shoot(){if(this.pingCool>0)return;this.pingCool=1.6;ping(this)}
+  shoot(){if(this===SUB&&KR.cannon()){KR.fire(this);return}if(this.pingCool>0)return;this.pingCool=1.6;ping(this)}
   toggleLight(){this.light=!this.light;sfx('beep',.35);toast(this.light?'Searchlight on':'Searchlight off')}
   damage(){}}
  /* ---- sonar: a ring of sound that lights up the places and any pearls around you ---- */
@@ -3764,17 +3765,266 @@ gl_FragColor=vec4(c,a);
   if(!LAMP.lit){if(near(LAMP.x,LAMP.y,LAMP.z,4.5))lightLamp();else if(near(LAMP.x,LAMP.y,LAMP.z,22)&&!OPEN.prompt)OPEN.prompt={t:'Steer into the lantern room to relight the lighthouse'}}else LAMP.beam.rotation.x+=dt*.8;
   if(!ST.scan&&Math.hypot(me.p.x-P.fall[0],me.p.z-P.fall[1])<p.fallScan&&me.p.y<-8&&!OPEN.prompt)OPEN.prompt={t:s?`${IS_TOUCH?'FIRE':GP.on?(VR.on?'Right grip':GP.rt):'Click'} · sonar ping to scan the whale fall`:'Ping it with the sub’s sonar to scan the whale fall'};
   // sea life
-  const t=CLOCK;for(const f of LIFE){if(!f.g.visible&&f.r>0){}const a=f.ph+t*f.spd*f.dir,x=f.c[0]+Math.cos(a)*f.r,z=f.c[1]+Math.sin(a)*f.r;let y=f.y+Math.sin(t*.3+f.ph)*f.wob;
+  const t=CLOCK;for(const f of LIFE){if(f.ctl)continue;const a=f.ph+t*f.spd*f.dir,x=f.c[0]+Math.cos(a)*f.r,z=f.c[1]+Math.sin(a)*f.r;let y=f.y+Math.sin(t*.3+f.ph)*f.wob;
    if(f.kind==='dolphin')y=Math.min(-.6,f.y+Math.sin(t*1.4+f.ph)*1.8);const fl=G(x,z)+(f.fl!==undefined?f.fl:2);if(y<fl)y=fl;f.g.position.set(x,y,z);const hd=Math.atan2(-Math.sin(a)*f.dir,Math.cos(a)*f.dir);f.g.rotation.set(f.kind==='dolphin'?-Math.cos(t*1.4+f.ph)*.35:0,hd,0);
    f.tail.rotation.y=Math.sin(t*(f.kind==='dolphin'?6:f.kind==='orca'?2.2:2.8)+f.ph)*.35;if(f.kind==='dolphin')f.tail.rotation.x=Math.sin(t*6+f.ph)*.3}
   {const m4=new T.Matrix4(),q=new T.Quaternion(),v=V3(),sc=V3();JEL.J.forEach((j,i)=>{const pu=Math.sin(t*1.6+j.ph);v.set(j.x+Math.sin(t*.1+j.ph)*3,j.y+Math.sin(t*.4+j.ph)*.8,j.z+Math.cos(t*.1+j.ph)*3);sc.set(j.s*(1+pu*.12),j.s*(1-pu*.15),j.s*(1+pu*.12));m4.compose(v,q,sc);JEL.im.setMatrixAt(i,m4)});JEL.im.instanceMatrix.needsUpdate=true}
   CRABS.forEach(c=>{c.a+=Math.sin(t*.4+c.ph)*dt*.6;const sp=Math.sin(t*2+c.ph)>.3?.6:0;c.g.position.x+=Math.sin(c.a)*sp*dt;c.g.position.z+=Math.cos(c.a)*sp*dt;c.g.rotation.y=c.a+Math.PI/2;
    if(Math.hypot(c.g.position.x-P.fall[0],c.g.position.z-P.fall[1])>9)c.a+=Math.PI*.5;c.g.position.y=G(c.g.position.x,c.g.position.z)+.1})}
+ /* ---- Build 27: The Kraken (brought over from the Quest version) ----
+    Something huge is waking in the deep canyon past the drowned lighthouse. First the great whites gather, circle and ram
+    the Moon Snail: spook them off with the bubble cannon (right grip in VR, click on a computer, FIRE on a phone, aimed with
+    your right hand or where you look); hold out a minute and the orca pod chases them away. Then the kraken rises face to
+    face, a wrecked ship held up in one tentacle, and wraps the sub in four more: shoot the glowing suckers so three let go
+    at once (a freed one grabs again after 15 s). Then the mermaids come, the only time you ever see them: their queen
+    swims between you and the kraken and her super sonar sends it back down into the canyon. Nothing gets hurt: the sharks
+    and the kraken are only scared off. If the glass breaks the mission's lost and the tow boat brings you home.
+    The view never shakes; in VR a buzz in your left or right hand tells you which side a shark is coming from.
+    Its models and sounds (made with Higgsfield for the Quest version) only download when the mission starts. */
+ const KR=(()=>{
+  const lt=5.3,ci=Math.floor(lt),cf=lt-ci,c0=DH.CAN[ci],c1=DH.CAN[ci+1],LX=lerp(c0[0],c1[0],cf),LZ=lerp(c0[1],c1[1],cf),LY=G(LX,LZ);
+  const BL=40,AL=60,SHARK_T=60,ARRIVE=75,SHARK_HITS=3,SUCK_HITS=4,RAM=5,REGRAB=15,SQ_EVERY=3,SQ_PER=1.2,SUBR=1.4,GOLD='#f2cc4d';
+  const GO=1,SHARKS=2,ORCAS=3,RISE=4,GRAB=5,MERS=6,SINK=7;
+  const K={stage:0,t:0,glass:100,A:null,held:false,gH:0,fog:1,cd:0,sq:0,pings:0,pingT:0,sinkFrom:0,shipFall:0,waitMsg:0,bodyFrom:V3(),bodyTo:V3(),yaw:0,cracks:[],crackN:-1};
+  const _a=V3(),_b=V3(),_c=V3(),_d=V3(),_e2=V3(),_m4=new T.Matrix4(),_q=new T.Quaternion(),UP=V3(0,1,0),ZERO=V3();
+  // its models and sounds (files next to this page)
+  SEA.kraken=['',BL,'vert',.6,.02,1.4];SEA.mermaid=['',2.8,'vert',2.4,.12,1.8];SEA.mermaid2=['',2.5,'vert',2.4,.12,1.8];SEA.krakenship=['',22,'vert',0,0,0];
+  const AS={req:false,got:{},fail:{},snd:{},sndReq:false};
+  function load(){if(AS.req)return;AS.req=true;['kraken','krakenship','mermaid','mermaid2'].forEach(k=>{
+   fetch('/sea/'+k+'.json').then(r=>{if(!r.ok)throw new Error('kraken model '+r.status);return r.json()}).then(D=>{const R=seaGeo(D,k);seaTex(D.tex,t=>{try{const m=seaMat(k,t,{kr:true}),U=m.userData.U;U.uBL.value=R.L;U.uBW.value=R.W;U.uBH.value=R.H;if(t){m.emissive=new T.Color('#ffffff');m.emissiveMap=t;m.emissiveIntensity=k==='kraken'?.2:k==='krakenship'?.1:.4}AS.got[k]={R,m};dress(k)}catch(e){console.warn(e);AS.fail[k]=1}})})
+    .catch(e=>{console.warn('kraken model unavailable',k,e);AS.fail[k]=1})});loadSnd()}
+  function loadSnd(){if(AS.sndReq||!AU.ctx)return;AS.sndReq=true;['kraken_roar','kraken_squeeze','mermaid_song','super_sonar','bubble_shot'].forEach(n=>
+   fetch('/sfx/'+n+'.mp3').then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer()}).then(b=>new Promise((res,rej)=>AU.ctx.decodeAudioData(b,res,rej))).then(buf=>{AS.snd[n]=buf}).catch(()=>{}))}
+  function play(n,v=1,rate=1,fb){const c=AU.ctx,b=AS.snd[n];if(!c||!b){if(fb)sfx(fb,v*.7);return}try{const s=c.createBufferSource();s.buffer=b;s.playbackRate.value=rate;const g=c.createGain();g.gain.value=v;s.connect(g);g.connect(AU.master);s.start()}catch(e){}}
+  const buzz=(side,i,ms)=>{if(VR.on&&VR.buzz)VR.buzz(side,i,ms)};
+  const fireWord=()=>IS_TOUCH?'FIRE':GP.on?(VR.on?'Right grip':GP.rb):'Click';
+  const aimWord=()=>VR.on?'where your right hand points':IS_TOUCH?'ahead of the sub':'where you look';
+  const say=l=>crewSay('King Stuart',l,GOLD,true);
+  // everything it shows lives in one group under the sea, hidden until the mission
+  const KG=new T.Group();KG.visible=false;root.add(KG);
+  // a lure in the dark: two amber eyes far down the canyon, so you know where to go
+  const lure=[-1,1].map(s=>{const g=new T.Sprite(glowM('#ffb21f',.85));g.scale.set(9,6,1);g.position.set(LX+s*5,LY+7,LZ);KG.add(g);return g});
+  const tag=tagSprite('THE KRAKEN','#ffcf7a');
+  // the kraken's body: its own model (face +z), or a stand-in until it arrives; glowing amber eyes
+  const KB={g:new T.Group(),p:V3(),f:V3(0,0,1),r:V3(1,0,0),u:V3(0,1,0),real:null,eyes:[],stand:null};KB.g.rotation.order='YXZ';KB.g.visible=false;KG.add(KB.g);
+  KB.eyes=[-1,1].map(s=>{const g=new T.Sprite(glowM('#ffb21f',.95));g.scale.set(6.5,5,1);KB.g.add(g);return g});
+  function eyesAt(W,H,L){KB.eyes.forEach((e,i)=>e.position.set((i?1:-1)*W*.085,-H*.03,L*.19+L*.036*1.3))}
+  eyesAt(BL*.95,BL*.6,BL);
+  function standIn(){if(KB.stand||KB.real)return;const m=new T.Mesh(sph(1,16,12),dm('#7a1424'));m.scale.set(BL*.24,BL*.2,BL*.46);KB.g.add(m);KB.stand=m}
+  // the wrecked ship it holds up, and the three mermaids (their queen first)
+  const SHIP={g:new T.Group(),vel:V3()};SHIP.g.visible=false;KG.add(SHIP.g);
+  const MER=[0,1,2].map(i=>{const g=new T.Group();g.visible=false;KG.add(g);const h=new T.Sprite(glowM('#73ffb3',.45));const s=i?1.6:2.2;h.scale.set(s,s,1);g.add(h);return{g,v:V3(),i}});
+  function dress(k){const A=AS.got[k];if(!A)return;
+   if(k==='kraken'){if(KB.stand){KB.g.remove(KB.stand);KB.stand=null}const me=new T.Mesh(A.R.g,A.m);me.frustumCulled=false;KB.g.add(me);KB.real=me;eyesAt(A.R.W,A.R.H,A.R.L)}
+   if(k==='krakenship'){const me=new T.Mesh(A.R.g,A.m);SHIP.g.add(me)}
+   if(k==='mermaid')MER[0].g.add(new T.Mesh(A.R.g,A.m));
+   if(k==='mermaid2'){MER[1].g.add(new T.Mesh(A.R.g,A.m));MER[2].g.add(new T.Mesh(A.R.g,A.m))}}
+  // the tentacles: eight tubes in one mesh, rebuilt as they move; four grab the sub, one holds the ship
+  const RN=22,SN=8,NV1=(RN+1)*(SN+1);
+  const armGeo=new T.BufferGeometry(),aPos=new Float32Array(8*NV1*3),aNor=new Float32Array(8*NV1*3),aCol=new Float32Array(8*NV1*3),aIdx=[];
+  {const skin=new T.Color('#8a1426'),skin2=skin.clone().multiplyScalar(1.3),under=new T.Color('#e88a8e'),c=new T.Color();for(let j=0;j<8;j++)for(let i=0;i<=RN;i++)for(let s=0;s<=SN;s++){const k=j*NV1+i*(SN+1)+s,ang=s/SN*TAU,belly=Math.sin(ang)<-.35;
+    c.copy(skin).lerp(belly?under:skin2,i/RN*.5+(belly?.5:0));aCol[k*3]=c.r;aCol[k*3+1]=c.g;aCol[k*3+2]=c.b}
+   for(let j=0;j<8;j++)for(let i=0;i<RN;i++)for(let s=0;s<SN;s++){const q0=j*NV1+i*(SN+1)+s,q1=q0+SN+1;aIdx.push(q0,q1+1,q1,q0,q0+1,q1+1)}}
+  armGeo.setAttribute('position',new T.BufferAttribute(aPos,3));armGeo.setAttribute('normal',new T.BufferAttribute(aNor,3));armGeo.setAttribute('color',new T.BufferAttribute(aCol,3));armGeo.setIndex(aIdx);
+  armGeo.attributes.position.setUsage(T.DynamicDrawUsage);armGeo.attributes.normal.setUsage(T.DynamicDrawUsage);
+  const armMesh=new T.Mesh(armGeo,patch(new T.MeshLambertMaterial({vertexColors:true,emissive:'#3a0610'}),{kr:true}));armMesh.frustumCulled=false;armMesh.visible=false;KG.add(armMesh);
+  const suckM=new T.MeshBasicMaterial({color:'#a6ff4d'}),suckGeo=sph(.42,10,8);
+  const ARMS=[];for(let j=0;j<8;j++)ARMS.push({j,phi:j*45+22.5,ph:j*1.7,reach:.2,grabber:false,holding:false,g:0,a0:0,h0:0,sgn:1,hp:SUCK_HITS,freeT:0,sk:null,tg:null,sAt:V3(),ctrl:[0,1,2,3,4,5].map(()=>V3()),wave:[0,1,2,3,4,5].map(()=>V3())});
+  let shipArm=null;
+  // what the bubbles can hit
+  const TG=[];
+  // the mission's own sharks and orcas (swimmers the mission steers itself; they wear the same Higgsfield models)
+  const mk=(kind)=>{const f=swim(kind,[LX,LZ],0,LY+10,0,0,0,{ctl:true,off:true});f.g.rotation.order='YXZ';return{f,p:V3(),d:V3(0,0,1),away:V3(),spd:0,ph:rr()*TAU,gone:true,flee:false}};
+  const SH=[0,1,2].map(()=>mk('shark')),OR=[0,1,2].map(()=>mk('orca'));
+  function steer(o,to,spd,turn,dt){_a.subVectors(to,o.p);const L=_a.length();if(L>1e-3){_a.multiplyScalar(1/L);const ang=Math.acos(clamp(o.d.dot(_a),-1,1)),k=ang>1e-4?Math.min(1,turn*Math.PI/180*dt/ang):1;o.d.lerp(_a,k).normalize()}
+   o.spd=lerp(o.spd,spd,1-Math.exp(-2.5*dt));o.p.addScaledVector(o.d,o.spd*dt);const fl=G(o.p.x,o.p.z)+2.2;if(o.p.y<fl)o.p.y=fl;if(o.p.y>-2.5)o.p.y=-2.5;show(o)}
+  function show(o){const f=o.f;f.g.position.copy(o.p);f.g.rotation.set(-Math.asin(clamp(o.d.y,-1,1))*.8,Math.atan2(o.d.x,o.d.z),0);f.tail.rotation.y=Math.sin(CLOCK*(f.kind==='orca'?2.2:2.8)*(.6+o.spd*.08)+o.ph)*.35}
+  function put(o,at,look){o.p.copy(at);o.d.subVectors(look,at);o.d.y=0;if(o.d.lengthSq()<1e-4)o.d.set(0,0,1);o.d.normalize();o.spd=4;o.f.off=false;o.gone=false;o.flee=false;show(o)}
+  const out=o=>{o.f.off=true;o.f.g.visible=false;o.flee=false;o.gone=true};
+  // the bubble cannon: one instanced mesh of bubbles
+  const BUB={n:24,s:[],im:null};{const m=new T.MeshLambertMaterial({color:'#dff7ff',emissive:'#2f7f95',transparent:true,opacity:.5,depthWrite:false});BUB.im=new T.InstancedMesh(new T.IcosahedronGeometry(.5,1),m,BUB.n);BUB.im.frustumCulled=false;BUB.im.renderOrder=3;BUB.im.visible=false;KG.add(BUB.im);
+   for(let i=0;i<BUB.n;i++)BUB.s.push({p:V3(),v:V3(),age:0,live:false})}
+  // the queen's super sonar: three great pink rings
+  const RINGS=[0,1,2].map(()=>{const m=new T.Mesh(new T.SphereGeometry(1,20,12),new T.MeshBasicMaterial({color:'#ff73d9',transparent:true,opacity:.4,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,fog:false,wireframe:true}));m.visible=false;KG.add(m);return{m,t:-1}});
+  // cracks in the Moon Snail's glass, drawn where the hits came from
+  let crack=null;
+  function crackMesh(s){if(crack&&crack.parent===s.j.body)return crack;const cv=document.createElement('canvas');cv.width=512;cv.height=256;const tx=new T.CanvasTexture(cv);
+   crack=new T.Mesh(new T.SphereGeometry(1.345,20,12,0,TAU,0,Math.PI*.56),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,side:T.DoubleSide,fog:false,opacity:.9}));crack.userData={cv,tx};crack.visible=false;crack.renderOrder=4;s.j.body.add(crack);K.crackN=-1;return crack}
+  function crackAt(s,wp){_a.subVectors(wp,s.p);const ch=Math.cos(-s.h),sh=Math.sin(-s.h),lx=_a.x*ch+_a.z*sh,lz=-_a.x*sh+_a.z*ch,ly=_a.y+.3,L=Math.hypot(lx,ly,lz)||1;
+   let u=Math.atan2(lz,-lx)/TAU;if(u<0)u+=1;const v=clamp(Math.acos(clamp(ly/L,-1,1))/(Math.PI*.56),.12,.9);K.cracks.push({u,v,seed:K.cracks.length*7.3+1})}
+  function drawCracks(s){const c=crackMesh(s),n=Math.min(K.cracks.length,Math.floor((100-K.glass)/5)+(K.glass<100?1:0));c.visible=K.stage>0&&n>0;if(n===K.crackN)return;K.crackN=n;
+   const cv=c.userData.cv,x=cv.getContext('2d');x.clearRect(0,0,512,256);x.lineCap='round';
+   for(let k=0;k<n;k++){const C=K.cracks[k];let sd=C.seed;const R=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+    for(let b=0;b<5;b++){let px=C.u*512,py=C.v*256,a=R()*TAU;x.beginPath();x.moveTo(px,py);for(let s2=0;s2<4;s2++){a+=(R()-.5)*1.1;const L=10+R()*26;px+=Math.cos(a)*L;py+=Math.sin(a)*L*.6;x.lineTo(px,py)}
+     x.strokeStyle='rgba(255,255,255,.85)';x.lineWidth=2.2;x.stroke();x.strokeStyle='rgba(160,220,255,.35)';x.lineWidth=5;x.stroke()}
+    x.fillStyle='rgba(255,255,255,.7)';x.beginPath();x.arc(C.u*512,C.v*256,4,0,TAU);x.fill()}
+   c.userData.tx.needsUpdate=true}
+  // ---- the glass ----
+  function hit(s,n,from){if(K.stage<SHARKS)return;K.glass=Math.max(0,K.glass-n);if(from)crackAt(s,from);else{const a=ARMS.find(q=>q.grabber&&q.holding);crackAt(s,a?a.sAt:_b.set(s.p.x+rnd()-.5,s.p.y+.5,s.p.z+rnd()-.5))}
+   drawCracks(s);missionHud()}
+  // ---- start, stop ----
+  function start(A){const s=SUB;if(!s){toast('The canyon is quiet today.');return false}clean();load();K.A=A;K.stage=GO;K.t=0;K.glass=100;K.cracks=[];K.crackN=-1;K.waitMsg=0;
+   KG.visible=true;lure.forEach(g=>g.visible=true);A.bcn=PCAR===s?null:beacon(s.home.x,s.home.z,'#ffb21f','MOON SNAIL SUB');seaLoad();
+   say(`Something HUGE is waking up in the canyon past the Drowned Lighthouse, and the sharks are gathering. Take the Moon Snail down there. ${fireWord()} fires the bubble cannon ${aimWord()}!`);return true}
+  function clean(){const s=SUB;K.stage=0;K.held=false;K.fog=1;if(s){s.held=false;if(crack)crack.visible=false}KG.visible=false;KB.g.visible=false;armMesh.visible=false;SHIP.g.visible=false;
+   MER.forEach(m=>m.g.visible=false);SH.forEach(out);OR.forEach(out);TG.length=0;BUB.s.forEach(b=>b.live=false);BUB.im.visible=false;RINGS.forEach(r=>{r.t=-1;r.m.visible=false});tag.visible=false;
+   ARMS.forEach(a=>{a.grabber=a.holding=false;a.g=0;a.reach=.2;if(a.sk)a.sk.visible=false});if(K.A&&K.A.bcn){drop(K.A.bcn.g);K.A.bcn=null}K.A=null}
+  // ---- the sharks ----
+  function startSharks(){const s=SUB;K.stage=SHARKS;K.t=0;loadSnd();const sp=s.p;TG.length=0;
+   SH.forEach((o,n)=>{const a=n*2.3+rr();_b.set(sp.x+Math.cos(a)*32,sp.y,sp.z+Math.sin(a)*32);_b.y=Math.max(_b.y,G(_b.x,_b.z)+3);put(o,_b,sp);
+    Object.assign(o,{hp:SHARK_HITS,mode:0,t:4+n*3,ang:a,rad:10+rr()*4});o.tg={on:true,r:1.9,pos:()=>o.p,vel:()=>_e2.copy(o.d).multiplyScalar(o.spd),hit:()=>sharkHit(o)};TG.push(o.tg)});
+   showMissionCard('SHARKS!',`${fireWord()} fires bubbles ${aimWord()}. Three hits spooks one off. Hold out ${SHARK_T} s!`);toast('SHARKS! Three bubble hits spooks one off');missionHud()}
+  function sharks(dt){const sp=SUB.p;for(const o of SH){if(o.gone)continue;o.t-=dt;
+    if(o.mode===0){o.ang+=6.5/o.rad*dt;_b.set(sp.x+Math.cos(o.ang)*o.rad,sp.y+Math.sin(o.ang*2)*1.5,sp.z+Math.sin(o.ang)*o.rad);steer(o,_b,6.5,90,dt);if(o.t<=0){o.mode=1;o.t=6;warn(o.p)}}
+    else if(o.mode===1){steer(o,sp,11,170,dt);if(o.p.distanceTo(sp)<SUBR+2){hit(SUB,RAM,o.p);sfx('land',.5);puff(o.p.x,o.p.y,o.p.z,'#e9fbff',1.2,1.2,.6);buzz('left',.7,120);buzz('right',.7,120);o.mode=2;o.t=4;o.away.subVectors(o.p,sp).normalize()}else if(o.t<=0){o.mode=0;o.t=7+rr()*5}}
+    else{_b.copy(o.p).addScaledVector(o.away,20);steer(o,_b,8,120,dt);if(o.t<=0){o.mode=0;o.t=7+rr()*5;o.ang=Math.atan2(o.p.z-sp.z,o.p.x-sp.x);o.rad=10+rr()*5}}}}
+  // a shark's coming: buzz the hand on its side, and say so if it's behind you
+  function warn(p){const cam=VR.on&&renderer.xr.isPresenting?renderer.xr.getCamera():camera;_m4.copy(cam.matrixWorld).invert();_a.copy(p).applyMatrix4(_m4);const side=_a.x<0?'left':'right';
+   buzz(side,.5,200);if(_a.z>0||!VR.on)toast(`Shark coming ${_a.z>0?'from behind ':''}on your ${side}!`)}
+  function sharkHit(o){if(o.gone||K.stage!==SHARKS)return;o.hp--;sfx('pop',.7);
+   if(o.hp<=0){o.tg.on=false;flee(o,SUB.p,13);const n=SH.filter(q=>q.gone).length;feed(`<b>Shark spooked off!</b> ${n} of ${SH.length}`,'#7fd3ff');missionHud()}
+   else{o.mode=2;o.t=2.5;o.away.subVectors(o.p,SUB.p).normalize()}}
+  function flee(o,from,spd){o.gone=true;o.flee=true;o.fleeSpd=spd;o.away.subVectors(o.p,from);o.away.y=Math.abs(o.away.y)*.2;if(o.away.lengthSq()<1e-3)o.away.set(1,0,0);o.away.normalize()}
+  function fleeing(dt){for(const o of SH.concat(OR)){if(!o.flee)continue;_b.copy(o.p).addScaledVector(o.away,30);steer(o,_b,o.fleeSpd,90,dt);if(o.p.distanceTo(SUB.p)>110)out(o)}}
+  // ---- the orcas ----
+  function startOrcas(){const s=SUB,sp=s.p;K.stage=ORCAS;K.t=0;let from=null;for(const o of SH)if(!o.gone){from=o.p;break}
+   _c.subVectors(from||sp,sp);_c.y=0;if(_c.lengthSq()<1)_c.set(Math.sin(s.h),0,Math.cos(s.h));_c.normalize();_d.copy(sp).addScaledVector(_c,55);_d.y=sp.y+2;
+   OR.forEach((o,i)=>{_b.copy(_d).add(_e2.set((i%2?1:-1)*(i?4+i*2:0),i?-1:0,i?-4-i*3:0));_b.y=Math.max(_b.y,G(_b.x,_b.z)+3);put(o,_b,sp);o.spd=9});
+   showMissionCard('ORCAS!','The pod has come to chase the sharks away!');say('Here come the orcas! Ha! Look at those sharks run!');sfx('whoop',.5);missionHud()}
+  function orcas(dt){const sp=SUB.p;let chase=null;for(const o of SH)if(!o.gone){chase=o;break}
+   OR.forEach((o,i)=>{if(o.flee)return;if(i===0)_b.copy(chase?chase.p:_c.copy(sp).addScaledVector(_d.set(Math.sin(SUB.h),0,Math.cos(SUB.h)),12));else _b.copy(OR[0].p).add(_e2.set((i%2?1:-1)*(3+i*2),-1,0)).addScaledVector(OR[0].d,-3-i*3);steer(o,_b,i?10.5:10,120,dt)});
+   if(K.t>1.5)SH.forEach(o=>{if(!o.gone){o.tg.on=false;flee(o,OR[0].p,14)}})}
+  // ---- the kraken ----
+  function frame(){KB.g.updateMatrix();_q.setFromEuler(KB.g.rotation);KB.f.set(0,0,1).applyQuaternion(_q);KB.r.set(1,0,0).applyQuaternion(_q);KB.u.set(0,1,0).applyQuaternion(_q);KB.p.copy(KB.g.position)}
+  function startRise(){const s=SUB,sp=s.p;K.stage=RISE;K.t=0;OR.forEach(o=>{if(!o.flee)flee(o,sp,11)});
+   if(!AS.got.kraken)standIn();
+   // face to face, out of open water: ahead of you if the canyon's open there, otherwise the most open way (toward the lair first)
+   const lair=Math.atan2(LX-sp.x,LZ-sp.z),tries=[s.h,lair,s.h-.8,s.h+.8,lair-.8,lair+.8,s.h-1.6,s.h+1.6];let bestA=s.h,bestF=1e9;
+   for(const an of tries){let f=-1e9;for(const k of[.5,.8,1.1,1.4])f=Math.max(f,G(sp.x+Math.sin(an)*(BL*.5+11)*k,sp.z+Math.cos(an)*(BL*.5+11)*k));if(f<sp.y-BL*.35){bestA=an;bestF=f;break}if(f<bestF){bestF=f;bestA=an}}
+   _a.set(Math.sin(bestA),0,Math.cos(bestA));
+   K.bodyTo.copy(sp).addScaledVector(_a,BL*.5+11);K.bodyTo.y=sp.y-BL*.06;K.bodyTo.y=Math.max(K.bodyTo.y,G(K.bodyTo.x,K.bodyTo.z)+BL*.3);K.bodyFrom.copy(K.bodyTo);K.bodyFrom.y-=BL*1.6;
+   K.yaw=Math.atan2(sp.x-K.bodyTo.x,sp.z-K.bodyTo.z);KB.g.position.copy(K.bodyFrom);KB.g.rotation.set(0,K.yaw,0);KB.g.visible=true;frame();K.fog=1.35;
+   makeArms();armMesh.visible=true;if(AS.got.krakenship){SHIP.g.visible=true;K.shipFall=0}lure.forEach(g=>g.visible=false);
+   sfx('boom',.5);play('kraken_roar',1,.85,'boom');say('WHAT IS THAT?! It’s the KRAKEN!');showMissionCard('THE KRAKEN',`Something huge is coming up out of the canyon ${dirWord(s,{x:K.bodyTo.x,z:K.bodyTo.z}).replace('to your ','on your ')}…`);missionHud()}
+  function rise(){const k=sm(0,1,clamp(K.t/6,0,1));KB.g.position.lerpVectors(K.bodyFrom,K.bodyTo,k);frame();ARMS.forEach(a=>a.reach=lerp(.2,1,k))}
+  function startGrab(){const s=SUB;K.stage=GRAB;K.t=0;K.sq=SQ_EVERY;K.gH=s.h;s.held=true;K.held=true;ARMS.forEach(a=>{if(a.grabber){a.holding=true;a.hp=SUCK_HITS;a.freeT=0}});
+   hit(s,10,KB.p);play('kraken_roar',1,1,'boom');buzz('left',.8,250);buzz('right',.8,250);
+   showMissionCard('THE KRAKEN HAS YOU!',`Shoot the four glowing suckers to make it let go. ${VR.on?'Look around for them':IS_TOUCH?'Turn the sub to find them':'Turn the sub (A/D) to find them'} · ${fireWord()} fires bubbles.`);missionHud()}
+  function grab(dt){const s=SUB;let holding=0;ARMS.forEach(a=>{if(a.grabber&&a.holding)holding++});K.sq-=dt;
+   if(K.sq<=0&&holding>0){K.sq=SQ_EVERY;hit(s,SQ_PER*holding,null);play('kraken_squeeze',.9,.9+rr()*.15,'land');buzz('left',.35,250);buzz('right',.35,250)}
+   s.held=K.held=holding>0;
+   ARMS.forEach(a=>{if(!a.grabber||a.holding)return;a.freeT+=dt;if(a.freeT>REGRAB&&freed()<3){a.holding=true;a.hp=SUCK_HITS;toast('A tentacle grabbed you again!');missionHud()}})}
+  const freed=()=>ARMS.filter(a=>a.grabber&&!a.holding).length;
+  function suckHit(a){if(K.stage!==GRAB||!a.holding)return;a.hp--;if(a.sk)a.sk.scale.setScalar(.6);sfx('cp',.4);if(a.hp>0)return;
+   a.holding=false;a.freeT=0;play('kraken_roar',.55,1.25,'boom');const n=freed();toast(`Tentacle off! ${n} of 4 free${n<3?' · quick, before it grabs again!':''}`);missionHud()}
+  // ---- the mermaids ----
+  function startMer(){const s=SUB,sp=s.p;K.stage=MERS;K.t=0;MER.forEach((m,i)=>{const a=i*2.1+.6;m.g.position.set(sp.x+Math.cos(a)*30,sp.y+4.5,sp.z+Math.sin(a)*30);m.v.set(0,0,0);m.g.lookAt(sp);m.g.visible=true});
+   play('mermaid_song',1,1,'whoop');showMissionCard('Wait… MERMAIDS?!','Hang on in there!');say('Are those… MERMAIDS?! Hang on in there!');missionHud()}
+  function queenSpot(out){const sp=SUB.p;_a.subVectors(KB.p,sp);_a.y=0;if(_a.lengthSq()<.01)_a.set(Math.sin(SUB.h),0,Math.cos(SUB.h));_a.normalize();return out.copy(sp).addScaledVector(_a,7).add(_e2.set(0,1.2,0))}
+  function mermaids(dt,leaving){const sp=SUB.p;MER.forEach((m,i)=>{const p=m.g.position,a=CLOCK*.55+i*2.1;
+    if(leaving&&K.t>6)_b.copy(p).add(_a.subVectors(p,sp).normalize().multiplyScalar(30)).add(_e2.set(0,6,0));
+    else if(i===0&&!leaving)queenSpot(_b);
+    else if(leaving)_b.set(sp.x+Math.cos(a)*6,sp.y+.2*Math.sin(a*2)*6,sp.z+Math.sin(a)*6);
+    else _b.set(KB.p.x+Math.cos(a)*BL*.6,KB.p.y+.3*BL*.6,KB.p.z+Math.sin(a)*BL*.6);
+    _c.subVectors(_b,p).multiplyScalar(1.4);if(_c.length()>12)_c.setLength(12);m.v.lerp(_c,1-Math.exp(-2.5*dt));p.addScaledVector(m.v,dt);
+    if(i===0&&!leaving&&_b.distanceTo(p)<2)_d.subVectors(KB.p,p);else _d.copy(m.v);
+    if(_d.lengthSq()>.01){_m4.lookAt(_d,ZERO,UP);_q.setFromRotationMatrix(_m4);m.g.quaternion.slerp(_q,1-Math.exp(-3*dt))}
+    if(leaving&&K.t>9.5)m.g.visible=false})}
+  function startSink(){K.stage=SINK;K.t=0;K.pings=0;K.pingT=0;K.sinkFrom=KB.p.y;const q=MER[0].g.position;play('mermaid_song',.8,1.15,'whoop');
+   showMissionCard('Her SUPER SONAR!','The kraken lets go…');ARMS.forEach(a=>{a.holding=false;if(a.tg)a.tg.on=false});SUB.held=K.held=false;missionHud()}
+  function sink(dt){K.pingT-=dt;if(K.pings<3&&K.pingT<=0){const r=RINGS[K.pings],q=MER[0].g.position;r.t=0;r.m.position.copy(q);r.m.visible=true;play('super_sonar',1,.9+K.pings*.1,'beep');buzz('left',.6,300);buzz('right',.6,300);
+    if(K.pings===0)sfx('boom',.4);K.pings++;K.pingT=.9}
+   const k=sm(0,1,clamp((K.t-.8)/8,0,1));KB.g.position.y=K.sinkFrom-BL*2*k;KB.g.rotation.set(25*Math.PI/180*k,K.yaw,0);frame();ARMS.forEach(a=>a.reach=lerp(1,.35,k));if(k>=1)KB.g.visible=false}
+  function rings(dt){RINGS.forEach(r=>{if(r.t<0)return;r.t+=dt;r.m.scale.setScalar(2+r.t*42);r.m.material.opacity=.45*(1-r.t/1.5);if(r.t>1.5){r.t=-1;r.m.visible=false}})}
+  // ---- the tentacles ----
+  const base=(a,out)=>{out.copy(KB.p).addScaledVector(KB.f,BL*.3).addScaledVector(KB.u,-BL*.2);const ph=a.phi*Math.PI/180;return out.addScaledVector(KB.r,Math.cos(ph)*BL*.12).addScaledVector(KB.u,Math.sin(ph)*.6*BL*.12)};
+  const WR=[0,5,SUBR+3.5,SUBR+1.1,SUBR+.8,SUBR+.55];
+  const wrap=(deg,h,r,out)=>{const a=K.gH+deg*Math.PI/180;return out.set(SUB.p.x+Math.sin(a)*r,SUB.p.y+h,SUB.p.z+Math.cos(a)*r)};
+  function makeArms(){const sp=SUB.p;ARMS.forEach(a=>{a.grabber=a.holding=false;a.g=0;a.reach=.2;a.hp=SUCK_HITS});const o=ARMS.slice().sort((x,y)=>base(x,_a).distanceToSquared(sp)-base(y,_b).distanceToSquared(sp));
+   shipArm=null;for(let k=4;k<o.length;k++)if(!shipArm||base(o[k],_a).y>base(shipArm,_b).y)shipArm=o[k];
+   const a0=[-35,35,-80,80],h0=[.5,-.4,.1,-.6];TG.length=0;
+   for(let k=0;k<4;k++){const a=o[k];a.grabber=true;a.a0=a0[k];a.h0=h0[k];a.sgn=k%2===0?1:-1;
+    if(!a.sk){a.sk=new T.Mesh(suckGeo,suckM);const gl=new T.Sprite(glowM('#c8ff6a',.8));gl.scale.set(1.5,1.5,1);a.sk.add(gl);KG.add(a.sk)}a.sk.visible=false;
+    a.tg={on:false,r:.85,pos:()=>a.sAt,vel:()=>null,hit:()=>suckHit(a)};TG.push(a.tg)}}
+  const cat=(c,s,out)=>{const x=clamp(s,0,1)*(c.length-1),i=Math.min(x|0,c.length-2),u=x-i,p0=c[Math.max(i-1,0)],p1=c[i],p2=c[i+1],p3=c[Math.min(i+2,c.length-1)],u2=u*u,u3=u2*u;
+   return out.set(.5*(2*p1.x+(p2.x-p0.x)*u+(2*p0.x-5*p1.x+4*p2.x-p3.x)*u2+(3*p1.x-p0.x-3*p2.x+p3.x)*u3),.5*(2*p1.y+(p2.y-p0.y)*u+(2*p0.y-5*p1.y+4*p2.y-p3.y)*u2+(3*p1.y-p0.y-3*p2.y+p3.y)*u3),
+    .5*(2*p1.z+(p2.z-p0.z)*u+(2*p0.z-5*p1.z+4*p2.z-p3.z)*u2+(3*p1.z-p0.z-3*p2.z+p3.z)*u3))};
+  const PTS=[];for(let i=0;i<=RN;i++)PTS.push(V3());const _t=V3(),_n=V3(),_bn=V3(),_pn=V3(),_o2=V3(),_s2=V3();
+  function arms(dt){if(K.stage===SINK&&!KB.g.visible){armMesh.visible=false;return}const t=CLOCK,sp=SUB.p;
+   for(const a of ARMS){const B=base(a,_o2);_s2.subVectors(B,_a.copy(KB.p).addScaledVector(KB.f,BL*.3).addScaledVector(KB.u,-BL*.2)).normalize().addScaledVector(KB.f,.5).normalize();const od=_s2;
+    _bn.crossVectors(UP,od);
+    for(let i=0;i<6;i++){const u=i/5;a.wave[i].copy(B).addScaledVector(od,AL*u*.9).addScaledVector(UP,AL*(.35*u*u+.12*Math.sin(t*(.9+u)+a.ph+u*3)*u)).addScaledVector(_bn,AL*.1*Math.sin(t*.7+a.ph*1.3+u*2)*u)}
+    for(let i=1;i<6;i++){_e2.subVectors(a.wave[i],sp);const L=_e2.length();if(L<7)a.wave[i].copy(sp).addScaledVector(L>.01?_e2.multiplyScalar(1/L):_e2.set(0,-1,0),7)}
+    if(a===shipArm&&K.stage!==SINK){const H=_c.copy(KB.p).addScaledVector(KB.f,BL*.3).addScaledVector(KB.r,BL*.55).addScaledVector(UP,BL*.3+2*Math.sin(t*.5));
+     a.wave[0].copy(B);a.wave[1].lerpVectors(B,H,.35).addScaledVector(UP,BL*.1);a.wave[2].lerpVectors(B,H,.7).addScaledVector(KB.r,3);a.wave[3].copy(H);a.wave[4].copy(H).addScaledVector(UP,3).addScaledVector(KB.f,2);a.wave[5].copy(H).addScaledVector(UP,1).addScaledVector(KB.f,5).addScaledVector(KB.r,-2)}
+    const want=a.grabber&&a.holding&&K.stage===GRAB?1:0;a.g=want>a.g?Math.min(want,a.g+dt*.9):Math.max(want,a.g-dt*.6);
+    if(a.grabber&&a.g>0){const s=a.sgn;a.ctrl[0].copy(B);a.ctrl[1].lerpVectors(B,sp,.45).addScaledVector(UP,3).addScaledVector(od,3);wrap(a.a0-s*70,a.h0-1.5,SUBR+3.5,a.ctrl[2]);wrap(a.a0,a.h0,SUBR+1.1,a.ctrl[3]);
+     wrap(a.a0+s*90,a.h0+.6,SUBR+.8,a.ctrl[4]);wrap(a.a0+s*175,a.h0+1.1,SUBR+.55,a.ctrl[5]);const g=sm(0,1,a.g);for(let i=0;i<6;i++){a.ctrl[i].lerpVectors(a.wave[i],a.ctrl[i],g);if(i){_e2.subVectors(a.ctrl[i],sp);const L=_e2.length(),R=WR[i];if(L<R)a.ctrl[i].copy(sp).addScaledVector(L>.01?_e2.multiplyScalar(1/L):_e2.set(0,-1,0),R)}}a.sAt.copy(a.ctrl[3]);const rS=armR(.6,a.g);a.sAt.addScaledVector(_e2.subVectors(sp,a.sAt).normalize(),rS*g+.2)}
+    else{for(let i=0;i<6;i++)a.ctrl[i].copy(a.wave[i]);a.sAt.copy(a.wave[3])}
+    if(a.sk){const on=a.holding&&a.g>.9&&K.stage===GRAB;a.sk.visible=on;if(on){a.sk.position.copy(a.sAt);const pu=.75+.15*Math.sin(t*6+a.ph),w=pu*(.62+.07*a.hp);a.sk.scale.setScalar(lerp(a.sk.scale.x,w,1-Math.exp(-8*dt)))}}
+    if(a.tg)a.tg.on=a.holding&&a.g>.9&&K.stage===GRAB;
+    if(a===shipArm&&SHIP.g.visible)ship(a,dt);
+    build(a,clamp(a.reach,0,1))}
+   armGeo.attributes.position.needsUpdate=true;armGeo.attributes.normal.needsUpdate=true}
+  function ship(a,dt){const g=SHIP.g;if(K.stage===SINK){K.shipFall+=dt;SHIP.vel.y-=1.2*dt;g.position.addScaledVector(SHIP.vel,dt);g.rotation.x+=.07*dt;g.rotation.z+=.1*dt;if(K.shipFall>12)g.visible=false;return}
+   const s=clamp(a.reach,0,1)*.6;cat(a.ctrl,s,_a);cat(a.ctrl,s+.02,_b);_b.sub(_a);_c.crossVectors(_b,UP);if(_c.lengthSq()<1e-4)_c.copy(KB.r);g.position.copy(_a);g.lookAt(_d.copy(_a).add(_c.normalize()));g.rotateZ(.31);SHIP.vel.set(0,0,0)}
+  const armR=(u,g)=>lerp(Math.max(.9,AL*.05),.12,Math.sqrt(u))*(1-.5*sm(0,1,g)*sm(.22,.55,u));
+  function build(a,reach){const sp=SUB.p;for(let i=0;i<=RN;i++){cat(a.ctrl,reach*i/RN,PTS[i]);const R=armR(i/RN,a.g)+SUBR+.15;_e2.subVectors(PTS[i],sp);const L=_e2.length();if(L<R)PTS[i].copy(sp).addScaledVector(L>.01?_e2.multiplyScalar(1/L):_e2.set(0,-1,0),R)}_pn.set(0,1,0);const off=a.j*NV1*3;
+   for(let i=0;i<=RN;i++){_t.subVectors(PTS[Math.min(i+1,RN)],PTS[Math.max(i-1,0)]);if(_t.lengthSq()<1e-8)_t.set(0,0,1);_t.normalize();_n.crossVectors(_pn,_t);_n.crossVectors(_t,_n);if(_n.lengthSq()<1e-8)_n.crossVectors(_t,_e2.set(1,0,0));_n.normalize();_pn.copy(_n);
+    _bn.crossVectors(_t,_n);const u=i/RN,r=armR(u,a.g),P=PTS[i];
+    for(let s=0;s<=SN;s++){const ang=s/SN*TAU,cs=Math.cos(ang),sn=Math.sin(ang),dx=_n.x*cs+_bn.x*sn,dy=_n.y*cs+_bn.y*sn,dz=_n.z*cs+_bn.z*sn,k=off+(i*(SN+1)+s)*3;
+     aPos[k]=P.x+dx*r;aPos[k+1]=P.y+dy*r;aPos[k+2]=P.z+dz*r;aNor[k]=dx;aNor[k+1]=dy;aNor[k+2]=dz}}}
+  // ---- the bubble cannon ----
+  const cannon=()=>K.stage>=SHARKS&&K.stage<=MERS;
+  function fire(s){if(K.cd>0)return;K.cd=.25;let d;if(VR.on&&VR.rAim&&VR.rAimOk)d=_d.copy(VR.rAim.d);else{camera.getWorldDirection(_d);d=_d}
+   const from=_a.copy(s.p).add(_e2.set(0,-.45,0)).addScaledVector(d,1.75);
+   // a gentle aim helper: a bubble heading close to something it can spook goes straight for it
+   let best=null,bs=VR.on?.25:.42;for(const t of TG){if(!t.on)continue;const c=t.pos();_b.subVectors(c,from);const L=_b.length();if(L>46||L<.5)continue;const an=Math.acos(clamp(_b.dot(d)/L,-1,1));if(an<bs){bs=an;best={t,L}}}
+   if(best){const c=_b.copy(best.t.pos()),v=best.t.vel();if(v)c.addScaledVector(v,best.L/26);d=_c.subVectors(c,from).normalize()}
+   const b=BUB.s.find(q=>!q.live);if(!b)return;b.live=true;b.age=0;b.p.copy(from);b.v.copy(d).multiplyScalar(26);BUB.im.visible=true;
+   play('bubble_shot',.45,.9+rr()*.2,'pop');buzz('right',.15,30)}
+  function bubbles(dt){K.cd-=dt;let any=false;for(let i=0;i<BUB.n;i++){const b=BUB.s[i];if(b.live){b.age+=dt;_a.copy(b.p);_b.copy(b.p).addScaledVector(b.v,dt);b.v.multiplyScalar(1-.6*dt);b.v.y+=.9*dt;let done=b.age>1.7;
+     if(!done)for(const t of TG){if(!t.on)continue;const c=t.pos();_c.subVectors(_b,_a);const L2=_c.lengthSq(),k=L2>1e-6?clamp(_d.subVectors(c,_a).dot(_c)/L2,0,1):0;_e2.copy(_a).addScaledVector(_c,k);
+      const rr2=t.r+.3;if(_e2.distanceToSquared(c)<rr2*rr2){done=true;puff(_e2.x,_e2.y,_e2.z,'#e9fbff',.9,.7,.8);t.hit(_e2);break}}
+     if(done)b.live=false;else{b.p.copy(_b);if(rr()<.12)puff(b.p.x,b.p.y,b.p.z,'#e9fbff',.3,.8,.8)}}
+    const sc=b.live?.55*(1+b.age*.4):0;_m4.makeScale(sc,sc,sc).setPosition(b.p);BUB.im.setMatrixAt(i,_m4);if(b.live)any=true}
+   BUB.im.instanceMatrix.needsUpdate=true;BUB.im.visible=any}
+  // ---- every frame while the mission's on ----
+  function tick(A,dt){const s=SUB,me=ME();if(!s||!me)return;K.t+=dt;
+   if(A.bcn){A.bcn.cyl.rotation.y+=dt;A.bcn.g.visible=PCAR!==s}
+   if(K.stage>=SHARKS&&PCAR!==s){missionFail('You left the Moon Snail, and the kraken sank back into the canyon.');return}
+   if(K.stage>=SHARKS&&K.glass<=0){lose(s);return}
+   tag.visible=K.stage===GO&&SON.reveal>0&&UW;if(tag.visible)tag.position.set(LX,LY+16,LZ);
+   if(K.stage===GO){lure.forEach((g,i)=>{g.material.opacity=.45+.4*Math.max(0,Math.sin(CLOCK*.8+i*.2))});if(!AS.warm&&UW&&['kraken','krakenship','mermaid','mermaid2'].every(k=>AS.got[k]||AS.fail[k]))warm();
+    const d=Math.hypot(s.p.x-LX,s.p.z-LZ);if(PCAR===s&&d<ARRIVE&&s.p.y<-6){lure.forEach(g=>g.visible=false);startSharks()}else if(Math.floor(K.t)!==Math.floor(K.t-dt))missionHud();return}
+   bubbles(dt);rings(dt);fleeing(dt);if(K.stage>=RISE)arms(dt);
+   if(K.stage===SHARKS){sharks(dt);const off=SH.filter(o=>o.gone).length;if(K.t>SHARK_T)startOrcas();else if(off>=SH.length&&K.t>3){toast('You drove off the whole pack!');K.stage=ORCAS;K.t=9}}
+   else if(K.stage===ORCAS){orcas(dt);if(K.t>9){if(AS.got.kraken||AS.fail.kraken||K.t>25)startRise();else if(!K.waitMsg){K.waitMsg=1;toast('Something huge is stirring down in the canyon…')}}}
+   else if(K.stage===RISE){rise();if(K.t>6)startGrab()}
+   else if(K.stage===GRAB){grab(dt);if(freed()>=3)startMer()}
+   else if(K.stage===MERS){mermaids(dt,false);if(K.t>8.5)startSink()}
+   else if(K.stage===SINK){mermaids(dt,true);sink(dt);if(K.t>10){win();return}}
+   if(Math.floor(K.t*2)!==Math.floor((K.t-dt)*2))missionHud()}
+  // get its shaders ready once while you cruise out to the canyon, so nothing hitches when it rises
+  function warm(){AS.warm=1;const L=[KB.g,SHIP.g,armMesh].concat(MER.map(m=>m.g)),was=L.map(o=>o.visible);L.forEach(o=>o.visible=true);try{renderer.compile(scene,camera)}catch(e){}L.forEach((o,i)=>o.visible=was[i])}
+  function win(){toast('The mermaids’ super sonar drove the kraken back into the canyon!');say('You did it! Nobody’s going to believe we saw MERMAIDS!');missionDone()}
+  function lose(s){missionFail('The kraken cracked the Moon Snail’s glass. The tow boat brought you home.');s.respawn();toast('The tow boat brought the Moon Snail home to ’Sconset Beach')}
+  function hud(A){const s=SUB,g=` · Glass ${Math.ceil(K.glass)}%`;
+   if(K.stage===GO){if(!s||PCAR!==s)return'Walk out the pontoon at ’Sconset Beach and get in the Moon Snail';const d=Math.round(Math.hypot(s.p.x-LX,s.p.z-LZ));return`Take the Moon Snail down to the canyon past the Drowned Lighthouse · ${d} m ${dirWord(s,{x:LX,z:LZ})}`}
+   if(K.stage===SHARKS)return`SHARKS! ${fireWord()} fires bubbles ${aimWord()} · hold out ${Math.max(0,Math.ceil(SHARK_T-K.t))} s · spooked ${SH.filter(o=>o.gone).length}/${SH.length}${g}`;
+   if(K.stage===ORCAS)return(K.t>9?'Something huge is stirring down there…':'The orcas are here!')+g;
+   if(K.stage===RISE)return'Something huge is coming up out of the canyon…'+g;
+   if(K.stage===GRAB)return`THE KRAKEN HAS YOU! Shoot the glowing suckers: ${freed()} of 4 free (3 at once to break loose)${g}`;
+   if(K.stage===MERS)return'Mermaids!'+g;if(K.stage===SINK)return'The kraken’s going back down…'+g;return''}
+  // the mission marker: on 'Sconset Beach, beside the shore end of the Moon Snail's pontoon
+  function spot(){if(!PONT)return[MOOR?MOOR.x:LX,MOOR?MOOR.z:LZ];const sx=PONT.x-Math.sin(PONT.a)*PONT.len/2,sz=PONT.z-Math.cos(PONT.a)*PONT.len/2;
+   for(let r=0;r<40;r+=2)for(const s of[1,-1]){const x=sx-Math.sin(PONT.a)*(4+r)+Math.cos(PONT.a)*6*s,z=sz-Math.cos(PONT.a)*(4+r)-Math.sin(PONT.a)*6*s;if(!isWater(x,z,.2)&&!pointInCollider(x,z))return[x,z]}return[sx,sz]}
+  return{start,tick,clean,hud,spot,cannon,fire,K,LX,LZ,LY,get glass(){return K.glass},get fog(){return K.fog},AS,SH,OR,ARMS,MER,KB,TG,startSharks,startOrcas,startRise,startMer}})();
  function hud(c){const dft=Math.round(c.depth*REAL*3.28),where=PLACES.find(p=>Math.hypot(p.x-c.p.x,p.z-c.p.z)<p.r);$('surf').textContent=c.depth<.4?'On the surface':`Depth ${dft} ft${where?' · '+where.name:''}`;
-  $('ammo').textContent=`${c.pingCool>0?'Sonar charging':'Sonar ready'} · Light ${c.light?'on':'off'}`}
+  $('ammo').textContent=c===SUB&&KR.K.stage>=2?`Glass ${Math.ceil(KR.glass)}% · bubble cannon · Light ${c.light?'on':'off'}`:`${c.pingCool>0?'Sonar charging':'Sonar ready'} · Light ${c.light?'on':'off'}`}
  function enterToast(){seaLoad();toast(IS_TOUCH?'Moon Snail · GO to move · wheel turns · UP rise · DIVE down · FIRE sonar · LIGHT searchlight':GP.on?(VR.on?'Right trigger go · left trigger back · right stick up rise, down dive · right grip sonar · left grip searchlight · B out at the surface':`${GP.rt} go · ${GP.lt} back · right stick up rise, down dive · RB sonar · LB searchlight`):TPK()?'Slide up to go · sideways to turn · ↑ rise · ↓ dive · ← sonar':'Moon Snail · W go · S back · A/D turn · Space rise · Shift dive · click sonar · G searchlight · E out at the surface')}
  function surfaceToast(){toast(IS_TOUCH?'Come up to the surface first: hold UP':GP.on?(VR.on?'Come up to the surface first: right stick up':'Come up to the surface first: right stick up'):'Come up to the surface first: hold Space')}
- return{pre,post,openStart,openTick,hud,enterToast,surfaceToast,pearlStart,pearlClean,pearlHud,pearlTick,onPontoon,makeSubModel,Sub,iceFree:()=>!!SAVE.ice,
+ return{pre,post,openStart,openTick,hud,enterToast,surfaceToast,pearlStart,pearlClean,pearlHud,pearlTick,krakenStart:KR.start,krakenTick:KR.tick,krakenClean:KR.clean,krakenHud:KR.hud,krakenSpot:KR.spot,KR,onPontoon,makeSubModel,Sub,iceFree:()=>!!SAVE.ice,
   get under(){return UW},get sub(){return SUB},SEAM,seaLoad,JEL,PLACES,PEARLS,TRAPS,LANTERNS,LAMP,BELL,LIFE,MOOR,PONT,CH,root,SAVE,ST,DU}})();
 
 
@@ -4858,7 +5108,7 @@ function audioStart(){if(AU.ctx){if(AU.ctx.state==='suspended')AU.ctx.resume();r
  const nb=c.createBuffer(1,c.sampleRate,c.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.noise=nb;
  const w=c.createBufferSource();w.buffer=nb;w.loop=true;const wf=c.createBiquadFilter();wf.type='lowpass';wf.frequency.value=380;const wg=c.createGain();wg.gain.value=.05;w.connect(wf);wf.connect(wg);wg.connect(M);w.start();AU.waves=wg;
  if(typeof musicStart==='function')musicStart()}catch(e){AU.ctx=null}}
-function sfx(type,v=1){const c=AU.ctx;if(!c)return;const t=c.currentTime,out=AU.master;
+function sfx(type,v=1){const c=AU.ctx;if(!c||!(v>.0005))return;const t=c.currentTime,out=AU.master;
  if(type==='shot'||type==='splat'||type==='boom'||type==='land'){const s=c.createBufferSource();s.buffer=AU.noise;const f=c.createBiquadFilter();f.type=type==='shot'?'bandpass':'lowpass';f.frequency.value=type==='shot'?1400:type==='boom'?260:type==='land'?180:420;const g=c.createGain();const L=type==='shot'?.09:type==='boom'?.6:type==='land'?.25:.18;g.gain.setValueAtTime((type==='boom'?.6:.25)*v,t);g.gain.exponentialRampToValueAtTime(.001,t+L);s.connect(f);f.connect(g);g.connect(out);s.start(t,Math.random(),L+.1)}
  else if(type==='dart'||type==='pop'){const d=type==='dart',s=c.createBufferSource();s.buffer=AU.noise;const f=c.createBiquadFilter();f.type=d?'highpass':'bandpass';f.frequency.value=d?1700:900;const g=c.createGain();const L=d?.07:.05;g.gain.setValueAtTime((d?.2:.12)*v,t);g.gain.exponentialRampToValueAtTime(.001,t+L);s.connect(f);f.connect(g);g.connect(out);s.start(t,Math.random(),L+.05);
   const o=c.createOscillator(),og=c.createGain();o.type=d?'triangle':'sine';o.frequency.setValueAtTime(d?760:560,t);o.frequency.exponentialRampToValueAtTime(d?250:170,t+(d?.06:.08));og.gain.setValueAtTime((d?.1:.22)*v,t);og.gain.exponentialRampToValueAtTime(.001,t+(d?.07:.1));o.connect(og);og.connect(out);o.start(t);o.stop(t+.12)}
@@ -5692,7 +5942,7 @@ function crewAction(){if(!PL||PCAR||PL.dead>0)return null;
 function prankHit(v){const A=OPEN.active;if(!A||A.type!=='prank'||A.car!==v||A.stage!==1)return;A.hits++;missionHud();if(A.hits<A.count)return;
  A.stage=2;if(A.bcn){drop(A.bcn.g);A.bcn=null}const s=Math.sin(v.h),co=Math.cos(v.h);let n=0;['chad','brad','tucker'].forEach((look,i)=>{if(spawnPirate(v.p.x+co*(5+i*2),v.p.z-s*(5+i*2),{prep:look,nades:i<2,mission:A.id}))n++});
  A.got=0;A.count=n;showMissionCard('Uh oh','Chad and Brad saw the paint job. Splat them!');ALLY.cool=0;ALLY.wake=1;missionHud()}
-function missionCleanup(A){if(!A)return;if(A.ring){drop(A.ring);A.ring=null}if(A.bcn){drop(A.bcn.g);A.bcn=null}if(A.cps){A.cps.forEach(b=>drop(b.g));A.cps=null}if(A.type==='heist'){FERRY.heist=false;bossHud(null)}if(A.type==='chase'&&S23)S23.chaseClean(A);if(A.type==='whale'&&S24)S24.whaleClean(A);if(A.type==='pearls'&&DEEPV)DEEPV.pearlClean(A);
+function missionCleanup(A){if(!A)return;if(A.ring){drop(A.ring);A.ring=null}if(A.bcn){drop(A.bcn.g);A.bcn=null}if(A.cps){A.cps.forEach(b=>drop(b.g));A.cps=null}if(A.type==='heist'){FERRY.heist=false;bossHud(null)}if(A.type==='chase'&&S23)S23.chaseClean(A);if(A.type==='whale'&&S24)S24.whaleClean(A);if(A.type==='pearls'&&DEEPV)DEEPV.pearlClean(A);if(A.type==='kraken'&&DEEPV)DEEPV.krakenClean(A);
  OPEN.pirates.forEach(e=>{if(e.mission===A.id)e.mission=null})}
 /* the Ferry Heist: Captain Seaweed's wild crew take the Eagle; catch her by boat, climb the stern ladder and clear the decks */
 const HEIST_SPOTS=[[-4,-30,1],[4,-27,1],[0,-33,1],[-3,25,1],[3,22,1],[0,28,1],[-5,-19,2],[5,-18,2],[0,14,2]];
@@ -5814,8 +6064,9 @@ const MISSIONS=[
  {id:'mail',name:'’Sconset Mail Run',type:'deliver',repeat:true,at:'po',local:true,desc:'Hal at the post office has a package for a cottage in the village. Faster pays more.'},
  {id:'whales',name:'Whale Watch',type:'whale',at:'whales',desc:'Tess the lifeguard spotted humpbacks off ’Sconset. See a spout, a breach and a tail slap. Watch from her stand, the top of Sankaty Light or the rental skiff, and keep 100 yards back.'},
  {id:'beach',name:'Beach Landing',type:'turf',at:'beach',count:8,sea:true,nades:true,desc:'Captain Seaweed’s crew rowed ashore at ’Sconset Beach to bury their loot in the sand. Splat 8 of them.'},
+ ...(DEEPV?[{id:'kraken',name:'The Kraken',type:'kraken',desc:'Something huge is waking up in the canyon past the Drowned Lighthouse, and the great whites are gathering. Take the Moon Snail sub down, spook the sharks with its bubble cannon, and don’t let anything crack the glass.'}]:[]),
  {id:'deliver',name:'Box Delivery',type:'deliver',repeat:true,desc:'Run a hot order from The Box to a house across the island. Faster pays more, but speed where a cop can see you and you get pulled over.'}];
-function missionPos(M){if(M.at&&S24){const s=S24.spot(M.at);if(s)return s}if(M.at&&M.at!=='box'&&S23){const s=S23.spot(M.at);if(s)return s}if(M.type==='boats')return[HARBOR.shore[0]-4,HARBOR.shore[1]+2];if(M.type==='heist')return[HARBOR.shore[0]-5,HARBOR.shore[1]-9];
+function missionPos(M){if(M.type==='kraken'&&DEEPV)return DEEPV.krakenSpot();if(M.at&&S24){const s=S24.spot(M.at);if(s)return s}if(M.at&&M.at!=='box'&&S23){const s=S23.spot(M.at);if(s)return s}if(M.type==='boats')return[HARBOR.shore[0]-4,HARBOR.shore[1]+2];if(M.type==='heist')return[HARBOR.shore[0]-5,HARBOR.shore[1]-9];
  let q=M.type==='hold'?[HARBOR.shore[0]-30,HARBOR.shore[1]+4]:M.at==='box'?[HUB.cb.front[0],HUB.cb.front[1]]:null;if(q){for(let r=0;r<200;r+=4){for(let a=0;a<TAU;a+=.5){const x=q[0]+Math.cos(a)*r,z=q[1]+Math.sin(a)*r;if(!isWater(x,z,.2)&&!pointInCollider(x,z)&&(M.type!=='hold'||r>0||1))return[x,z]}}return q}if(M.type==='drive'){const s=HUB.spawn,h=s.h+Math.PI;return[s.x+Math.sin(h)*30,s.z+Math.cos(h)*30]}let p=M.type==='deliver'?[HUB.cb.deck[0],HUB.cb.deck[1]]:LL(M.ll[0],M.ll[1]);
  for(let r=0;r<200;r+=6){let ok=null;for(let a=0;a<TAU;a+=.5){const x=p[0]+Math.cos(a)*r,z=p[1]+Math.sin(a)*r;if(!isWater(x,z,.2)&&!pointInCollider(x,z)){ok=[x,z];break}}if(ok)return ok}return p}
 function buildMarkers(){OPEN.markers.forEach(m=>drop(m.g));OPEN.markers=MISSIONS.map(M=>{const p=missionPos(M),g=new T.Group();g.position.set(p[0],surfaceY(p[0],p[1]),p[1]);scene.add(g);
@@ -5829,6 +6080,7 @@ function missionStart(M){if(coopGuest()){toast('Your friend starts the missions 
  if(M.type==='chase'&&S23)S23.chaseStart(A_,M);
  if(M.type==='whale'&&S24)S24.whaleStart(A_,M);
  if(M.type==='pearls'&&DEEPV)DEEPV.pearlStart(A_);
+ if(M.type==='kraken'&&DEEPV&&!DEEPV.krakenStart(A_)){OPEN.active=null;return}
  if(M.type==='hold'){A_.sea=M.sea;A_.zx=mk2.x;A_.zz=mk2.z;A_.secs=M.secs;A_.held=0;A_.out=0;A_.spawnT=1.5;const rg=new T.Mesh(new T.RingGeometry(17.3,18,72),new T.MeshBasicMaterial({color:'#ffcf5a',transparent:true,opacity:.6,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(A_.zx,surfaceY(A_.zx,A_.zz)+.2,A_.zz);scene.add(rg);A_.ring=rg;ALLY.cool=0;ALLY.wake=1}
  if(M.type==='heist')heistStart(A_,M);
  if(M.type==='kidrace'){const c=[ICE?ICE.x:mk2.x,ICE?ICE.z:mk2.z],P=[];for(let k=0;k<400&&P.length<5;k++){const s=SPOTS[(rnd()*SPOTS.length)|0],d=Math.hypot(s.x-c[0],s.z-c[1]);if(d<60||d>240||isWater(s.x,s.z,-.2)||P.some(q=>Math.hypot(q.x-s.x,q.z-s.z)<55))continue;P.push({x:s.x,z:s.z,a:Math.atan2(s.x-c[0],s.z-c[1])})}
@@ -5852,7 +6104,7 @@ function missionHud(){const el=$('obj');if(!el)return;const A=OPEN.active,list=M
  const goal=OWNER?`<small>${money(CASH)} · you own The Box</small>`:`<small>${money(CASH)} / ${money(PRICE)} · buy The Box</small>`,bar=OWNER?'':`<i class="bar"><u style="width:${Math.min(100,CASH/PRICE*100).toFixed(1)}%"></u></i>`;
  if(!A&&ZED.state==='wave'){el.innerHTML=`${goal}<b>Hospital outbreak</b><span>Wave ${ZED.wave+1} of 3 · ${ZED.list.filter(z=>z.dead<=0).length} zombies left</span>`;return}
  if(!A){el.innerHTML=`${goal}<b>Free roam</b><span>${!OWNER&&CASH>=PRICE?'You can afford it · go buy the Box!':`${done}/${list.length} missions · Box deliveries`}</span>${bar}`;return}
- const prog=A.type==='drive'?`Checkpoint ${Math.min(A.cp+1,CPS.length)}/${CPS.length} · ${fmtT(Math.max(0,A.limit-A.t)).replace(/\.\d+$/,'')} left`:A.type==='boats'?`Pirate boats sunk ${A.got}/${A.count}`:A.type==='deliver'?`${esc(A.addr)} · ${clockStr(A.limit-A.t)} left`:A.type==='hold'?`Hold the pier ${Math.floor(A.held)}/${A.secs}s${A.out>0?' · get back in the ring!':''}`:A.type==='heist'?(A.stage===2?'Take down Captain Seaweed and his crew':`Seaweed crew splatted ${A.got}/${A.count}${A.boarded?'':' · catch the Eagle by boat'}`):A.type==='kidrace'?`Flag ${Math.min(A.cp+1,A.cps.length)}/${A.cps.length} · ${clockStr(Math.max(0,A.limit-A.t))} left`:A.type==='whale'&&S24?S24.whaleHud(A):A.type==='pearls'&&DEEPV?DEEPV.pearlHud(A):A.type==='chase'?`Chad and Brad splatted ${A.got}/2 · ${Math.round(A.left||0)} m from their Land Rover`:A.type==='prank'?(A.stage===1?`Paint on Chad’s Land Rover ${A.hits}/${A.count}`:`Preps splatted ${A.got}/${A.count}`):`${OPEN.pirates.some(e=>e.mission===A.id&&e.prep)?'Preps':'Pirates'} splatted ${A.got}/${A.count}`;
+ const prog=A.type==='drive'?`Checkpoint ${Math.min(A.cp+1,CPS.length)}/${CPS.length} · ${fmtT(Math.max(0,A.limit-A.t)).replace(/\.\d+$/,'')} left`:A.type==='boats'?`Pirate boats sunk ${A.got}/${A.count}`:A.type==='deliver'?`${esc(A.addr)} · ${clockStr(A.limit-A.t)} left`:A.type==='hold'?`Hold the pier ${Math.floor(A.held)}/${A.secs}s${A.out>0?' · get back in the ring!':''}`:A.type==='heist'?(A.stage===2?'Take down Captain Seaweed and his crew':`Seaweed crew splatted ${A.got}/${A.count}${A.boarded?'':' · catch the Eagle by boat'}`):A.type==='kidrace'?`Flag ${Math.min(A.cp+1,A.cps.length)}/${A.cps.length} · ${clockStr(Math.max(0,A.limit-A.t))} left`:A.type==='whale'&&S24?S24.whaleHud(A):A.type==='pearls'&&DEEPV?DEEPV.pearlHud(A):A.type==='kraken'&&DEEPV?DEEPV.krakenHud(A):A.type==='chase'?`Chad and Brad splatted ${A.got}/2 · ${Math.round(A.left||0)} m from their Land Rover`:A.type==='prank'?(A.stage===1?`Paint on Chad’s Land Rover ${A.hits}/${A.count}`:`Preps splatted ${A.got}/${A.count}`):`${OPEN.pirates.some(e=>e.mission===A.id&&e.prep)?'Preps':'Pirates'} splatted ${A.got}/${A.count}`;
  el.innerHTML=`${goal}<b>${esc(A.name)}</b><span>${prog}</span>`}
 function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
  if(!A){if(OPEN.markerCool>0)OPEN.markerCool-=dt;for(const m of OPEN.markers){m.cyl.rotation.y+=dt;const d=Math.hypot(me.p.x-m.x,me.p.z-m.z),dc=Math.hypot(camera.position.x-m.x,camera.position.z-m.z);m.g.children[1].material.opacity=.12*clamp((dc-3)/14,0,1);m.g.children[2].visible=dc>12;m.cyl.material.opacity=clamp((dc-3)/9,0,1)*.35;
@@ -5875,6 +6127,7 @@ function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
   if(A.t>A.limit){missionFail('Too slow! Kingston says try again.');return}tick2()}
  if(A.type==='whale'&&S24){S24.whaleTick(A,dt);return}
  if(A.type==='pearls'&&DEEPV){DEEPV.pearlTick(A,dt);return}
+ if(A.type==='kraken'&&DEEPV){DEEPV.krakenTick(A,dt);return}
  if(A.type==='chase'&&S23){if(A.bcn)A.bcn.cyl.rotation.y+=dt;S23.chaseTick(A,dt);return}
  if(A.type==='prank'){if(A.bcn)A.bcn.cyl.rotation.y+=dt;if(Math.hypot(me.p.x-A.car.p.x,me.p.z-A.car.p.z)>700){missionFail('You left Chad’s Land Rover behind.');return}
   if(A.stage===2){const left=OPEN.pirates.filter(e=>e.mission===A.id&&e.dead<=0).length;if(left===0&&A.t>1){missionDone();return}}}
@@ -5883,7 +6136,7 @@ function missionTick(dt){const A=OPEN.active,me=ME();if(!me)return;
   if(A.t>A.limit){missionFail('The order went cold. Grab another at The Box.');return}if(Math.floor(A.t*2)!==Math.floor((A.t-dt)*2))missionHud()}}
 
 /* ---------- mode: Open Island ---------- */
-function openClear(){polClear();skyClear();zedClear();ZED.state='idle';shopClose();OPEN.veh.forEach(v=>{if(!PARKED.includes(v))drop(v.j.g)});OPEN.traffic.forEach(t=>drop(t.car.j.g));OPEN.peds.forEach(p=>drop(p.n.g));OPEN.pirates.forEach(e=>drop(e.n.g));OPEN.preps.forEach(P=>drop(P.car.j.g));OPEN.allies.forEach(f=>drop(f.c.g));OPEN.pboats.forEach(b=>drop(b.j.g));OPEN.orcas.forEach(o=>drop(o.m.g));OPEN.markers.forEach(m=>drop(m.g));
+function openClear(){if(DEEPV)DEEPV.krakenClean();polClear();skyClear();zedClear();ZED.state='idle';shopClose();OPEN.veh.forEach(v=>{if(!PARKED.includes(v))drop(v.j.g)});OPEN.traffic.forEach(t=>drop(t.car.j.g));OPEN.peds.forEach(p=>drop(p.n.g));OPEN.pirates.forEach(e=>drop(e.n.g));OPEN.preps.forEach(P=>drop(P.car.j.g));OPEN.allies.forEach(f=>drop(f.c.g));OPEN.pboats.forEach(b=>drop(b.j.g));OPEN.orcas.forEach(o=>drop(o.m.g));OPEN.markers.forEach(m=>drop(m.g));
  OPEN.veh=[];OPEN.traffic=[];OPEN.peds=[];OPEN.pirates=[];OPEN.preps=[];OPEN.allies=[];OPEN.pboats=[];OPEN.orcas=[];OPEN.markers=[];OPEN.active=null;if(PCAR&&PL&&PCAR.c===PL.c)PCAR.seat(null);if(PL&&PL.c.g.parent&&PL.c.g.parent!==scene)PL.c.g.parent.remove(PL.c.g);
  PARKED.forEach(c=>{if(c.c)c.seat(null);c.player=false});ferryClear();const el=$('obj');if(el)el.hidden=true;const w=$('orca-warn');if(w)w.hidden=true}
 function makeCrewJeep(di,x,z,h){const sp=DRIVERS[di],c=new Car(sp,false,{driver:false});c.place(x,z,h);OPEN.veh.push(c);return c}
@@ -6314,7 +6567,7 @@ function addMarker(kind,o){const t=MARK_TEX[kind]||(MARK_TEX[kind]=markTex(kind)
  const k=kind==='ship'?.075:kind==='cg'?.055:.048;s.scale.set(k*.8,k,1);s.renderOrder=25;s.visible=false;scene.add(s);AA.markers.push({s,kind,o})}
 function markTick(){const H=!!PCAR&&PCAR.kind==='heli',cp=camera.position;for(const M of AA.markers){const o=M.o;let alive=false,p=null;
   if(M.kind==='ship'){alive=o.dead<=0;p=o.p.clone();p.y+=33}else if(M.kind==='flak'){alive=o.dead<=0;p=V3(o.x,o.y+7,o.z)}else{alive=o.side==='cg'||o.dead<=0;p=aaBase(o);p.y+=(o.ship?6:7.5)}
-  const d=p.distanceTo(cp),show=MODE==='open'&&alive&&d>60&&(M.kind==='ship'||(M.kind==='cg'?!H&&d<1400:H||d<500))&&!(AA.man&&M.kind==='cg');if(M.s.visible!==show)M.s.visible=show;if(show)M.s.position.copy(p)}}
+  const d=p.distanceTo(cp),show=MODE==='open'&&alive&&d>60&&!(DEEPV&&DEEPV.under)&&(M.kind==='ship'||(M.kind==='cg'?!H&&d<1400:H||d<500))&&!(AA.man&&M.kind==='cg');if(M.s.visible!==show)M.s.visible=show;if(show)M.s.position.copy(p)}}
 /* ---- maps ---- */
 function pirMini(x,dot,zoom){for(const A of AA.list){if(A.ship||(A.side==='pir'&&A.dead>0))continue;const q=MM.tm(A.x,A.z),k=5/zoom*1.4;x.fillStyle=A.side==='pir'?'#ff7a1a':'#2f6bff';x.fillRect(q[0]-k,q[1]-k,2*k,2*k)}
  PIR.ships.forEach(S=>{if(S.dead>0)return;dot(S.p,'#ffffff',8.5);dot(S.p,'#d81e1e',6.5)})}
@@ -8629,6 +8882,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)toggleView
  // which in-headset panel is up: map, shop, pause (or finished) menu, main menu, or none
  const uiMode=()=>WM.open?'map':ARMS.open?'shop':COOPUI.open?'coop':menuOn()?'pause':MODE==='menu'?'main':'';
  function buzz(g,i,ms){try{const h=g&&g.hapticActuators&&g.hapticActuators[0];if(h&&h.pulse)h.pulse(i,ms)}catch(e){}}
+ VR.buzz=(side,i,ms)=>buzz(side==='left'?st.L:st.R,i,ms);
  function note(k,msg){if(st.noted[k])return;st.noted[k]=1;toast(msg)}
  // resume from the pause screen; guarded so a trigger press and its select event can't toggle twice
  function resume(){if(!PAUSED||MODE==='menu'||MODE==='raceover'||MODE==='battleover')return;const t=performance.now();if(t-st.lastResume<250)return;st.lastResume=t;st.mute=true;togglePause()}
@@ -8982,6 +9236,7 @@ function step(dt){pollPad();if(camInput){camInput=false;if(FOOT()&&PL)toggleView
   if(PCAR&&!FOOT()){const w=VIEWP.vrVehFirst(PCAR)?2:0;if(CAM!==w){if(st.camBefore===null)st.camBefore=CAM;CAM=w;camVis()}}
   // on foot you aim with the right controller (your head if it isn't tracked); while a panel is up the aim holds still
   const fp=FOOT()&&PL&&PL.fp&&PL.dead<=0&&!menuOn()&&!st.ui&&st.vis==='visible';const aim0=st.hp.right;let aim=null;
+  if(aim0){if(!VR.rAim)VR.rAim={o:new T.Vector3(),d:new T.Vector3()};VR.rAim.o.copy(aim0.o).applyMatrix4(rig.matrixWorld);VR.rAim.d.set(0,0,-1).applyQuaternion(aim0.q).applyQuaternion(rig.quaternion).normalize();VR.rAimOk=true}else VR.rAimOk=false;
   if(aim0){_e.setFromQuaternion(aim0.q,'YXZ');aim={yaw:_e.y,pitch:_e.x};ray.position.copy(aim0.o);ray.quaternion.copy(aim0.q)}
   if(!st.ui){
    if(fp&&aim){if(st.prevAimYaw!==null)PL.yaw+=angWrap(aim.yaw-st.prevAimYaw);PL.pitch=clamp(aim.pitch,-1.1,1.1);st.aimYaw=aim.yaw}
